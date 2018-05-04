@@ -1,0 +1,127 @@
+\ProvidesPackageRCS $Header: beamerthemeteaching.sty,v 0.2 2013/06/16 chiquet $
+% __________________________________________________________________
+%
+% INCLUSION DES PACKAGES NECESSAIRES
+\RequirePackage{pgf}
+\RequirePackage{amsmath,amssymb,amsfonts}
+\RequirePackage[frenchb,english]{babel}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[OT1]{fontenc}
+\RequirePackage{aeguill}
+\RequirePackage[normalem]{ulem}
+%\RequirePackage{avant}
+
+\RequirePackage{some_macros}
+
+\newcommand{\emphase}[1]{\textcolor{darkred}{#1}}
+\newcommand{\paragraph}[1]{\textcolor{darkred}{#1}}
+\newcommand{\refer}[1]{{\small{\textcolor{mred}{{\parencite{#1}}}}}}
+
+\setbeamersize{text margin left=1.25em,text margin right=1.25em}
+% LE THEME : "SMALL IS BEAUTIFUL"
+\useinnertheme{circles}
+\useoutertheme{default}
+\usecolortheme{teaching}
+
+\setbeamertemplate{footline}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamercovered{transparent=5}
+\setbeamerfont{date}{size=\scriptsize}
+\setbeamerfont{author}{size=\large}
+\setbeamerfont{institute}{size=\scriptsize}
+\setbeamerfont{block title}{size=\normalsize}
+\setbeamercolor{date,author,institute,block title}{fg=mred}
+
+% PAS DE BARRE DE NAVIGUATION
+\setbeamertemplate{navigation symbols}{}
+
+% \mode<presentation>
+% 
+% \pgfdeclarehorizontalshading[frametitle.bg,frametitle right.bg]{beamer@frametitleshade}{\paperheight}{%
+%   color(0pt)=(frametitle.bg);
+%   color(\paperwidth)=(frametitle right.bg)}
+% 
+% \AtBeginDocument{
+%   \pgfdeclareverticalshading{beamer@topshade}{\paperwidth}{%
+%     color(0pt)=(bg);
+%     color(4pt)=(black!50!bg)}
+% }
+% 
+% \addtobeamertemplate{headline}
+% {}
+% {%
+%   \vskip-0.2pt
+%   %\pgfuseshading{beamer@topshade}
+%   \vskip-2pt
+% }
+% 
+% \setbeamertemplate{footline}{\hfill\tiny{\insertframenumber\hspace*{0.1cm}\vspace*{0.3cm}}}
+% 
+% \defbeamertemplate*{frametitle}{my theme}
+% {%
+%   \nointerlineskip%
+%   \vskip2pt%
+%   \hbox{\leavevmode
+%     \advance\beamer@leftmargin by -12bp%
+%     \advance\beamer@rightmargin by -12bp%
+%     \beamer@tempdim=\textwidth%
+%     \advance\beamer@tempdim by \beamer@leftmargin%
+%     \advance\beamer@tempdim by \beamer@rightmargin%
+% 
+%    \hskip-\Gm@lmargin\hbox{%
+%       \setbox\beamer@tempbox=\hbox{\begin{minipage}[b]{\paperwidth}%
+%           \vbox{}\vskip-.75ex%
+%           \leftskip0.3cm%
+%           \rightskip0.3cm plus1fil\leavevmode
+%           \insertframetitle%
+%           \ifx\insertframesubtitle\@empty%
+%             \strut\par%
+%           \else
+%             \par{\usebeamerfont*{framesubtitle}{\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}\strut\par}%
+%           \fi%
+%           \nointerlineskip
+%           \vbox{}%
+%           \end{minipage}}%
+% 
+%       \beamer@tempdim=\ht\beamer@tempbox%
+%       \advance\beamer@tempdim by 2pt%
+%       \begin{pgfpicture}{0pt}{0pt}{\paperwidth}{\beamer@tempdim}
+%         \usebeamercolor{frametitle right}
+%         \pgfpathrectangle{\pgfpointorigin}{\pgfpoint{\paperwidth}{\beamer@tempdim}}
+%         \pgfusepath{clip}
+%         \pgftext[left,base]{}
+%       \end{pgfpicture}
+%       \hskip-\paperwidth%
+%       \box\beamer@tempbox%
+%     }%
+% 
+%     \hskip-\Gm@rmargin%
+%   }%
+%   \nointerlineskip
+%     \vskip-0.2pt
+%     \hbox to\textwidth{\hskip-\Gm@lmargin\hskip-\Gm@rmargin}
+%     \vskip-2pt
+% }
+% 
+% \mode
+% <all>
+
+% __________________________________________________________________
+%
+% THEOREMES
+{
+  \ifbeamer@blocks
+    \newtheorem{theoreme}[theorem]{Th\'{e}or\`{e}me}
+    \newtheorem{definitionf}[theorem]{D\'efinition}
+    \newtheorem{proposition}[theorem]{Proposition}
+    \newtheorem{propriete}[theorem]{Propri\'{e}t\'{e}}
+    \newtheorem{properties}[theorem]{Properties}
+    \newtheorem{corollaire}[theorem]{Corollaire}
+    \newtheorem{lemme}[theorem]{Lemme}
+    \newtheorem{probleme}[theorem]{Probl\`{e}me}
+    \newtheorem{fait}[theorem]{Fait}
+    \newtheorem{remarque}{Remarque}
+    \newtheorem{principe}{Principe}
+    \newtheorem{hypothese}{Hypoth\`{e}se}
+  \fi
+}

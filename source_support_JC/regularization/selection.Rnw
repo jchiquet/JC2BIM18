@@ -1,0 +1,221 @@
+\begin{frame}
+  \frametitle{Variable Selection}
+
+  \begin{block}{Problematic}
+    
+  With many regressor, 
+  \begin{itemize}
+  \item we integrate more and more information in the model ;
+  \item we have more and more parameters to estimate and $\var (\hat{Y}_i)\nearrow$.
+  \end{itemize}  
+\end{block}
+
+  \vfill
+  
+  \begin{block}{Idea}
+    Look for a (small)  set $\mathcal{S}$ with  $k$ variables
+    among $p$ such that
+  \begin{equation*}
+    Y \approx X_{\mathcal{S}}^T \hatbbeta_{\mathcal{S}}.
+  \end{equation*} 
+    \end{block}
+
+  \begin{block}{Ingredients}
+    To find this tradeoff, we need
+    \begin{enumerate}
+    \item a \alert{criterion} to evaluate the performance ;
+    \item an \alert{algorithm} to determine the subset of $k$ variables optimising the criterion.
+    \end{enumerate}
+  \end{block}
+
+\end{frame}
+
+\subsection{Criteria for model comparison}
+
+\begin{frame}
+  \frametitle{Estimation of the prediction error by cross-validation}
+  \framesubtitle{For the regression: PRESS (\textit{predicted residual sum of squares})}
+
+  \begin{block}{Principe}
+    \vspace{-.25cm}
+    \begin{enumerate}
+    \item Split the data into $K$ subsets,
+    \item Successively use each subset as the test set,
+    \item Compute the test error for the $K$ subsets,
+    \item Average the $K$ error to get the final estiamte.
+    \end{enumerate}
+  \end{block}
+
+  \vspace{-.25cm}
+  
+  \begin{block}{Formalism}
+    Let  $\kappa  :  \{1,\dots,n\} \rightarrow  \{1,\dots,K\}$  be  an
+    indexing   function  that   indicates  the   partition  to   which
+    observation  $i$   is  allocated   by  randomization.   Denote  by
+    $\hat{f}^{-\kappa(i)}$ the  fitted model, computed with  the $k$th
+    part of the data removed.  Then
+   \begin{equation*}
+     \mathrm{CV}(\hat{\bbeta})     =    \frac{1}{n}\sum_{i=1}^n
+     (y_i - x_i^T \hat{\bbeta}^{-\kappa(i)} )^2
+   \end{equation*}
+   provides an estimate of the prediction error.
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Penalized Criterion}
+  \framesubtitle{Principle}
+  
+  \begin{block}{Idea}
+    Rather than estimating the prediciton error with the test error, we estimate how much the training error under estimate the true prediction error.
+  \end{block}
+
+  \vfill
+  
+  \begin{block}{General form}
+   Based on the available model fit, compute
+    \begin{equation*}
+      \hat{\mathrm{err}} = \mathrm{err}_{\mathcal{D}} + \mathrm{"optimism"}.
+    \end{equation*}
+  \end{block}
+
+  \vfill
+  
+  \begin{block}{Remarks}
+    \begin{itemize}
+    \item \og penalize \fg to much complex models
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Penalized Criteria}
+  \framesubtitle{The most Popular in linear regression}
+
+    Let $k$ be the size of the current model (i.e. the current number of predictors).
+    
+    \vfill
+
+    \begin{block}{Criterion for the Linear regression model
+        \only<1>{$\sigma$ known}\only<2>{$\sigma$ unknown}}
+      We choose  the model with size  $k$ minimizing one of the following
+      \begin{itemize}
+    \item      \alert{\bf      Aka\"ike     Information      Criteria}
+      \only<1>{equivalent to $C_p$ when $\sigma$ is known} \only<2>{$\sigma^2$ estimated by $\err_{\mathcal{D}}/n$}
+      \[ 
+      \mathrm{AIC} = - 2 \mathrm{loglik} + 2 k
+      \only<1>{ = \frac{n}{\sigma^2} \mathrm{err}_{\mathcal{D}} + 2 k .}
+      \only<2>{ = n \log(\mathrm{err}_{\mathcal{D}}) + 2 k .}
+      \]
+      
+    \item \alert{\bf Bayesian Information Criterion} \only<2>{$\sigma^2$ estimated by $\err_{\mathcal{D}}/n$}
+      \[ 
+      \mathrm{BIC} = - 2 \mathrm{loglik} + k \log(n)
+      \only<1>{ = \frac{n}{\sigma^2} \mathrm{err}_{\mathcal{D}} + k \log(n) .}
+      \only<2>{ = n \log(\mathrm{err}_{\mathcal{D}}) + k \log(n) .}
+      \]
+    \end{itemize}
+    \end{block}
+  
+\end{frame}
+
+% \begin{frame}{$C_p$/AIC: proof}
+% 
+% Ideally, we would like to minimize the error of the mean distance between the true model $\bX  \bbeta =  \bmu$  and the OLS. This diustance splits as follows
+% \begin{align*}
+% \| \bmu - \bX \hatbbetaols \|^2 = & \| \by - \varepsilon - \bP_\bX \by \|^2 \\
+%  =& \| \by -  \hat\by \|^2 + \| \varepsilon \|^2  -2 \varepsilon^\intercal (\by -\bP_\bX\by) \\
+%   = & n \err_{\mathcal{D}}  + \| \varepsilon  \|^2 -2 \varepsilon^\intercal  (\bI -\bP_\bX) (\bmu + \varepsilon)\\
+%   = & n\err_{\mathcal{D}} - \| \varepsilon \|^2 +2 \varepsilon^\intercal \bP_\bX \varepsilon -2
+% \varepsilon^\intercal (\bI -\bP_\bX) \bmu
+% \end{align*}
+% 
+% On average we get
+% \begin{itemize}
+% \item $\E[\| \varepsilon \|^2] = n \sigma^2$
+% \item $\E[\varepsilon^\intercal (\bI-\bP_\bX)\bmu]=0$
+% \item $\E[2 \varepsilon^\intercal \bP_\bX \varepsilon]= 2 \E[ \trace{\varepsilon^\intercal \bP_\bX
+%   \varepsilon}]=2 \trace{\bP_\bX}\sigma^2$
+% \end{itemize}
+% 
+% If $k$ is the dimension of the space of the projection, we find
+% $$
+% \E \| \bmu - \bX \hatbbetaols \|^2 = n \err_{\mathcal{D}} - n \sigma^2 +2 k \sigma^2
+% $$
+% We then just have to divide by $n \sigma^2$.
+% \end{frame}
+
+\subsection{Algorithms for variable subset selection}
+
+\begin{frame}
+  \frametitle{Exhaustive search  (best-subset)}
+
+  \begin{block}{Algorithm}
+    For $k=0,\dots,p$,  find the subset with  $k$ variables with the smallest  $SCR$ among $2^k$ models.
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Properties}
+    \begin{itemize}
+    \item Generalize to any criterion ($R^2$, AIC, BIC\dots)
+    \item Efficient algorithm with pruning  (\og Leaps and Bound \fg)
+    \item impossible as soon as $p>30$.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\only<1>{(Forward regression)} \only<2>{Forward-stepwise}}
+
+  \begin{block}{Algorithm}
+    \begin{itemize}
+    \item[1.] Begin with $\mathcal{S} = \emptyset$
+    \item[2.]<1> at step $k$ find the variable which, added to $\mathcal{S}$, 
+      gives the best model
+    \item[2'.]<2> At step $k$ find the best model by either adding or removing one variable.
+    \item[3] etc. until $p$ variables enter the model
+      
+    \end{itemize}
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Properties}
+    \begin{itemize}
+    \item Best model is understood asadjusted $R^2$, AIC, BIC\dots
+    \item useful when $p$ is large
+    \item large bias, but variance/complexity controlled.
+    \item \og greedy \fg\ algorithm
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Backward regression}
+% 
+%   \begin{block}{Algorithm}
+%     \begin{enumerate}
+%     \item[1] Start with the full model $\mathcal{S} = \set{1,\dots,p}$
+%     \item[2]  At step    $k$,  remove the less influent   variable.
+%     \item[3] etc. until $\mathcal{S}$ is empty.
+%     \end{enumerate}
+%   \end{block}
+%   
+%   \vfill
+%   
+%   \begin{block}{Properties}
+%     \begin{itemize}
+%     \item Best model is understood as SCR or $R^2$,
+%       AIC, BIC\dots
+%     \item does not work  when $n < p$
+%     \item large bias, but variance/complexity controlled.
+%     \item \og greedy \fg\ algorithm
+%     \end{itemize}
+%   \end{block}
+% 
+% \end{frame}
+% 

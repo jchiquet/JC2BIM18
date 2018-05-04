@@ -1,0 +1,100 @@
+\documentclass{beamer}
+
+\def\currentChapter{Variable Selection and Regularization}
+
+<<preamble, child='../common_preamble.Rnw'>>=
+@
+
+\definecolor{genecolor}{RGB}{94,135,173}
+
+<<echo=FALSE, message=FALSE>>=
+rm(list=ls())
+library(GGally)
+library(glmnet)
+library(tidyverse)
+library(corrplot)
+theme_set(theme_bw())
+@
+
+\begin{document}
+
+\dotitlepage
+
+\dotoc
+
+\section{Motivations}
+
+<<child='statlearn.Rnw'>>=
+@
+
+<<ols_prostate, child='ols_prostate.Rnw'>>=
+@
+
+\begin{frame}
+  \frametitle{Solutions}
+
+  \begin{block}{Variable selection}
+    If the  underlying model  is assumed to  have only  few predictors
+    truly related to the outcome,  we may want to \alert{select} those
+    with the highest effect. We are looking for both
+    \begin{itemize}
+    \item better interpretability.
+    \item better predictive performances.
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Regularization}
+    If  all  the predictors  have  similar  or  close effects  on  the
+    response, selection (and thus interpretability) is out of reach.
+
+    We may \alert{regularize} the problem by \alert{constraining} the
+    parameters $\bbeta$ to  live in an appropriate set  that will make
+    the $\bX^T\bX$ invertible.
+  \end{block}
+
+\end{frame}
+ 
+\section{Variable Selection}
+ 
+<<child='selection.Rnw'>>=
+@
+ 
+<<child='subset_prostate.Rnw'>>=
+@
+
+\begin{frame}
+  \frametitle{Comments}
+
+  \begin{block}{Interpretability}
+    \begin{enumerate}
+    \item If the true $\mathcal{S}$ only contains a  \alert{\bf few
+      variables linked to the response},\\
+      $\rightsquigarrow$ variable selection algorithms can retrieve relevent predictors.
+    \item  If the true   $\mathcal{S}$  contains  \alert{\bf many correlated predictors}\\
+      $\rightsquigarrow$  the selected variables will be hardly interpretable.
+    \end{enumerate}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Stability issue}
+    With strong correlation or when $n < p$, \alert{\bf small changes} in the data can induce   \alert{\bf large discrepencies }  between the sets of selected variables.
+   \end{block}
+
+\end{frame}
+
+\section{Regularisation}
+ 
+<<child='shrinkage.Rnw'>>=
+@
+ 
+<<child='ridge.Rnw'>>=
+@
+
+<<child='lasso.Rnw'>>=
+@
+
+\end{document}
+

@@ -1,0 +1,137 @@
+\subsection{Lasso Regression}
+
+\subsubsection{Definition of the LASSO estimator}
+
+\begin{frame}
+  \frametitle{The Lasso}
+  \framesubtitle{Least Absolute Shrinkage and Selection Operator}
+
+  \begin{block}{Fact}
+    Ridge  performs  regularization\dots but  we  also  would like  to
+    select the most significant variables.
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Idea}
+    Suggest  an admissible  set that  induces  \alert{sparsity} (force
+    several entries to exactly zero in $\hat{\bbeta}$).
+  \end{block}
+
+  \vfill
+
+  \begin{overlayarea}{\textwidth}{.4\textheight}
+    \begin{columns}
+      \begin{column}[c]{.6\textwidth}
+        \begin{block}{Lasso as a convex optimization problem}
+          The Lasso estimate $\hat{\bbeta}^{\text{lasso}}$ solves
+          \begin{equation*}
+            \minimize_{\bbeta\in\R^{p+1}} \mathrm{RSS}(\bbeta), \quad \text{s.t.  }  \sum_{j=1}^p
+            \left|\beta_j\right|  \leq s,
+          \end{equation*}
+          where $s$ is a shrinkage factor.
+        \end{block}
+      \end{column}
+      \begin{column}{.4\textwidth}
+        \includegraphics[width=.7\textwidth]{figures/lasso_set}
+      \end{column}
+    \end{columns}
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Some more insights: 2-dimensional example}
+  \framesubtitle{Thanks to Sylvie Huet}
+
+  \begin{overlayarea}{\textwidth}{\textheight}
+
+    \begin{equation*}
+      \sum_{i=1}^n (y_i-x_i^1\beta_1 - x_i^2\beta_2)^2, \qquad
+      \only<1>{\text{no constraints}}
+      \only<2>{\text{s.c. } |\beta_1| + |\beta_2| < 0.75}
+      \only<3>{\text{s.c. } |\beta_1| + |\beta_2| < 0.66}
+      \only<4>{\text{s.c. } |\beta_1| + |\beta_2| < 0.4}
+      \only<5>{\text{s.c. } |\beta_1| + |\beta_2| < 0.2}
+      \only<6>{\text{s.c. } |\beta_1| + |\beta_2| < 0.0743}
+    \end{equation*}
+
+    \includegraphics<1>[width=.7\textwidth]{dess11}
+    \includegraphics<2>[width=.7\textwidth]{dess12}
+    \includegraphics<3>[width=.7\textwidth]{dess13}
+    \includegraphics<4>[width=.7\textwidth]{dess14}
+    \includegraphics<5>[width=.7\textwidth]{dess15}
+    \includegraphics<6>[width=.7\textwidth]{dess16}
+
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lasso as penalized regression}
+
+  \begin{block}{Get rid of  the intercept}
+    We should not penalize the intercept term, thus
+    \begin{itemize}
+    \item $\hat{\beta}_0 = \bar{\mathbf{y}}$,
+    \item center $\mathbf{y}$ and $\mathbf{x}_j$, $j=1,\dots,p$,
+    \item scale the predictor before the fit,
+    \item send $\hatbbeta$ back to the original scale.
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+ Solve the convex, $\ell_1$-penalized problem
+  \begin{equation*}
+      \hat{\bbeta}^{\text{lasso}}   =   \argmin_{\bbeta\in\R^p}  \frac{1}{2}
+      \|\mathbf{y} - \mathbf{X} \bbeta\|^2 + \lambda \|\bbeta\|_1,
+  \end{equation*}
+  whose solution has no close form, but always exists and is unique as
+  soon as $\mathbf{X}^\intercal \mathbf{X}$ has full rank.
+
+  \vfill
+
+  $\rightsquigarrow$  Lasso   performs  regularization   and  variable
+  selection but has no analytical solution.
+
+\end{frame}
+
+<<child='lasso_prostate.Rnw'>>=
+@ 
+
+\subsubsection{Model complexity and Tuning parameter}
+
+\begin{frame}
+  \frametitle{Critères pénalisés}
+
+  \begin{block}{LASSO degrees of freedom}
+    It simply equals the number of active (non-null) coefficients)
+\[
+\mathrm{df}(\hat{\by}_\lambda^{\text{lasso}}) = \mathrm{card}(\set{j:\beta_j(\lambda)\neq 0}) = |\mathcal{A}|.
+\]
+  \end{block}
+
+  \begin{itemize}
+    \item \alert{Akaike Information Criterion} 
+        \begin{equation*}
+          \mathrm{AIC} = -2 \mathrm{loglik} + 2\frac{|\mathcal{A}|}{n},
+        \end{equation*}
+      \item \alert{Bayesian   Information   Criterion}
+        \begin{equation*}
+          \mathrm{BIC} = -2\mathrm{loglik} + |\mathcal{A}|\log(n),
+        \end{equation*}
+      \item \alert{modified BIC} (when $n < p$)
+        \begin{equation*}
+          \mathrm{mBIC} = -2\mathrm{loglik} + |\mathcal{A}|\log(p),
+        \end{equation*}
+      \item \alert{Extended BIC} add a prior on the number of model with size  $|\mathcal{A}|$
+        \begin{equation*}
+          \mathrm{eBIC} = -2\mathrm{loglik} + |\mathcal{A}|(\log(n) + 2\log(p)).
+        \end{equation*}
+      \end{itemize}
+\end{frame}
+
+<<child='lasso_criteria.Rnw'>>=
+@ 
+

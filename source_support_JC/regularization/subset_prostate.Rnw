@@ -1,0 +1,150 @@
+\subsection{Illustration: prostate cancer}
+
+<<options subset prostate, include=FALSE>>=
+opts_chunk$set(fig.path='figures/subset')
+@
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Exhaustive search}
+
+<<>>=
+library(leaps)
+@
+
+Get all possible models
+<<bss1, tidy=FALSE>>=
+out <- regsubsets(
+          lpsa ~ . , 
+          data  = prostate_train,
+          nbest = 100, 
+          really.big = TRUE
+        )
+bss <- summary(out)
+@ 
+
+Extract size and RSS. Add the null model (with just the intercept)
+<<bss2, tidy=FALSE>>=
+intercept <- lm(lpsa ~ 1, data = prostate_train)
+@
+
+<<bss3, echo = FALSE>>=
+bss.size  <- as.numeric(rownames(bss$which))
+@
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exhaustive search II}
+<<bss_r2, echo=FALSE>>=
+bss.best.r2  <- tapply(bss$adjr2, bss.size, min)
+plot(1:8, bss.best.r2, type="b",
+     xlab="subset size", ylab="Adjusted R2", col="red2" )
+@
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exhaustive search III}
+<<bss_AIC, echo=FALSE>>=
+bss.best.cp  <- tapply(bss$cp   , bss.size, min)
+plot(1:8, bss.best.cp, type="b",
+     xlab="subset size", ylab="AIC", col="red2" )
+@
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exhaustive search IV}
+
+<<bss_BIC, echo=FALSE>>=
+bss.best.bic <- tapply(bss$bic  , bss.size, min)
+plot(1:8, bss.best.bic, type="b",
+     xlab="subset size", ylab="BIC", col="red2" )
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Forward-Stepwise (I)}
+
+Create the nul model and the full model
+<<>>=
+null  <- lm(lpsa ~ 1, data = prostate_train)
+full  <- lm(lpsa ~ ., data = prostate_train)
+@ 
+
+Create the scope of models
+<<>>=
+lower <- ~1
+upper <- ~lcavol+lweight+age+lbph+svi+lcp+gleason+pgg45
+scope <- list(lower = lower,upper = upper)
+@ 
+
+Stepwise with AIC: forward, backward, both
+<<tidy=FALSE>>=
+fwd  <- step(null, scope, direction = "forward" , trace=FALSE)
+bwd  <- step(full, scope, direction = "backward", trace=FALSE)
+both <- step(null, scope, direction = "both"   , trace=FALSE)
+@ 
+
+\vfill
+
+\rsa 3  equivalent models
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Forward regression}
+
+\begin{scriptsize}
+<<res_AIC_forward prostate>>=
+fwd
+fwd$anova
+@ 
+\end{scriptsize}
+  
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Backward regression}
+
+\begin{scriptsize}
+<<res_AIC_backward prostate>>=
+bwd
+bwd$anova
+@ 
+\end{scriptsize}
+
+\end{frame}
+\begin{frame}[containsverbatim]
+  \frametitle{Stepwise regression}
+
+\begin{scriptsize}
+<<res_AIC_stepwise prostate>>=
+both
+both$anova
+@
+\end{scriptsize}
+  
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Performance on test data}
+
+<<res_stepwise prostate>>=
+print(err_ols)
+print(err_AIC.fwd  <- mean((y_test - predict(fwd , prostate_test))^2))
+print(err_AIC.bwd  <- mean((y_test - predict(bwd , prostate_test))^2))
+print(err_AIC <- mean((y_test - predict(both, prostate_test))^2))
+@ 
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Stepwise: BIC modification}
+  \framesubtitle{More sparse model}
+  
+<<res_BIC_stepwise prostate, tidy=FALSE>>=
+BIC <- step(null, scope, k = log(n <- nrow(prostate)), trace=FALSE)
+BIC
+print(err_BIC  <- mean((y_test - predict(BIC, prostate_test))^2))
+@ 
+\end{frame}
+

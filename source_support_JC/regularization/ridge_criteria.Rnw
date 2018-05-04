@@ -1,0 +1,36 @@
+
+<<include=FALSE>>=
+opts_chunk$set(fig.width=8, fig.path='figures/crit_ridge')
+@
+
+\begin{frame}[containsverbatim]
+  \frametitle{Cross-Validation}
+  
+  Cross-validation is easily parallelized and is fast on small data sets
+
+<<LOO ridge>>=
+system.time(loo <- quadrupen::crossval(x_train,y_train, penalty =  "ridge", K = n))
+@
+
+<<CV10 ridge>>=
+system.time(CV10 <- quadrupen::crossval(x_train,y_train, penalty =  "ridge", K = 10))
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Leave one out}
+<<plot loo ridge,echo=FALSE>>=
+plot(loo, main="LOO CV error")
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Ten fold}
+<<plot cv10 ridge, echo=FALSE>>=
+plot(CV10, main="10-fold CV error")
+@
+\end{frame}
+
+
+

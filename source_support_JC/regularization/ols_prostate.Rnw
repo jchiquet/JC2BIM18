@@ -1,0 +1,107 @@
+\subsection{Illustration: prostate cancer}
+
+<<options ols_prostate, include=FALSE>>=
+opts_chunk$set(fig.path='figures/ols')
+@
+
+\begin{frame}[fragile]
+  \frametitle{Example: prostate cancer data set}
+
+  \begin{block}{The data set: 97 patient with prostate cancer}
+    Examine  the  correlation  between  the level  of  cancer-specific
+    antigen ($\mathbf{y}$) and various clinical measures.
+  \end{block}
+
+<<load prostate data>>=
+load("prostate.rda")
+prostate %>% as_tibble() %>% print()
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Correlations between predictors}
+
+<<plot_pairs>>=
+prostate %>% filter(train == TRUE) %>% select(-train) %>% 
+  ggpairs(upper = list(continuous="cor",combo="box"))
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Correlations between predictors II}
+
+<<print_cor>>=
+prostate %>% 
+  filter(train == TRUE) %>% 
+  select(-train) %>% 
+  cor %>% as.dist() %>% print()
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Correlations between predictors III}
+
+<<plot_cor>>=
+prostate %>%  filter(train == TRUE) %>% 
+  select(-train) %>% cor() %>% corrplot(method = "color", order = "hclust")
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{OLS and limitations}
+
+For studying the correlation effect, we normalize and create test and train sets
+<<lm_prostate>>=
+prostate_train <- 
+  prostate %>% filter(train == TRUE)  %>% select(-train) %>% 
+  scale(FALSE, TRUE) %>% as_data_frame()
+prostate_test  <- 
+  prostate %>% filter(train == FALSE) %>% select(-train) %>% 
+  scale(FALSE, TRUE) %>% as_data_frame()
+model.full <- lm(lpsa~., prostate_train)
+@
+
+   \begin{block}{Estimating prediction error}
+  \end{block}
+<<error_ols_prostate>>=
+y_hat <- predict(model.full, newdata=prostate_test)
+y_test <- prostate_test$lpsa
+err_ols <- mean((y_test-y_hat)^2)
+print(err_ols)
+@
+
+<<summary ols prostate, size="tiny">>=
+summary(model.full)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comments}
+
+  Why do  some coefficients in  $\bbeta$ are not well  estimated/ have
+  large variance? (pgg45, gleason)
+
+  \begin{block}{Statistical issue}
+    \alert{Correlated variables are not well estimated},\\
+    
+    \rsa  they carry the same information regarding the response.
+
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Numerical issue}
+    \alert{Correlated variables leads to bad conditioning of $\bX^T\bX$},\\
+
+    \rsa OLS cannot be computed  when they are redundant variables in
+      $\bX$ \alert{or when $n<p$}.
+  \end{block}
+  
+  $\rightsquigarrow$ \textit{interpretation becomes rather difficult}
+
+\end{frame}

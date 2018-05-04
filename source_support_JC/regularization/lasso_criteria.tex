@@ -1,0 +1,149 @@
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The prostate data (not high dimensional)}
+
+Compute AIC/BIC with unknown variance
+\begin{Schunk}
+\begin{Sinput}
+> crit <- criteria(lasso(x,y), plot=FALSE)
+> print(head(crit$criterion), digits=3)
+\end{Sinput}
+\begin{Soutput}
+   AIC  BIC     GCV df lambda fraction
+1 4.87 4.87 0.01332  1   8.31   0.0000
+2 4.80 4.80 0.01186  2   7.57   0.0287
+3 4.71 4.71 0.01086  2   6.90   0.0549
+4 4.63 4.63 0.01004  2   6.28   0.0788
+5 4.56 4.56 0.00936  2   5.73   0.1005
+6 4.50 4.50 0.00879  2   5.22   0.1203
+\end{Soutput}
+\begin{Sinput}
+> print(head(crit$beta.min))
+\end{Sinput}
+\begin{Soutput}
+6 x 2 sparse Matrix of class "dgCMatrix"
+                 AIC          BIC
+lcavol   0.505713979  0.505713979
+lweight  0.538673769  0.538673769
+age     -0.007359858 -0.007359858
+lbph     0.058546774  0.058546774
+svi      0.585474987  0.585474987
+lcp      .            .          
+\end{Soutput}
+\end{Schunk}
+
+\includegraphics{figures/crit_ridge-003}
+
+\vspace{2cm}
+
+Try AIC/BIC with variance estimated from the OLS
+\begin{Schunk}
+\begin{Sinput}
+> sigma.hat <- sqrt(1/(n-p-1) * sum((y-cbind(1,x) %*% coefficients(lm(y~x)))^2))
+\end{Sinput}
+\end{Schunk}
+
+You can also define your own penalties
+\begin{Schunk}
+\begin{Sinput}
+> penalty <- setNames(c(2, log(n), log(p), log(n)+2*log(p)),
++                     c("AIC", "BIC", "mBIC", "eBIC"))
+\end{Sinput}
+\end{Schunk}
+
+Now make the plot
+\begin{Schunk}
+\begin{Sinput}
+> criteria(lasso(x,y), penalty=penalty, sigma=sigma.hat)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{figures/crit_ridge-006}
+
+\includegraphics{figures/crit_ridge-007}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Cross-validation}
+
+  Cross-validation is easily parallelizabled thus  it does not take so
+  much time on small dataset.
+
+\begin{Schunk}
+\begin{Sinput}
+> system.time(loo <- crossval(x,y,"lasso",K=n))
+\end{Sinput}
+\begin{Soutput}
+CROSS-VALIDATION FOR  lasso  REGULARIZER 
+
+97-fold CV on the lambda1 grid, lambda2 is fixed.
+   user  system elapsed 
+  2.167   0.517   0.499 
+\end{Soutput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+> system.time(CV10 <- crossval(x,y,"lasso",K=10))
+\end{Sinput}
+\begin{Soutput}
+CROSS-VALIDATION FOR  lasso  REGULARIZER 
+
+10-fold CV on the lambda1 grid, lambda2 is fixed.
+   user  system elapsed 
+  1.083   0.384   0.147 
+\end{Soutput}
+\end{Schunk}
+
+\includegraphics{figures/crit_ridge-010}
+
+\includegraphics{figures/crit_ridge-011}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The cookies data (high dimensional)}
+
+
+\begin{Schunk}
+\begin{Sinput}
+> dim(spectrum)
+\end{Sinput}
+\begin{Soutput}
+[1]  70 256
+\end{Soutput}
+\begin{Sinput}
+> plot(crossval(spectrum,flour,"lasso",K=n, min.ratio=1e-3),
++      main="LOO CV")
+\end{Sinput}
+\begin{Soutput}
+CROSS-VALIDATION FOR  lasso  REGULARIZER 
+
+70-fold CV on the lambda1 grid, lambda2 is fixed.
+\end{Soutput}
+\end{Schunk}
+
+\includegraphics{figures/crit_ridge-014}
+
+\vspace{2cm}
+
+Try the penalized criteria
+\begin{Schunk}
+\begin{Sinput}
+> penalty <- setNames(c(2, log(n), log(p), log(n)+2*log(p)),
++                     c("AIC", "BIC", "mBIC", "eBIC"))
+\end{Sinput}
+\end{Schunk}
+
+Now make the plot
+\begin{Schunk}
+\begin{Sinput}
+> criteria(lasso(spectrum,flour, min.ratio=1e-3),
++          penalty=penalty)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{figures/crit_ridge-016}
+
+\end{frame}

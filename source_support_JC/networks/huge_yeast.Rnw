@@ -1,0 +1,106 @@
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(size = 'scriptsize',dev='pdf',fig.path='figures/',
+               fig.width=9, fig.height=6, message=FALSE,
+               fig.pos='htbp!', warning=FALSE,
+               out.width='.8\\textwidth')
+@
+
+\begin{frame}[fragile]
+\frametitle{The plasmodium data}
+
+<<get_plasmodium_data, fig.path='figures/'>>=
+library(Matrix)
+load("plasmodium_expression.Rdata")
+dim(Y)
+head(Y)[, 1:5]
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{The plasmodium data}
+\framesubtitle{Gene to Gene empirical covariance}
+
+Covariance between the 100 most variable genes.
+
+<<get_plasmodium_data_fig, fig.path='figures/'>>=
+genes.subset <- order(apply(Y,1,var))[1:100]
+image(Matrix(cor(t(Y[genes.subset, ]))), userRaster=TRUE)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Network between the genes}
+\framesubtitle{Sparse Estimation}
+
+Regulatory network between the 100 most variable genes.
+
+<<r show_plasmodium_glasso3, fig.path='figures/', message=FALSE>>=
+library(huge)
+huge.out <- huge(as.matrix(t(Y[genes.subset, ])), method="glasso", cov.output=TRUE)
+plot(huge.out)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Network between the genes}
+\framesubtitle{Inverse covariance}
+
+<<r show_plasmodium_glasso4, fig.path='figures/', message=FALSE>>=
+library(huge)
+huge.out$df
+image(Matrix(huge.out$icov[[3]]))
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{The plasmodium data}
+\framesubtitle{Covariance between conditions}
+
+<<get_plasmodium_data_fig_cond, fig.path='figures/'>>=
+image(Matrix(cor(Y)))
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Covariance structure between the conditions}
+\framesubtitle{Sparse Estimation}
+
+<<r get_plasmodium_glassoa, fig.path='figures/', message=FALSE>>=
+library(huge)
+huge.out <- huge(as.matrix(Y), method="glasso", cov.output=TRUE)
+sel.out  <- huge.select(huge.out)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Covariance structure between the conditions}
+\framesubtitle{Sparse Estimation}
+
+<<r get_plasmodium_glassob, fig.path='figures/', message=FALSE>>=
+image(sel.out$opt.cov)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Covariance structure between the conditions}
+\framesubtitle{Sparse Estimation of the inverse covariance}
+
+<<r show_plasmodium_glasso, fig.path='figures/'>>=
+sum(abs(sel.out$opt.icov) != 0)
+ncol(sel.out$opt.icov) ** 2
+image(sel.out$opt.icov)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Covariance structure between the conditions}
+\framesubtitle{Associated network}
+
+<<r show_plasmodium_glasso2, fig.path='figures/'>>=
+plot(huge.out)
+@
+
+\end{frame}
+

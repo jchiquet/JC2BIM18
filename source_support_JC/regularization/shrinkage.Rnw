@@ -1,0 +1,113 @@
+\subsection{Motivations et principle}
+
+\begin{frame}
+  \frametitle{Several goals}
+
+  Control the parameter $\hatbbeta$ to
+
+  \begin{enumerate}
+  \item \alert{Regularize} the problem
+    \begin{itemize}
+    \item For numerical purpose, (conditioning of $\bX^T\bX$),
+    \item     For    stability    purpose,     (correlation    between
+      $(X_1,\dots,X_p)$).
+    \end{itemize}
+  \item \alert{Enhance} the prediction
+    \begin{itemize}
+    \item By trading a little bias vs variance
+    \item By controlling irrelevant variables
+    \end{itemize}
+  \item \alert{Looking towards} interpretability
+    \begin{itemize}
+    \item By controlling model complexity,
+    \item By embedding the variable selection (Lasso).
+    \end{itemize}
+  \end{enumerate}
+
+\end{frame}
+
+\pgfdeclareimage[height=0.8\textheight]{sparsity1}{figures/sparsity_1}
+\pgfdeclareimage[height=0.8\textheight]{sparsity2}{figures/sparsity_2}
+\pgfdeclareimage[height=0.375\textheight]{sparsity4}{figures/sparsity_4}
+
+%--------------------------------------%
+\begin{frame}
+  \frametitle{A Geometric View of Shrinkage}
+  \framesubtitle{Constrained Optimization}
+
+  \begin{overlayarea}{\textwidth}{\textheight}
+    \begin{columns}
+      \begin{column}{0.475\textwidth}
+        \begin{tikzpicture}
+          \only<1>{%
+            \node (Surf) at (0,0) {\pgfuseimage{sparsity1}}
+            node     at    (Surf.west)    [rotate=90,yshift=5mm]
+            {$L(\beta_1,\beta_2;\mathbf{X})$}
+            node at (Surf.south west) [xshift=5mm,yshift=5mm]{$\beta_2$}
+            node at (Surf.south east) [xshift=-7.5mm,yshift=2.5mm]{$\beta_1$};
+          }
+          \only<2>{%
+            \node (Surf2) at (0,0) {\pgfuseimage{sparsity2}}
+            node    at    (Surf2.west)    [rotate=90,yshift=5mm]
+            {$L(\beta_1,\beta_2;\mathbf{X})$}
+            node at (Surf2.south west) [xshift=5mm,yshift=5mm]{$\beta_2$}
+            node at (Surf2.south east) [xshift=-7.5mm,yshift=2.5mm]{$\beta_1$};
+          }
+          \only<3->{%
+            \node (titi) at (0,0) {\phantom{titi}};
+            \node (Surf3) at (0,-4.5) {\pgfuseimage{sparsity4}}
+            node at (Surf3.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
+            node at (Surf3.south) [yshift=-2.5mm] {$\beta_1$};
+          }
+        \end{tikzpicture}
+      \end{column}
+      \begin{column}{0.55\textwidth}
+        \only<1>{%
+          We basically want to solve a problem of the form
+          \begin{equation*}
+            \maximize_{\beta_1,\beta_2} L(\beta_1,\beta_2;\mathbf{X})
+          \end{equation*}
+          where $L$ is typically a concave likelihood function.
+
+          This is strictly equivalent to solve
+          \begin{equation*}
+            \minimize_{\beta_1,\beta_2} L'(\beta_1,\beta_2;\mathbf{X})
+          \end{equation*}
+          where $L'=-L$ is convex ! For instance the squared error loss in the
+          OLS.
+        }
+        \only<2->{%
+          \begin{equation*}
+            \left\{\begin{array}{ll}
+                \displaystyle    \maximize_{\beta_1,\beta_2}   &
+                L(\beta_1,\beta_2;\mathbf{X})\\
+                \mathrm{s.t.} & \Omega(\beta_1,\beta_2) \leq c
+              \end{array}\right.,
+          \end{equation*}
+          where  $\Omega$  defines  a  domain  that  \emph{constrains}
+          $\boldsymbol\beta$.
+        }
+        \only<3->{%
+          \begin{equation*}
+            \Updownarrow
+          \end{equation*}
+          \begin{equation*}
+            \minimize_{\beta_1,\beta_2} J(\bbeta),
+          \end{equation*}
+          with $J$ the convex objective defined by
+          \begin{equation*}
+            J(\bbeta) = - L(\beta_1,\beta_2;\mathbf{X}) + \lambda \Omega(\beta_1,\beta_2)
+          \end{equation*}
+        }
+
+        \only<4>{
+          \begin{center}
+            How shall we define $\Omega$ ?
+          \end{center}
+        }
+      \end{column}
+    \end{columns}
+  \end{overlayarea}
+\end{frame}
+
+

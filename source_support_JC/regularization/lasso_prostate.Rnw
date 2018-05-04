@@ -1,0 +1,66 @@
+
+<<include=FALSE>>=
+theme_set(theme_bw())
+opts_chunk$set(fig.width=8, fig.path='figures/lasso_prostate')
+@
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Lasso fit on the prostate cancer data}
+
+  \vfill
+Compute the LASSO path
+<<>>=
+library(glmnet)
+lasso_path <- quadrupen::lasso(x_train,y_train)
+@
+
+\vfill
+
+Compute the prediction error on the test set for all $\lambda$
+
+<<>>=
+err <- colMeans((y_test - predict(lasso_path, x_test))^2)
+@
+
+\vfill
+
+Then, $\lambda^\star$ that minimizes this error
+<<>>=
+lasso_path@lambda1[which.min(err)]
+@
+
+\framebreak
+
+The prediction error is smaller than with the OLS with only 5 coefficients
+<<>>=
+err[which.min(err)]
+lasso_path@coefficients[which.min(err), ]
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Prediction error on the test set}
+
+<<fig.height=5>>=
+qplot(log10(lasso_path@lambda1), err) + geom_line() + 
+geom_vline(xintercept = log10(lasso_path@lambda1[which.min(err)]), lty=3)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Path of solution ($\lambda$)}
+
+<<fig.height=6>>=
+plot(lasso_path)
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Path of solution (amount of shrinkage $s$)}
+
+<<fig.height=6>>=
+plot(lasso_path, xvar="fraction")
+@
+\end{frame}

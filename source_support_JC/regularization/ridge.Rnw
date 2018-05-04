@@ -1,0 +1,311 @@
+\subsection{Ridge regression}
+
+\subsubsection{The ridge estimator}
+
+\begin{frame}
+  \frametitle{Definition}
+
+  \begin{block}{Fact}
+    If  the  $\beta_j$ are  unconstrained,  they  can  have very  high
+    magnitude and thus large variances.
+  \end{block}
+
+  \begin{block}{Idea}
+    To  control  the variance,  we  should  control  the size  of  the
+    coefficients in  $\bbeta$. This could  induce a large  decrease of
+    the prediction error.
+  \end{block}
+
+  \begin{overlayarea}{\textwidth}{.4\textheight}
+    \begin{columns}
+      \begin{column}[c]{.6\textwidth}
+        \begin{block}{Ridge as a regularization problem}
+          The ridge estimate of $\bbeta$ is the solution to
+          \begin{equation*}
+            \hat{\bbeta}^{\text{ridge}}     =    \argmin_{\bbeta\in\R^{p+1}}
+            \mathrm{RSS}(\bbeta), \quad  \text{s.t. } \sum_{j=1}^p \beta_j^2
+            \leq s,
+          \end{equation*}
+          where $s$ is a shrinkage factor.
+        \end{block}
+      \end{column}
+      \begin{column}{.4\textwidth}
+        \includegraphics[width=.7\textwidth]{figures/ridge_set}
+      \end{column}
+    \end{columns}
+  \end{overlayarea}
+\end{frame}
+
+\begin{frame}
+  \frametitle{A 2-dimensional toy example}
+
+  Consider that the true relationship is $Y = X_1 \beta_1 + X_2\beta_2
+  +  \varepsilon$ If  $X_1$ and  $X_2$ are  strongly  correlated, then
+  $X_1\approx X_2$ and for any $\gamma\geq 0$
+  \begin{align*}
+    Y & = X_1 (\beta_1 + \gamma) + X_2 (\beta_2 - \gamma) +
+    \gamma(X_1-X_2) + \varepsilon \\
+    & \approx X_1 (\beta_1 + \gamma) + X_2 (\beta_2 - \gamma) + \varepsilon.
+  \end{align*}
+  A large  panel of fit  with estimated $\bbeta$ varying  according to
+  $\gamma$ will produce the same prediction error.
+
+  \vfill
+
+  \onslide<2>{
+    For small $s$ (or large $\lambda$ in the Lagrangian form), the ridge
+    controls
+    \begin{equation*}
+      (\beta_1 + \gamma)^2 + (\beta_2 - \gamma)^2
+    \end{equation*}
+    which  is minimal for  $\gamma =  (\beta_2-\beta_1)/2$, and  in this
+    case $\beta_j = (\beta_1 + \beta_2)/2$.
+  }
+\end{frame}
+
+<<child='ridge_toy.Rnw'>>=
+@ 
+
+\begin{frame}
+  \frametitle{Ridge as penalized regression}
+
+  \alert{Dont  penalize   the  intercept}  thus  consider   $\bbeta  =
+  (\beta_1,\dots\beta_p)$ and set
+  \begin{itemize}
+  \item $\hatbeta_0 = \bar{\by} - \bar{x}\hatbbeta$
+  \item center $\mathbf{y}$ and $\mathbf{x}_j$, $j=1,\dots,p$.
+  \end{itemize}
+  \alert{Standardize the $\bx_j$} for the fit and send back
+  $\hatbbetaridge$ to the \alert{orginal scale}.
+
+  \vfill
+
+  \begin{block}{Convex Langrangian form}
+    \vspace{-.5cm}
+    \begin{align*}
+      \hat{\bbeta}^{\text{ridge}} &  =   \argmin_{\bbeta\in\R^p}  \frac{1}{2}
+      \|\mathbf{y} - \mathbf{X} \bbeta\|^2 + \lambda \|\bbeta\|^2\\
+      & = (\mathbf{X}^\intercal \mathbf{X} +
+      \lambda \mathbf{I}_p)^{-1} \mathbf{X}^\intercal \mathbf{y} = \mathbf{H}_\lambda \by.
+    \end{align*}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Strong convexity}
+    Oppositely to  the least squares, a  non-singular solution always
+    exists   when    $\lambda>0$   whatever   the    conditioning   of
+    $\mathbf{X}^\intercal \mathbf{X}$ (original proposal).
+  \end{block}
+
+\end{frame}
+
+% \subsubsection{Propriétés et résolution pratique}
+
+% \begin{frame}
+%   \frametitle{Connexion à l'OLS}
+
+%   Soit $\mathbf{S}_\lambda =  \mathbf{X}^\intercal \mathbf{X} + \lambda
+%   \mathbf{I}_p$.  Alors
+%   \begin{equation*}
+%     \hat{\bbeta}^{\text{ridge}} =
+%     \mathbf{S}_\lambda^{-1}        \mathbf{X}^\intercal       \mathbf{X}
+%     \hat{\bbeta}^{\text{ols}} =
+%     \left(\mathbf{I}_p - \lambda\mathbf{S}_\lambda^{-1}\right) \hat{\bbeta}^{\text{ols}}.
+%   \end{equation*}
+%   Lorsque       $\lambda=0$,       $\hat{\bbeta}^{\text{ridge}}$      et
+%   $\hat{\bbeta}^{\text{ols}}$ coincident.
+
+%   \begin{columns}
+%     \begin{column}[c]{.5\textwidth}
+%       Dans le cas d'un design orthonormal, $\mathbf{X}^\intercal
+%       \mathbf{X}=\mathbf{I}$ et
+%       \begin{equation*}
+%         \hat{\bbeta}^{\text{ridge}} = \frac{1}{1+\lambda} \hat{\bbeta}^{\text{ols}}.
+%       \end{equation*}
+%     \end{column}
+
+%     \begin{column}[c]{.5\textwidth}
+%       \begin{center}
+%         \begin{tikzpicture}[scale=.5,font=\small]
+%           \draw[very thin,color=gray] (-4,-4) grid [xstep=1,ystep=1] (4,4);
+%           \draw[->] (-4.5,0) -- (4.5,0) node[right] {$\beta^{\text{ols}}$};
+%           \draw[->] (0,-4.5) -- (0,4.5) ;
+%           \draw[color=blue] plot[samples=200] (\x,{1/(2)*\x})
+%           node[right] {Ridge};
+%           \draw[dashed,color=black] plot (\x,{\x}) node[right] {OLS};
+
+%           % units for cartesian reference frame
+%           \foreach \x in {-4,-2,0,2,4}{
+%             \draw (\x cm,1pt)  -- (\x cm,-3pt)
+%             node[anchor=north,xshift=-0.09cm] {\scriptsize$\x$};
+%             \draw (1pt,\x cm) -- (-3pt,\x cm)
+%             node[anchor=east] {\scriptsize$\x$};
+%           }
+%         \end{tikzpicture}
+%       \end{center}
+%     \end{column}
+%   \end{columns}
+
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Biais et variance de l'estimateur Ridge}
+
+%   \begin{proposition}
+%     \begin{equation*}
+%       \E\left(\hat{\bbeta}^{\text{ridge}}-\hatbbetaols\right)   =
+%       -\lambda \mathbf{S}_\lambda^{-1} \bbeta,       \var\left(\hat{\bbeta}^{\text{ridge}}\right)  =
+%       \sigma^2 \mathbf{S}_\lambda^{-1} \mathbf{X}^\intercal \mathbf{X}
+%       \mathbf{S}_\lambda^{-1}.
+%     \end{equation*}
+%     et
+%     \begin{equation*}
+%       \var(\hatbbetaols) - \var(\hatbbetaridge) \succeq 0
+%     \end{equation*}
+%     donc
+%     $\var(x^T\hatbbetaols) \geq \var(x^T\hatbbetaridge)$ un $x$ fixé.
+%   \end{proposition}
+
+%   \vfill
+
+%   \begin{itemize}
+%   \item quand $\lambda\to 0$, sans biais, grande variance (OLS)
+%   \item quand $\lambda\to \infty$, grand biais, variance nulle.
+%   \end{itemize}
+
+%   \vfill
+
+%   $\rightsquigarrow$  Un compromis  est nécessaire  (\textit{i.e.}, un bon choix pour $\lambda$).
+
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Calcul pratique du chemin de solution}
+%   \framesubtitle{Ridge et SVD}
+
+%   \begin{block}{Décomposition en valeur singulière --
+%       \href{{http://upload.wikimedia.org/wikipedia/commons/e/e9/Singular_value_decomposition.gif}}{lien
+%         vers une illustration}}
+%     \begin{equation*}
+%       \mathbf{X} = \mathbf{U} \mathbf{D} \mathbf{V}^\intercal,
+%     \end{equation*}
+%     \vspace{-.5cm}
+%     \begin{itemize}
+%     \item  $\mathbf{U}$  est  une   matrice  $n\times  p$  orthogonale
+%       génératrice de l'espace colonne,
+%     \item  $\mathbf{V}$  est  une   matrice  $p\times  p$  orthogonale
+%       génératice de l'espace ligne,
+%     \item     $\mathbf{D}=     \mathrm{diag}(d_1,\dots,d_i,\dots,d_p)$
+%       contient les valeurs singulières de $\mathbf{X}$.
+%     \end{itemize}
+%   \end{block}
+
+%   \vfill
+
+%   \begin{equation*}
+%     \hat{\bbeta}^{\mathrm{ridge}}      =      \mathbf{V}
+%     {\boldsymbol\Delta}_\lambda \mathbf{U}^\intercal \mathbf{y},
+%   \end{equation*}
+%   où ${\boldsymbol\Delta}_\lambda$ est une matrice diagonale telle que
+%   $\Delta_i= d_i/(d_i^2+\lambda)$.
+
+%   \vfill
+
+%   \begin{block}{Coût algorithmique}
+%     Le calcul du chemin de solution complet pour $K$ valeurs de $\lambda$ nécessite
+%     \begin{enumerate}
+%     \item une SVD ($\mathcal{O}(np^2)$)
+%     \item un produit matriciel entre $\mathbf{V}$ et la matrice $p\times K$
+%           ${\boldsymbol\Delta}_\lambda     \mathbf{U}^\intercal
+%       \mathbf{y}$
+%     \end{enumerate}
+%   \end{block}
+% \end{frame}
+
+<<child='ridge_prostate.Rnw'>>=
+@ 
+
+\subsubsection{Model complexity and Tuning parameter}
+
+\begin{frame}
+   \frametitle{Classical options}
+
+ \begin{block}{Cross-validation}
+   We compute $CV(\lambda)$, the CV error along the $\lambda$ path
+    \begin{enumerate}
+    \item if $K=n$, this is the LOOCV,
+    \item if $K=2$, this is the hold out estimation,
+    \item in a high dimensional setup, we must choose $K$ ``carefully'',
+    \end{enumerate}
+   We choose  $\lambda$ minimising the CV 
+  \end{block}
+
+\vfill
+
+\begin{block}{Penalized criteria}
+We choose  $\lambda$ minimizing a criterion with the form
+\begin{equation*}
+\mathrm{crit}(\lambda) = \mathrm{err}_\mathcal{D}(\lambda) + \mathrm{pen}(\mathrm{df}_\lambda)
+\end{equation*}
+$\rightsquigarrow$ What sens give to the degrees of freedom for ridge regression?
+\end {block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Effective degrees of freedom}
+
+  \begin{itemize}
+  \item Degrees of freedom of a model describes its complexity level.
+  \item For the least squares, $\mathrm{df} = p$ (plus 1 for the intercept).
+  \item Need a definition adapted to shrinkage methods.
+  \end{itemize}
+
+  \vfill
+
+  \begin{definition}[Efron  and  others]   Consider  a  fitted  vector
+    $\hat{\mathbf{y}}$ from an observation $\mathbf{y}$. We define its
+    degrees of freedom as
+    \begin{equation*}
+      \mathrm{df}(\hat{\mathbf{y}})    =    \frac{1}{\sigma^2}
+      \sum_{i=1}^n \mathrm{cov}(\hat{y}_i,y_i).
+    \end{equation*}
+    $\rightsquigarrow$The  harder the fit  to the  data, the  higher the
+    covariance.
+  \end{definition}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Effective degrees of freedom: the ridge case}
+
+  \begin{proposition} Consider a linear fitting method that predicts
+    $\hat{\mathbf{y}}$  for  entry  $\mathbf{y}$  through  the
+    smoother matrix $\mathbf{H}$:
+    \begin{equation*}
+      \hat{\mathbf{y}} = \mathbf{H} \mathbf{y}.
+    \end{equation*}
+    The    effective    degrees    of    freedom    of    the    model
+    $\hat{\mathbf{y}}$ verifies
+    \begin{equation*}
+      \mathrm{df}(\hat{\mathbf{y}}) = \mathrm{Tr}(\mathbf{H}).
+    \end{equation*}
+  \end{proposition}
+
+  \vfill
+
+  \begin{block}{Ridge: effective degrees of freedom}
+    For ridge  regression, $\mathrm{df}$  is a decreassig  function of
+    $\lambda$ which tends to 0 (or 1 when considering the intercept):
+    \begin{equation*}
+      \mathrm{df}(\hat{\mathbf{y}}_\lambda) =\sum_{i=1}^p \frac{d_i^2}{d_i^2+\lambda}.
+    \end{equation*}
+  \end{block}
+
+
+\end{frame}
+ 
+<<child='ridge_criteria.Rnw'>>=
+@ 

@@ -1,0 +1,52 @@
+
+<<include=FALSE>>=
+opts_chunk$set(fig.width=8, fig.path='figures/ridge')
+@
+
+<<echo=FALSE>>=
+x_train <- select(prostate_train, -lpsa) %>% as.matrix()
+y_train <- pull(prostate_train, lpsa)  %>% as.numeric()
+x_test  <- select(prostate_test, -lpsa) %>% as.matrix()
+y_test  <- pull(prostate_test, lpsa)  %>% as.numeric()
+library(quadrupen)
+@
+
+\begin{frame}[containsverbatim]
+  \frametitle{Ridge fit for the prostate cancer data}
+
+  \vfill
+
+Compute the ridge path
+<<compute ridge path prostate>>=
+ridge_path <- quadrupen::ridge(x_train, y_train)
+@
+
+\vfill
+
+Compute the prediction error on the test set for all $\lambda$
+<<compute err prostate ridge, tidy=FALSE>>=
+err <- colMeans((y_test - predict(ridge_path, as.matrix(x_test)))^2)
+@
+
+\vfill
+
+Then, $\lambda^\star$ that minimizes this error
+<<lambda ridge prostate>>=
+ridge_path@lambda2[which.min(err)]
+@
+
+The prediction error is smaller than with the OLS
+<<err ridge prostate>>=
+err_ridge <- err[which.min(err)]
+print(err_ridge) 
+print(err_ols)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+<<rdige path prostate, echo=FALSE>>=
+plot(ridge_path)
+@
+\end{frame}
+

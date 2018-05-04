@@ -1,0 +1,26 @@
+
+<<include=FALSE>>=
+opts_chunk$set(fig.path='figures/toy_ridge')
+@
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{A 2-dimensional toy example (in \texttt{R})}
+
+Generate two correlated predictors
+<<echo=TRUE>>=
+suppressMessages(library(quadrupen)) # use github version
+x1 <- rnorm(5)
+x2 <- x1 + rnorm(5,0, 0.5)
+cor(x1,x2)
+@
+
+Draw $Y$ and plot the  \alert{\bf ridge regularisation path}
+<<echo=TRUE,fig.width=8>>=
+library(glmnet)
+y <- x1 + x2 +rnorm(5)
+plot(quadrupen::ridge(cbind(x1,x2),y))
+@
+
+\end{frame}

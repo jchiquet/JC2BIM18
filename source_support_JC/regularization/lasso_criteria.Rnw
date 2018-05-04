@@ -1,0 +1,46 @@
+
+<<include=FALSE>>=
+theme_set(theme_bw())
+opts_chunk$set(fig.width=8, fig.path='figures/crit_lasso')
+@
+
+\begin{frame}[containsverbatim]
+ \frametitle{Cancer de la prostate}
+ \framesubtitle{Calcul de l' AIC/BIC en estimant $\sigma$ (plot)}
+
+<<echo=FALSE>>=
+criteria(lasso_path)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Cross-validation}
+
+<<>>=
+system.time(loo <- crossval(x_train, y_train, penalty = "lasso", K = n))
+@
+
+<<>>=
+system.time(CV10 <- crossval(x_train, y_train, penalty = "lasso", K = 10))
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Leave one out}
+<<echo=FALSE, fig.width=8>>=
+plot(loo, main="LOO CV error")
+@
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Ten fold}
+<<echo=FALSE, fig.width=8>>=
+plot(CV10, main="10-fold CV error")
+@
+\end{frame}
+
+
+

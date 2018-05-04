@@ -1,0 +1,170 @@
+\subsection{Assessing the quality of a regression model}
+
+\begin{frame}
+  \frametitle{Statistical Learning}
+
+  \begin{block}{Canonical scenario}
+    \begin{enumerate}
+    \item an \alert{outcome} measurement (or \emph{response}, \emph{output})
+      \begin{itemize}
+      \item  either   quantitative  (expression  level,   tumor  size,
+        survival time, etc.)
+      \item or categorical (presence/absence of a gene or of a disease, etc.)
+      \end{itemize}
+    \item a set of  \alert{features} (or \emph{predictors}, \emph{inputs})
+      \begin{itemize}
+      \item clinical measurements (expression level, tumor size)
+      \item age, smoking or not, height, SNPs, etc.
+      \end{itemize}
+    \end{enumerate}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Learning problem} Given a training set of data (observed
+    inputs and outputs), we aim to
+    \begin{enumerate}
+    \item suggest a model,
+    \item learn this model on the training set,
+    \item test this model on new outcomes/features.
+    \end{enumerate}
+  \end{block}
+
+  \vfill
+
+  $\rightsquigarrow$   \alert{A  ``good''   model  should   accurately
+    predict new outcomes.}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Notations}
+
+  Let
+  \begin{itemize}
+  \item $Y$ be the output random variable,
+  \item  $X  =  (X_1,  \dots,  X_p)$  be  the  input  random
+    variables, where $X_j$ is the $j$ predictor.
+  \end{itemize}
+
+  \vfill
+
+  \begin{block}{The data}
+    Given a sample $\{(y_i, x_i), i=1,\dots,n\}$ of i.id. realizations
+    of $(Y,X)$, denote
+    \begin{itemize}
+    \item $\mathcal{D} = \{i:(y_i, x_i) \in \text{ training set}\}$,
+    \item $\mathcal{T} = \{i:(y_i, x_i) \in \text{ test set}\}$,
+    \item   $\mathbf{y}   =   (y_i)_{i\in\mathcal{D}}$,  the
+      \emph{response} vector in $\mathbb{R}^{|\mathcal{D}|}$,
+    \item $\mathbf{x}_j =  (x_{ij})_{i\in\mathcal{D}}^\intercal)$ the vector
+      of data for the $j$th predictor in $\mathbb{R}^{|\mathcal{D}|}$,
+    \item $\mathbf{X}$ the $n\times p$  data (or design) matrix on the
+      training set whose $j$th row is $\mathbf{x}_j$,
+    \item $(\by_\mathcal{T},\bX_\mathcal{T})$ are the test data.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Regression models}
+
+  We seek a function $f$ that predicts $Y$ through $X$.
+
+  \begin{proposition} The  model $f(X)=\E[Y|X]$ minimizes  the squared
+    error loss, that is,
+    \begin{equation*}
+      f(X)   =    \argmin_{\varphi}   \err(\varphi(X)),   \quad
+      \text{with } \err(\varphi(X)) = \mathbb{E}[(Y - \varphi(X))^2].
+    \end{equation*}
+    $\rightsquigarrow$ The best prediction of $Y$ at any point $X = x$
+    is the conditional mean, when  best is measured by average squared
+    error.
+  \end{proposition}
+
+  \vfill
+
+  This leads to the regression model
+    \begin{equation*}
+      Y = f(X) + \varepsilon,
+    \end{equation*}
+    where
+    \begin{itemize}
+    \item     $\varepsilon$     is     an    additive     error     with
+      $\E[\varepsilon]=\mathbf{0}$, $\var[\varepsilon]=\sigma^2$,
+    \item $f(x) = \E[Y | X = x]$ is the \emph{regression} function.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning strategy}
+
+  \begin{block}{Problem}
+    $\prob(Y|X)$  and  $\prob(X)$   are  unknown  thus  $\E(Y|X),  \err(f(X))$
+  unreachable: one should \alert{estimate} this.
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Strategy}
+    \begin{enumerate}
+    \item  Fix a family $\mathcal{F}$ of models\\
+        \onslide<2>{\textit{For the linear model, $\mathcal{F} = \set{X^T\bbeta, \bbeta\in\Rset^p}$.}}
+      \bigskip
+    \item Fit a model $\hat{f}\in\mathcal{F}$ on the training set $\mathcal{D}$\\ 
+      \onslide<2>{\textit{With the least square, compute $\hatbbetaols$ and $\hat f = \hat Y = \bX \hatbbetaols$}}\bigskip
+    \item Estimate the prediction error with the test set $\mathcal{T}$.
+       \begin{equation*}
+         \onslide<2>{\text{For instance, }\hat{\err}(\bX_{\mathcal{T}}\hatbbetaols) = \frac{1}{n} \left\|
+         \by_{\mathcal{T}}- \bX_{\mathcal{T}} \hatbbetaols_{\mathcal{D}}\right\|^2.}
+       \end{equation*}
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bias/variance tradeoff}
+
+  At an input point $X=x$,
+  \begin{overlayarea}{\textwidth}{\textheight}
+    \begin{equation*}
+      \err(\hat{f}(x))                =
+      \underbrace{\sigma^2}_{\substack{\text{incompressible}\\\text{error}}}
+      +
+      \underbrace{\text{bias}^2(\hat{f}(x))                    +
+        \var(\hat{f}(x))}_{\mathrm{MSE}(\hat{f}(x))}.
+    \end{equation*}
+
+    \begin{center}
+      \includegraphics[width=.7\textwidth]{figures/tradeoff}
+    \end{center}
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linear regression}
+
+  \begin{block}{Prediction error}
+    For a fixed $\bX$, one has
+   \begin{equation*}
+      \hat{\mathrm{err}}(\bX \hatbbetaols)  = \sigma^2 \frac{(p+1)}{n} + \sigma^2.
+    \end{equation*}
+  \end{block}
+  \vfill  
+  
+  \begin{block}{Gauss-Markov Theorem}
+    $\hat Y = X^\intercal \hatbbetaols$ is the BLUE: the best model 
+    (i.e. with the smallest variance) among unbiased estimators of 
+    $\bbeta$.
+  \end{block}
+  \vfill
+
+  $\rightsquigarrow$ Are  they some  cases where we  should \alert{\bf
+    trade some bias for smaller variance} ?
+\end{frame}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "slides.tex"
+%%% End:
