@@ -1,0 +1,430 @@
+\section{A tour of the \texttt{huge} package assessing GGM approach}
+
+<<r load_some_usefull_functions, echo=FALSE>>=
+source("huge/func_utils.R")
+source("huge/external_functions.R")
+@
+
+\begin{frame}[fragile]
+  \frametitle{Assess the standard GGMs approaches}
+
+Full analysis can be found at \url{http://julien.cremeriefamily.info/doc/teachings/exposome/td_exposome_correction.html}
+
+<<r load_huge>>=
+suppressMessages(library(huge, quietly = TRUE))
+@
+
+\begin{enumerate}
+\item Simulated data
+\begin{itemize}
+    \item Test that an approach is working under some simple conditions
+    \item Especially usefull when the approach has no underlying model
+    \item Essential sanity check
+\end{itemize}
+\item Breast cancer data (pinpoint interesting genes/pathways)
+\begin{itemize}
+    \item Several hundred breast cancers (estrogen receptor + and -)
+    \item Several thousand genes 
+    \item Goal: How can GGMs approaches help ? 
+\end{itemize}
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple simulations (network with hubs)}
+
+<<r simu_hub>>=
+set.seed(11)
+n <- 80; d <- 10;
+rd.net  <- huge.generator(
+  n, ## number of samples
+  d, ## number of genes
+  graph="hub", ## type of net
+  g = 2, ## number of group)
+  verbose=FALSE)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple simulations (network with hubs)}
+
+<<r visu, echo=FALSE>>=
+plot.sim <- function (x, ...) 
+{
+    scale.all <- 0.7
+    gcinfo(FALSE)
+    par = par(mfrow = c(2, 2), pty = "s", omi = scale.all*c(0.3, 0.3, 0.3, 0.3), mai = scale.all*c(0.3, 0.3, 0.3, 0.3))
+    image(as.matrix(x$theta), col = gray.colors(256), main = "Adjacency Matrix", cex.main=scale.all, cex.axis=scale.all, axes=FALSE)
+    image(x$sigma, col = gray.colors(256), main = "Covariance Matrix", cex.main=scale.all, cex.axis=scale.all, axes=FALSE)
+    g = graph.adjacency(x$theta, mode = "undirected", diag = FALSE)
+    layout.grid = layout.fruchterman.reingold(g)
+    plot(g, layout = layout.grid, edge.color = "gray50", vertex.color = "red", 
+        vertex.size = 10, vertex.label = NA)
+    rm(g, layout.grid)
+    gc()
+    image(x$sigmahat, col = gray.colors(256), main = "Empirical Covariance Matrix", cex.main=scale.all, cex.axis=scale.all, axes=FALSE)
+}
+@
+
+<<r simu_hub_plot, fig.width=5, fig.height=3>>=
+plot(rd.net)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Inference using GGMs and correlation}
+
+\paragraph{Inference}
+
+<<r inference_glasso_cor, cache=TRUE>>=
+## glasso, mb and ct
+glasso <- huge(rd.net$data, method="glasso", 
+               nlambda=50,  verbose=F)
+mb <- huge(rd.net$data, method="mb", 
+           nlambda=50, verbose=F)
+corthr <- huge(rd.net$data, method="ct", 
+              nlambda = 50, verbose=F)
+@
+
+\paragraph{Selection}
+
+<<r inference_glasso_cor_sel, cache=TRUE>>=
+## glasso, mb and ct
+glasso.sel <- huge.select(glasso, "stars", verbose=F)
+mb.sel <- huge.select(mb, "stars", verbose=F)
+corthr.sel <- huge.select(corthr, "stars", verbose=F)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Inference using GGMs and correlation (results)}
+
+<<r inference_glasso_cor_res_prime, echo=F>>=
+gr.mb <- graph.adjacency(mb.sel$refit)
+gr.cor <- graph.adjacency(corthr.sel$refit)
+V(gr.mb)$label.cex <- 2
+V(gr.cor)$label.cex <- 2
+V(gr.mb)$color <- rep(c("blue", "red"), each=5)
+V(gr.cor)$color <-rep(c("blue", "red"), each=5)
+@
+
+<<r inference_glasso_cor_res>>=
+gr.glasso <- graph.adjacency(glasso.sel$refit)
+V(gr.glasso)$label.cex <- 2
+V(gr.glasso)$color <- rep(c("blue", "red"), each=5)
+par(mfrow=c(1, 3))
+plot(gr.glasso, vertex.size=30, edge.arrow.mode = "-")
+plot(gr.mb, vertex.size=30, edge.arrow.mode = "-")
+plot(gr.cor, vertex.size=30, edge.arrow.mode = "-")
+@
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A bit of code to run a simulation}
+
+<<r one_simu_code_cluster>>=
+suppressMessages(require(reshape2))
+one.simu <- function(i) {
+  lbd.c <- seq(1, 0, -10^-2); 
+  d <- 25; seq.n <- c(10, 15, 30, 50, 100, 150, 300, 500)
+  out <- data.frame(t(sapply(seq.n, function(n) {
+   exp <- huge.generator(n, d, graph="cluster", 
+                         g=3, prob=1, verbose=F)
+   gl <- huge(exp$data, method="glasso", nlambda=50, verbose=F)
+   mb <- huge(exp$data, method="mb", nlambda=50, verbose=F)
+   cthr <- huge(exp$data, method="ct", lambda=lbd.c, verbose=F)
+   res.cthr <- perf.auc(perf.roc(cthr$path, exp$theta))
+   res.gl <- perf.auc(perf.roc(gl$path, exp$theta))
+   res.mb <- perf.auc(perf.roc(mb$path, exp$theta))
+   return(setNames(c(res.gl,res.cthr,res.mb,n,i),
+   c("glasso","correlation","mb", "sample size", "simu")))
+  })))
+return(melt(out, measure.vars = 1:3, value.name = "score"))}
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Run}
+
+<<r run_simu_cluster, cache=TRUE>>=
+suppressMessages(library(parallel))
+res <- do.call(rbind, mclapply(1:40, one.simu, mc.cores=4))
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (cluster - clique)}
+
+<<r plot_simu_cluster, fig.width=6, fig.height=4, echo=FALSE>>=
+suppressMessages(library(ggplot2))
+ggplot(res, aes(x=factor(sample.size), y=score)) +
+geom_boxplot(aes(colour=variable))
+@
+
+<<r one_simu_code_cluster2, echo=FALSE, cache=TRUE>>=
+suppressMessages(require(reshape2))
+one.simu_c2 <- function(i) {
+   lbd.c <- seq(1, 0, -10^-2);
+   d <- 25; seq.n <- c(10, 15, 30, 50, 100, 150, 300, 500)
+   out <- data.frame(t(sapply(seq.n, function(n) {
+   exp <- huge.generator(n, d, verbose=F, g=3, prob=0.5)
+   gl <- huge(exp$data, method="glasso", nlambda=50, verbose=F)
+   mb <- huge(exp$data, method="mb", nlambda=50, verbose=F)
+   cthr <- huge(exp$data, method="ct", lambda=lbd.c, verbose=F)
+   res.cthr <- perf.auc(perf.roc(cthr$path, exp$theta))
+   res.gl <- perf.auc(perf.roc(gl$path, exp$theta))
+   res.mb <- perf.auc(perf.roc(mb$path, exp$theta))
+   return(setNames(c(res.gl,res.cthr,res.mb,n,i),
+   c("glasso","correlation","mb", "sample size", "simu")))
+  })))
+return(melt(out, measure.vars = 1:3,
+            value.name = "score"))}
+suppressMessages(library(parallel))
+res_rd <- do.call(rbind, mclapply(1:40, one.simu_c2, mc.cores=4))
+
+@
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (cluster, connection probability of 0.5)}
+
+<<r plot_simu_cluster2, fig.width=6, fig.height=4, echo=FALSE>>=
+suppressMessages(library(ggplot2))
+ggplot(res_rd, aes(x=factor(sample.size), y=score)) +
+geom_boxplot(aes(colour=variable))
+@
+
+<<r one_simu_code_random, echo=FALSE, cache=TRUE>>=
+suppressMessages(require(reshape2))
+one.simu_rd <- function(i) {
+   lbd.c <- seq(1, 0, -10^-2);
+   d <- 25; seq.n <- c(10, 15, 30, 50, 100, 150, 300, 500)
+   out <- data.frame(t(sapply(seq.n, function(n) {
+   exp <- huge.generator(n, d, verbose=F, prob=0.3)
+   gl <- huge(exp$data, method="glasso", nlambda=50, verbose=F)
+   mb <- huge(exp$data, method="mb", nlambda=50, verbose=F)
+   cthr <- huge(exp$data, method="ct", lambda=lbd.c, verbose=F)
+   res.cthr <- perf.auc(perf.roc(cthr$path, exp$theta))
+   res.gl <- perf.auc(perf.roc(gl$path, exp$theta))
+   res.mb <- perf.auc(perf.roc(mb$path, exp$theta))
+   return(setNames(c(res.gl,res.cthr,res.mb,n,i),
+   c("glasso","correlation","mb", "sample size", "simu")))
+  })))
+return(melt(out, measure.vars = 1:3,
+            value.name = "score"))}
+suppressMessages(library(parallel))
+res_rd <- do.call(rbind, mclapply(1:40, one.simu_rd, mc.cores=4))
+
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (random, connection probability of 0.3)}
+
+<<r plot_simu_random, fig.width=6, fig.height=4, echo=FALSE>>=
+suppressMessages(library(ggplot2))
+ggplot(res_rd, aes(x=factor(sample.size), y=score)) +
+geom_boxplot(aes(colour=variable))
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Breast cancer: transcriptomics for ER+ and ER- tumors}
+
+We look at a large public datasets from Guedj et al. 2011 with two main subgroups
+  \begin{itemize}
+  \item Estrogen receptor positive
+  \item Estrogen receptor negative
+  \end{itemize}
+
+<<r load_guedj_data, cache=TRUE>>=
+load ("huge/breast_cancer_guedj11.RData")
+load ("huge/gen_name.RData")
+gene.name <- unlist(gene.name)
+data.raw <- expr
+table(class.ER)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Filtering Unknown genes}
+
+<<r not.known.filtering, echo=TRUE>>=
+toDiscard <- which(gene.name == "Not.Known")
+gene.name <- gene.name[-toDiscard]
+data.raw <- data.raw[-toDiscard, ]
+@
+
+We get
+
+<<r nbgenes>>=
+dim(data.raw)
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Differential analysis}
+  
+Do we detect some gene expression differences ?
+
+<<r limma, cache=TRUE>>=
+load ("huge/breast_cancer_guedj11.RData")
+suppressMessages(library(limma))
+design <- cbind(Moy=1, Erp=(class.ER == "ERp")+0)
+fit <- lmFit(data.raw, design=design)
+fit <- eBayes(fit)
+res <- topTable(fit, coef="Erp", number=10^5,
+                genelist=fit$genes, adjust.method="BH",
+              sort.by="none", resort.by=NULL,
+              p.value=1, lfc=0, confint=FALSE)
+@
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Many genes are differentially expressed}
+
+\begin{itemize}
+\item The histogram of p-values looks good
+\item This is a well known fact (ER+ and ER- are very different)
+\end{itemize}
+
+<<r many_genes, fig.width=5, fig.height=3>>=
+sum(res$adj.P.Val < 10^-5)
+hist(res$P.Value, breaks=30, col="grey",
+     main="P-values ER- vs ER+")
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{What to do with this list of genes?}
+
+ESR1 has the most significant p-values
+
+<<r ESR1_gene>>=
+gene.name[order(res$adj.P.Val)[1]]
+@
+
+\begin{block}{Network analysis}
+\begin{itemize}
+\item Could we find partners of ESR1 that are specific to ER+?
+\item We cannot infer a network on  41000 genes (Verzelen 2011)
+\begin{itemize}
+\item[\rsa] \emphase{Most differentially expressed} genes
+\item[\rsa] Most varying genes
+\item[\rsa] Look at a specific pathway \dots
+\end{itemize}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Selecting some probes}
+
+Take the 20 most differentially expressed plus some random
+
+<<r random_genes, echo=FALSE, cache=TRUE>>=
+selected_gene <- order(res$P.Value)[1:100] ## top 100 genes from diff analysis
+sel.name <- gene.name[selected_gene]
+selected_gene <- selected_gene[match(unique(sel.name), sel.name)][1:20]
+
+random_gene <- sample(setdiff(c(1:nrow(res)), selected_gene), 5)
+selected_gene <- c(selected_gene, random_gene)
+sel.name <- gene.name[selected_gene]
+
+data.ERm <- t(data.raw[selected_gene, which(class.ER=="ERm")])
+data.ERp <- t(data.raw[selected_gene, which(class.ER=="ERp")])
+
+
+min.lbd <- 100
+lambdas <- rev(1/min.lbd * 10^seq(0, log10(min.lbd), length.out=100))
+#lambdas <- 10^seq(log10(0.2), log10(1), len=100)
+
+gl.ERm <- huge(huge.npn(data.ERm, npn.func="truncation", verbose=F),
+               method="glasso", lambda=lambdas, verbose=F)
+gl.ERp <- huge(huge.npn(data.ERp, npn.func="truncation", verbose=F),
+               method="glasso", lambda=lambdas, verbose=F)
+sel.ERm <- huge.select(gl.ERm, criterion="stars", verbose=FALSE)
+sel.ERp <- huge.select(gl.ERp, criterion="stars", verbose = FALSE)
+@
+
+<<r random_genes_prepare_plotting, echo=FALSE, cache=FALSE>>=
+net_Mspec_ <- as.matrix(sel.ERm$refit) & !(as.matrix(sel.ERp$refit))
+net_Pspec_ <- as.matrix(sel.ERp$refit) & !(as.matrix(sel.ERm$refit))
+rownames(net_Mspec_) <- colnames(net_Mspec_) <- sel.name
+rownames(net_Pspec_) <- colnames(net_Pspec_) <- sel.name
+
+net_Mspec_ <- net_Mspec_[rowSums(net_Mspec_) >=1,
+                       rowSums(net_Mspec_) >=1]
+
+net_Pspec_ <- net_Pspec_[rowSums(net_Pspec_) >=1,
+                       rowSums(net_Pspec_) >=1]
+
+
+net_Mspec <- graph_from_adjacency_matrix(net_Mspec_)
+net_Pspec <- graph_from_adjacency_matrix(net_Pspec_)
+
+
+
+col.nd1 <- rep("white", ncol(net_Mspec_))
+col.nd1[rownames(net_Mspec_) == "ESR1"] <- "red"
+col.nd1[rownames(net_Mspec_) == "FOXA1"] <- "orange"
+igreen <- which(rownames(net_Mspec_) %in% sel.name[21:30])
+if(length(igreen)>0)  col.nd1[igreen] <- "green"
+
+col.nd2 <- rep("white", ncol(net_Pspec_))
+col.nd2[rownames(net_Pspec_) == "ESR1"] <- "red"
+col.nd2[rownames(net_Pspec_) == "FOXA1"] <- "orange"
+igreen <- which(rownames(net_Pspec_) %in% sel.name[21:30])
+if(length(igreen)>0)  col.nd2[igreen] <- "green"
+@
+
+<<r ploting_network_random, echo=FALSE, fig.width=8, fig.height=6>>=
+V(net_Pspec)$label.cex <- 1
+V(net_Mspec)$label.cex <- 1
+
+par(mfrow=c(1, 2))
+plot( net_Pspec, edge.arrow.mode = "-", vertex.size=30, edge.width=2, vertex.color=col.nd2, main="ER+ specific")
+plot( net_Mspec, edge.arrow.mode = "-", vertex.size=30, edge.width=2, vertex.color=col.nd1, main="ER- specific")
+@
+
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{FOXA1, ESR1, GATA3 a well known interaction}
+
+\begin{enumerate}
+\item FOXA1 is a key determinant of estrogen receptor function and endocrine response. Antoni Hurtado et al. 2011 (Nat. Genet.):
+
+    \rsa "FOXA1 is a key determinant that can influence differential interactions between ER and chromatin"
+
+\item GATA3 acts upstream of FOXA1 in mediating ESR1 binding by shaping enhancer accessibility. Theodorou et al. 2013 (Genome Res.)
+
+\item Estrogen receptor regulation of carbonic anhydrase XII through a distal enhancer in breast cancer.
+Barnett DH et al 2008 (Cancer Res.)
+    
+    \rsa "we show that CA12 is robustly regulated by estrogen via ER alpha in breast cancer cells"
+\end{enumerate}
+
+\end{frame}
+

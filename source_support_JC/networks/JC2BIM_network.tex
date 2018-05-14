@@ -1,0 +1,925 @@
+\documentclass[10pt, c, xcolor=x11names]{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\def\currentChapter{Biological Network Inference with Sparse Graphical Models}
+
+
+% THEME BEAMER
+\usepackage{../themeJC2BIM}
+
+\graphicspath{{figures/},{../common_figs/}}
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes,backgrounds,arrows,automata,shadows,positioning}
+\tikzstyle{every state}=[fill=red,draw=none,scale=0.7,font=\small,text=white]
+\tikzstyle{every edge}=[-,shorten >=1pt,auto,thin,draw]
+\tikzstyle{alertstate}=[fill=bleu]
+\definecolor{genecolor}{RGB}{94,135,173}
+
+\def\currentDate{Fréjus, 4--8 June 2018}
+\def\currentInstitute{Julien Chiquet}
+\def\currentCourse{(JC)2BIM 2018 Research School}
+
+\title{\currentCourse}
+
+\subtitle{\huge\currentChapter\normalsize}
+
+\institute{\currentInstitute}
+
+\date{\currentDate}
+
+
+
+\AtBeginSection{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \framesubtitle{\insertpart}
+    \tableofcontents[currentsection,currentsubsection, subsectionstyle=show/shaded/hide]  
+  \end{frame}
+}
+
+\AtBeginSubsection{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \framesubtitle{\insertpart}
+    \tableofcontents[currentsection,currentsubsection, subsectionstyle=show/shaded/hide]  
+  \end{frame}
+}
+
+\AtBeginSubsubsection{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \framesubtitle{\insertpart}
+    \tableofcontents[currentsection,currentsubsection, subsectionstyle=show/shaded/hide]  
+  \end{frame}
+}
+
+\newcommand{\dotitlepage}{%
+  \begin{frame}
+    \titlepage
+    \vfill
+    \begin{center}
+        \scriptsize\url{http://github/jchiquet/JC2BIM}
+    \end{center}
+    \vfill
+    \includegraphics[width=2cm]{logo_sfbi}\hfill
+    \includegraphics[width=2.5cm]{logo_inra}
+  \end{frame}
+  %
+}
+
+\newcommand{\dotoc}{%
+  \begin{frame}
+    \frametitle{Outline}
+    \tableofcontents[currentsection,
+    sectionstyle=show/show,
+    subsectionstyle=hide]
+  \end{frame}
+  %
+}
+
+\usepackage{hhline}
+
+
+
+\pgfdeclareimage[width=.3\textwidth]{affymetrix}{../common_figs/tech_affy}
+\pgfdeclareimage[width=.18\textwidth]{microarray}{../common_figs/data_affy}
+\pgfdeclareimage[width=.18\textwidth]{sequencer}{../common_figs/tech_ngs}
+\pgfdeclareimage[width=.25\textwidth]{ngs}{../common_figs/data_ngs}
+\pgfdeclareimage[width=.3\textwidth]{computer}{../common_figs/computer}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\part<presentation*>{Introduction}
+
+\dotitlepage
+
+\dotoc
+
+\include{motivations}
+
+\begin{frame}
+  \frametitle{Outline}
+
+  \begin{enumerate}
+  \item[Part 1] \alert{Framework}\\
+    \textit{Gaussian graphical models and sparse regularization techniques}\bigskip
+
+  \item[Part 2] \alert{Extensions}\\
+    \textit{Extensions of these methods for omic data analyses}\bigskip
+
+  \end{enumerate}
+\end{frame}
+
+\AtBeginSection[]{
+  \begin{frame}<handout:0>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\part<presentation>{sparse Gaussian Graphical Models}
+\begin{frame}
+  \partpage
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+ 
+\include{ggm}
+
+\include{inference}
+
+\include{limitations}
+
+%% simple simu GGM
+
+\section{A tour of the \texttt{huge} package assessing GGM approach}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Assess the standard GGMs approaches}
+
+Full analysis can be found at \url{http://julien.cremeriefamily.info/doc/teachings/exposome/td_exposome_correction.html}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{suppressMessages}\hlstd{(}\hlkwd{library}\hlstd{(huge,} \hlkwc{quietly} \hlstd{=} \hlnum{TRUE}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{enumerate}
+\item Simulated data
+\begin{itemize}
+    \item Test that an approach is working under some simple conditions
+    \item Especially usefull when the approach has no underlying model
+    \item Essential sanity check
+\end{itemize}
+\item Breast cancer data (pinpoint interesting genes/pathways)
+\begin{itemize}
+    \item Several hundred breast cancers (estrogen receptor + and -)
+    \item Several thousand genes 
+    \item Goal: How can GGMs approaches help ? 
+\end{itemize}
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple simulations (network with hubs)}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{11}\hlstd{)}
+\hlstd{n} \hlkwb{<-} \hlnum{80}\hlstd{; d} \hlkwb{<-} \hlnum{10}\hlstd{;}
+\hlstd{rd.net}  \hlkwb{<-} \hlkwd{huge.generator}\hlstd{(}
+  \hlstd{n,} \hlcom{## number of samples}
+  \hlstd{d,} \hlcom{## number of genes}
+  \hlkwc{graph}\hlstd{=}\hlstr{"hub"}\hlstd{,} \hlcom{## type of net}
+  \hlkwc{g} \hlstd{=} \hlnum{2}\hlstd{,} \hlcom{## number of group)}
+  \hlkwc{verbose}\hlstd{=}\hlnum{FALSE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple simulations (network with hubs)}
+
+
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(rd.net)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/r_simu_hub_plot-1} 
+
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Inference using GGMs and correlation}
+
+\paragraph{Inference}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## glasso, mb and ct}
+\hlstd{glasso} \hlkwb{<-} \hlkwd{huge}\hlstd{(rd.net}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"glasso"}\hlstd{,}
+               \hlkwc{nlambda}\hlstd{=}\hlnum{50}\hlstd{,}  \hlkwc{verbose}\hlstd{=F)}
+\hlstd{mb} \hlkwb{<-} \hlkwd{huge}\hlstd{(rd.net}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"mb"}\hlstd{,}
+           \hlkwc{nlambda}\hlstd{=}\hlnum{50}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+\hlstd{corthr} \hlkwb{<-} \hlkwd{huge}\hlstd{(rd.net}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"ct"}\hlstd{,}
+              \hlkwc{nlambda} \hlstd{=} \hlnum{50}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\paragraph{Selection}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## glasso, mb and ct}
+\hlstd{glasso.sel} \hlkwb{<-} \hlkwd{huge.select}\hlstd{(glasso,} \hlstr{"stars"}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+\hlstd{mb.sel} \hlkwb{<-} \hlkwd{huge.select}\hlstd{(mb,} \hlstr{"stars"}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+\hlstd{corthr.sel} \hlkwb{<-} \hlkwd{huge.select}\hlstd{(corthr,} \hlstr{"stars"}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Inference using GGMs and correlation (results)}
+
+
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{gr.glasso} \hlkwb{<-} \hlkwd{graph.adjacency}\hlstd{(glasso.sel}\hlopt{$}\hlstd{refit)}
+\hlkwd{V}\hlstd{(gr.glasso)}\hlopt{$}\hlstd{label.cex} \hlkwb{<-} \hlnum{2}
+\hlkwd{V}\hlstd{(gr.glasso)}\hlopt{$}\hlstd{color} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"blue"}\hlstd{,} \hlstr{"red"}\hlstd{),} \hlkwc{each}\hlstd{=}\hlnum{5}\hlstd{)}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{3}\hlstd{))}
+\hlkwd{plot}\hlstd{(gr.glasso,} \hlkwc{vertex.size}\hlstd{=}\hlnum{30}\hlstd{,} \hlkwc{edge.arrow.mode} \hlstd{=} \hlstr{"-"}\hlstd{)}
+\hlkwd{plot}\hlstd{(gr.mb,} \hlkwc{vertex.size}\hlstd{=}\hlnum{30}\hlstd{,} \hlkwc{edge.arrow.mode} \hlstd{=} \hlstr{"-"}\hlstd{)}
+\hlkwd{plot}\hlstd{(gr.cor,} \hlkwc{vertex.size}\hlstd{=}\hlnum{30}\hlstd{,} \hlkwc{edge.arrow.mode} \hlstd{=} \hlstr{"-"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/r_inference_glasso_cor_res-1} 
+
+\end{knitrout}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A bit of code to run a simulation}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{suppressMessages}\hlstd{(}\hlkwd{require}\hlstd{(reshape2))}
+\hlstd{one.simu} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{i}\hlstd{) \{}
+  \hlstd{lbd.c} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlopt{-}\hlnum{10}\hlopt{^-}\hlnum{2}\hlstd{);}
+  \hlstd{d} \hlkwb{<-} \hlnum{25}\hlstd{; seq.n} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{10}\hlstd{,} \hlnum{15}\hlstd{,} \hlnum{30}\hlstd{,} \hlnum{50}\hlstd{,} \hlnum{100}\hlstd{,} \hlnum{150}\hlstd{,} \hlnum{300}\hlstd{,} \hlnum{500}\hlstd{)}
+  \hlstd{out} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{sapply}\hlstd{(seq.n,} \hlkwa{function}\hlstd{(}\hlkwc{n}\hlstd{) \{}
+   \hlstd{exp} \hlkwb{<-} \hlkwd{huge.generator}\hlstd{(n, d,} \hlkwc{graph}\hlstd{=}\hlstr{"cluster"}\hlstd{,}
+                         \hlkwc{g}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{prob}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+   \hlstd{gl} \hlkwb{<-} \hlkwd{huge}\hlstd{(exp}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"glasso"}\hlstd{,} \hlkwc{nlambda}\hlstd{=}\hlnum{50}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+   \hlstd{mb} \hlkwb{<-} \hlkwd{huge}\hlstd{(exp}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"mb"}\hlstd{,} \hlkwc{nlambda}\hlstd{=}\hlnum{50}\hlstd{,} \hlkwc{verbose}\hlstd{=F)}
+   \hlstd{cthr} \hlkwb{<-} \hlkwd{huge}\hlstd{(exp}\hlopt{$}\hlstd{data,} \hlkwc{method}\hlstd{=}\hlstr{"ct"}\hlstd{,} \hlkwc{lambda}\hlstd{=lbd.c,} \hlkwc{verbose}\hlstd{=F)}
+   \hlstd{res.cthr} \hlkwb{<-} \hlkwd{perf.auc}\hlstd{(}\hlkwd{perf.roc}\hlstd{(cthr}\hlopt{$}\hlstd{path, exp}\hlopt{$}\hlstd{theta))}
+   \hlstd{res.gl} \hlkwb{<-} \hlkwd{perf.auc}\hlstd{(}\hlkwd{perf.roc}\hlstd{(gl}\hlopt{$}\hlstd{path, exp}\hlopt{$}\hlstd{theta))}
+   \hlstd{res.mb} \hlkwb{<-} \hlkwd{perf.auc}\hlstd{(}\hlkwd{perf.roc}\hlstd{(mb}\hlopt{$}\hlstd{path, exp}\hlopt{$}\hlstd{theta))}
+   \hlkwd{return}\hlstd{(}\hlkwd{setNames}\hlstd{(}\hlkwd{c}\hlstd{(res.gl,res.cthr,res.mb,n,i),}
+   \hlkwd{c}\hlstd{(}\hlstr{"glasso"}\hlstd{,}\hlstr{"correlation"}\hlstd{,}\hlstr{"mb"}\hlstd{,} \hlstr{"sample size"}\hlstd{,} \hlstr{"simu"}\hlstd{)))}
+  \hlstd{\})))}
+\hlkwd{return}\hlstd{(}\hlkwd{melt}\hlstd{(out,} \hlkwc{measure.vars} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{value.name} \hlstd{=} \hlstr{"score"}\hlstd{))\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Run}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{suppressMessages}\hlstd{(}\hlkwd{library}\hlstd{(parallel))}
+\hlstd{res} \hlkwb{<-} \hlkwd{do.call}\hlstd{(rbind,} \hlkwd{mclapply}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{40}\hlstd{, one.simu,} \hlkwc{mc.cores}\hlstd{=}\hlnum{4}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (cluster - clique)}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/r_plot_simu_cluster-1} 
+
+\end{knitrout}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (cluster, connection probability of 0.5)}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/r_plot_simu_cluster2-1} 
+
+\end{knitrout}
+
+
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simulation results (random, connection probability of 0.3)}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/r_plot_simu_random-1} 
+
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Breast cancer: transcriptomics for ER+ and ER- tumors}
+
+We look at a large public datasets from Guedj et al. 2011 with two main subgroups
+  \begin{itemize}
+  \item Estrogen receptor positive
+  \item Estrogen receptor negative
+  \end{itemize}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{load} \hlstd{(}\hlstr{"huge/breast_cancer_guedj11.RData"}\hlstd{)}
+\hlkwd{load} \hlstd{(}\hlstr{"huge/gen_name.RData"}\hlstd{)}
+\hlstd{gene.name} \hlkwb{<-} \hlkwd{unlist}\hlstd{(gene.name)}
+\hlstd{data.raw} \hlkwb{<-} \hlstd{expr}
+\hlkwd{table}\hlstd{(class.ER)}
+\end{alltt}
+\begin{verbatim}
+## class.ER
+## ERm ERp 
+## 162 375
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Filtering Unknown genes}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{toDiscard} \hlkwb{<-} \hlkwd{which}\hlstd{(gene.name} \hlopt{==} \hlstr{"Not.Known"}\hlstd{)}
+\hlstd{gene.name} \hlkwb{<-} \hlstd{gene.name[}\hlopt{-}\hlstd{toDiscard]}
+\hlstd{data.raw} \hlkwb{<-} \hlstd{data.raw[}\hlopt{-}\hlstd{toDiscard, ]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+We get
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{dim}\hlstd{(data.raw)}
+\end{alltt}
+\begin{verbatim}
+## [1] 41248   537
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Differential analysis}
+  
+Do we detect some gene expression differences ?
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{load} \hlstd{(}\hlstr{"huge/breast_cancer_guedj11.RData"}\hlstd{)}
+\hlkwd{suppressMessages}\hlstd{(}\hlkwd{library}\hlstd{(limma))}
+\hlstd{design} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwc{Moy}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{Erp}\hlstd{=(class.ER} \hlopt{==} \hlstr{"ERp"}\hlstd{)}\hlopt{+}\hlnum{0}\hlstd{)}
+\hlstd{fit} \hlkwb{<-} \hlkwd{lmFit}\hlstd{(data.raw,} \hlkwc{design}\hlstd{=design)}
+\hlstd{fit} \hlkwb{<-} \hlkwd{eBayes}\hlstd{(fit)}
+\hlstd{res} \hlkwb{<-} \hlkwd{topTable}\hlstd{(fit,} \hlkwc{coef}\hlstd{=}\hlstr{"Erp"}\hlstd{,} \hlkwc{number}\hlstd{=}\hlnum{10}\hlopt{^}\hlnum{5}\hlstd{,}
+                \hlkwc{genelist}\hlstd{=fit}\hlopt{$}\hlstd{genes,} \hlkwc{adjust.method}\hlstd{=}\hlstr{"BH"}\hlstd{,}
+              \hlkwc{sort.by}\hlstd{=}\hlstr{"none"}\hlstd{,} \hlkwc{resort.by}\hlstd{=}\hlkwa{NULL}\hlstd{,}
+              \hlkwc{p.value}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{lfc}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{confint}\hlstd{=}\hlnum{FALSE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Many genes are differentially expressed}
+
+\begin{itemize}
+\item The histogram of p-values looks good
+\item This is a well known fact (ER+ and ER- are very different)
+\end{itemize}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(res}\hlopt{$}\hlstd{adj.P.Val} \hlopt{<} \hlnum{10}\hlopt{^-}\hlnum{5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5907
+\end{verbatim}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(res}\hlopt{$}\hlstd{P.Value,} \hlkwc{breaks}\hlstd{=}\hlnum{30}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"grey"}\hlstd{,}
+     \hlkwc{main}\hlstd{=}\hlstr{"P-values ER- vs ER+"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/r_many_genes-1} 
+
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{What to do with this list of genes?}
+
+ESR1 has the most significant p-values
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{gene.name[}\hlkwd{order}\hlstd{(res}\hlopt{$}\hlstd{adj.P.Val)[}\hlnum{1}\hlstd{]]}
+\end{alltt}
+\begin{verbatim}
+## 205225_at 
+##    "ESR1"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{block}{Network analysis}
+\begin{itemize}
+\item Could we find partners of ESR1 that are specific to ER+?
+\item We cannot infer a network on  41000 genes (Verzelen 2011)
+\begin{itemize}
+\item[\rsa] \emphase{Most differentially expressed} genes
+\item[\rsa] Most varying genes
+\item[\rsa] Look at a specific pathway \dots
+\end{itemize}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Selecting some probes}
+
+Take the 20 most differentially expressed plus some random
+
+
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in graph\_from\_adjacency\_matrix(net\_Mspec\_): could not find function "{}graph\_from\_adjacency\_matrix"{}}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in graph\_from\_adjacency\_matrix(net\_Pspec\_): could not find function "{}graph\_from\_adjacency\_matrix"{}}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/r_ploting_network_random-1} 
+
+\end{knitrout}
+
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{FOXA1, ESR1, GATA3 a well known interaction}
+
+\begin{enumerate}
+\item FOXA1 is a key determinant of estrogen receptor function and endocrine response. Antoni Hurtado et al. 2011 (Nat. Genet.):
+
+    \rsa "FOXA1 is a key determinant that can influence differential interactions between ER and chromatin"
+
+\item GATA3 acts upstream of FOXA1 in mediating ESR1 binding by shaping enhancer accessibility. Theodorou et al. 2013 (Genome Res.)
+
+\item Estrogen receptor regulation of carbonic anhydrase XII through a distal enhancer in breast cancer.
+Barnett DH et al 2008 (Cancer Res.)
+    
+    \rsa "we show that CA12 is robustly regulated by estrogen via ER alpha in breast cancer cells"
+\end{enumerate}
+
+\end{frame}
+
+
+\part<presentation>{Extensions}
+\begin{frame}
+  \partpage
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Extensions motivated by biological data}
+
+  \begin{block}{\alert{Strengthen the inference } by}
+    \vspace{-.25cm}
+
+    \begin{itemize}
+    \item accounting for biological features
+
+      \begin{enumerate}
+      \item \alert{structure} of the network (organization of biological mechanisms)
+      \item sample \alert{heterogeneity} (structure of the population)
+      \item horizontal \alert{integration} (use multiple data and platforms)
+      \item Deal with \alert{covariates}
+      \end{enumerate}
+
+    \item accounting for data features
+
+      \begin{enumerate}
+      \item What if some \alert{important actor is missing}?
+      \item Extend to \alert{non strictly normal} distribution
+      \item Deal with a \alert{large number} of actors
+      \end{enumerate}
+    \end{itemize}
+
+  $\rightsquigarrow$ How? Essentially by crafting the regularization according to our prior knowledge
+
+  \end{block}
+
+\end{frame}
+
+\pgfdeclareimage[height=0.5\textheight]{optim}{figures/fig_optim2}
+
+\begin{frame}
+  \frametitle{General strategy}
+  \framesubtitle{Revisit ``traditional'' statistical methods under the light of optimization}
+  
+  \begin{overlayarea}{\textwidth}{\textheight}
+    
+    \begin{enumerate}
+      \item statistical problem $\leftrightarrow$ optimization problem
+          \begin{equation*}
+          \minimize_{\btheta}     L(\btheta;\textbf{data})    \quad
+          \text{s.t.} \quad \Omega(\btheta) \leq c.
+          \end{equation*}
+
+      \item  modification  of  the original  problem/regularization
+          \begin{columns}
+            \begin{column}{0.5\textwidth}
+              \begin{tikzpicture}
+                \node (surf) at (0,0) {\pgfuseimage{optim}}
+                node at (surf.west) [rotate=90,yshift=-5mm,xshift=0mm] {\footnotesize$L(\theta_1,\theta_2;\textbf{data})$}
+                node at (surf.south west) [xshift=10mm,yshift=5mm]{\footnotesize$\theta_2$}
+                node at (surf.south east) [xshift=-20mm,yshift=1mm]{\footnotesize$\theta_1$};
+              \end{tikzpicture}
+            \end{column}
+            \begin{column}{0.5\textwidth}
+              \begin{footnotesize}
+                modify $\Omega$ and/or $L$ to
+                \begin{itemize}
+                \item \footnotesize control the computational cost
+                \item \footnotesize control the model complexity
+                \item \footnotesize account for  prior knowledge
+                \end{itemize}
+                looking for
+                \begin{itemize}
+                \item[$\rightsquigarrow$] \footnotesize $\uparrow$ performance and interpretability
+                \item[$\rightsquigarrow$] \footnotesize trade-off between speed and accuracy
+                \end{itemize}
+              \end{footnotesize}
+            \end{column}
+          \end{columns}
+      \end{enumerate}
+  \end{overlayarea}
+
+\end{frame}
+
+%% account for underlying structure of the network
+\include{simone}
+
+%% account for sample heterogeneity
+\include{multitask}
+
+%% account for multivariate data
+\include{multiattribute}
+
+%% Handling count data-> Poisson Log-normal
+
+\section{Model for count data}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Motivations: oak powdery mildew pathobiome}
+
+  \begin{block}{Metabarcoding data from [JFS16]}<1->
+    \begin{itemize}
+    \item $n = 116$ leaves, $p = 114$ species ($66$ bacteria, $47$ fungies + \textit{E. alphitoides})
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{counts[}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{,} \hlnum{48}\hlopt{:}\hlnum{51}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##       f_1 f_2 f_3 f_4 E_alphitoides b_1045 b_109 b_1093
+## A1.02  72   5 131   0             0      0     0      0
+## A1.03 516  14 362   0             0      0     0      0
+## A1.04 305  24 238   0             0      0     0      0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \item $d = 8$ covariates (tree susceptibility, distance to trunk, orientation, \dots)
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{covariates[}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{, ]}
+\end{alltt}
+\begin{verbatim}
+##               tree distTOtrunk distTOground pmInfection orientation
+## A1.02 intermediate         202        155.5           1          SW
+## A1.03 intermediate         175        144.5           0          SW
+## A1.04 intermediate         168        141.5           0          SW
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \item Sampling effort in each sample (bacteria $\neq$  fungi)
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{offsets[}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{,} \hlnum{48}\hlopt{:}\hlnum{51}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##       f_1  f_2  f_3  f_4 E_alphitoides b_1045 b_109 b_1093
+## [1,] 2488 2488 2488 2488          2488   8315  8315   8315
+## [2,] 2054 2054 2054 2054          2054    662   662    662
+## [3,] 2122 2122 2122 2122          2122    480   480    480
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problematic \& Basic formalism}
+  
+  \begin{block}{Data tables: $\bY = (Y_{ij}), n \times p$;  $\bX = (X_{ik}), n \times d$; $\bO = (O_{ij}), n \times p$ where}
+    \vspace{-.25cm}
+    \begin{itemize}
+    \item $Y_{ij} = $ abundance (read counts) of species (genes) $j$ in sample $i$
+    \item $X_{ik} = $ value of covariate $k$ in sample $i$
+    \item $O_{ij} = $ offset (sampling effort) for species $j$ in sample $i$
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Need for multivariate analysis to}
+    \vspace{-.25cm}
+    \begin{itemize}
+    \item understand \emphase{between-species/genes interactions} \\
+      \rsa 'network' inference (variable/covariance selection)
+    \item correct for technical and \emphase{confounding effects} \\
+      \rsa account for covariables and sampling effort
+    \end{itemize}
+  \end{block}
+
+  \rsa need a generic framework to \alert{model dependences between count variables}
+
+\end{frame}
+
+%====================================================================
+
+\begin{frame}{Models for multivariate count data}
+
+  \begin{block}{If we were in a Gaussian world, the \alert{general linear model} would be appropriate}<1->
+    For each sample $i = 1,\dots,n$, it explains 
+    \begin{itemize}
+    \item the abundances of the $p$ species ($\bY_i$) 
+    \item by the values of the $d$ covariates $\bX_i$ and the $p$ offsets $\bO_i$
+    \end{itemize}
+    \begin{equation*}
+      \bY_i = 
+      \underbrace{\bX_i \mathbf{B}}_{\begin{tabular}{c} \text{account for} \\ \text{covariates}  \end{tabular}} 
+      + \underbrace{\bO_i}_{\begin{tabular}{c} \text{account for} \\ \text{sampling effort}  \end{tabular}}
+      \ + \bvarepsilon_i, 
+      \ \bvarepsilon_i \sim \mathcal{N}(\bzr_p, \underbrace{\bSigma}_{\begin{tabular}{c} \text{\emphase{dependence}} \\ \text{\emphase{between species}}  \end{tabular}})
+    \end{equation*}
+    \begin{itemize}
+      \item[\textcolor{mred}{+}] \only<1>{\emphase{null covariance $\Leftrightarrow$ independence \rsa uncorrelated species do not interact}}
+      \only<2>{\sout{\emphase{null covariance $\Leftrightarrow$ independence \rsa uncorrelated species do not interact}}}
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{But we are not, and there is no generic model for multivariate counts}<2>
+    \begin{itemize}
+      \item Data transformation ($\log{}, \sqrt{} $) : quick and dirty \\
+      \item Non-Gaussian multivariate distributions: do not scale to data dimension yet \\
+      \item \emphase{Latent variable models}: interaction occur in a latent (unobserved) layer\\
+    \end{itemize}
+  \end{block}
+    
+\end{frame}
+
+%====================================================================
+\begin{frame}{{P}oisson-log normal (PLN) distribution}
+
+  \begin{block}{A latent Gaussian model}<1>
+  Originally proposed by Atchisson [AiH89]
+  \[
+    \bZ_i \sim \mathcal{N}(\bzr, \boldsymbol\Sigma)
+  \]
+  \[
+    \bY_i \,|\, \bZ_i \sim \clP(\exp{\{\alert{\bO_i + \bX_i^\intercal \bB} + \bZ_i\}})
+  \]
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Interpretation}
+    \vspace{-.25cm}
+  \begin{itemize}
+   \item Dependency structure encoded in the latent space (i.e. in $\bSigma$)
+   \item Additional effects are fixed
+   \item Conditional Poisson distribution = noise model
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Properties}
+    \vspace{-.25cm}
+      \begin{itemize}
+        \item[\textcolor{green}{+}] over-dispersion
+        \item[\textcolor{green}{+}] covariance with arbitrary signs
+        \item[\textcolor{mred}{-}] maximum likelihood via EM algorithm is limited to a couple of variables
+      \end{itemize}
+  \end{block}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Geometrical view}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/PLN_geom-1} 
+
+\end{knitrout}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Our contributions}
+
+  \begin{block}{Algorithm/Numerical}
+    A variational approach coupled with convex optimization techniques suited to higher dimensional data sets.
+    
+    \paragraph{{\tt PLNmodels} R/C++-package:}  \text{\url{https://github.com/jchiquet/PLNmodels}}
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Extensions for multivariate analysis}
+     \paragraph{Idea:} put some additional constraint on the residual variance.
+      \begin{itemize}
+      \item \emphase{Network Inference} \\
+        \rsa select direct interaction in $\bSigma^{-1}$ via sparsity constraints
+        
+      \item \textcolor{gray}{\it Principal component analysis}\\
+        \textcolor{gray}{\it constraint the rank of $\bSigma$ (most important effect in the variance)}
+
+    \end{itemize}
+
+    \paragraph{Challenge:} a variant of the variational algorithm is required for each model
+  \end{block}
+
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{PLN-network: unravel important interactions}
+
+  \paragraph{Variable selection of direct effects.}
+    \begin{align*}
+      \bZ_i \text{ iid} & \sim \clN_p(\bzr_p, \bSigma), & \emphase{\|\bSigma^{-1}\|_1 \leq c} \\
+      \bY_i \,|\, \bZ_i & \sim \clP(\exp\{\bO_i + \bX_i \bbeta + \bZ_i\})
+      \end{align*}
+
+  \paragraph{Interpretation: conditional independence structure.}
+    \begin{equation*}
+      (i,j)  \notin  \mathcal{E}  \Leftrightarrow  Z_i  \indep  Z_j  |
+      Z_{\backslash \{i,j\}} \Leftrightarrow \bSigma_{ij}^{-1} = 0.
+    \end{equation*}
+
+    \begin{center}
+      \begin{tabular}{c@{\hspace{2cm}}c}
+        \begin{tabular}{c}
+          \small $\mathcal{G}=(\mathcal{P},\mathcal{E})$ \\
+          \includegraphics[width=.3\textwidth]{graph}
+        \end{tabular}
+     &
+       \begin{tabular}{c}
+         \small $\bSigma^{-1}$\\\includegraphics[width=.2\textwidth]{Markovadjacency}
+       \end{tabular}
+      \end{tabular}
+    \end{center}
+
+  \paragraph{PLN-network: find a sparse reconstruction of the latent inverse covariance}
+  
+    Iterate over variational estimator and Graphical-Lasso [BDE08,YL08,FHT07] in the latent layer
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Networks of partial correlations for oak mildew pathobiome}
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+  \hlcom{# Models with offset and covariates (tree + orientation)}
+  \hlstd{formula} \hlkwb{<-} \hlstd{counts} \hlopt{~} \hlnum{1} \hlopt{+} \hlstd{covariates}\hlopt{$}\hlstd{tree} \hlopt{+} \hlstd{covariates}\hlopt{$}\hlstd{orientation} \hlopt{+} \hlkwd{offset}\hlstd{(}\hlkwd{log}\hlstd{(offsets))}
+  \hlstd{models_PLN} \hlkwb{<-} \hlkwd{PLNnetwork}\hlstd{(formula,} \hlkwc{penalties} \hlstd{=} \hlnum{10}\hlopt{^}\hlkwd{seq}\hlstd{(}\hlkwd{log10}\hlstd{(}\hlnum{2}\hlstd{),} \hlkwd{log10}\hlstd{(}\hlnum{0.6}\hlstd{),} \hlkwc{len} \hlstd{=} \hlnum{30}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{overprint}
+  \foreach\x in{1,...,15}{
+    \includegraphics<\x>[trim={2.5cm 2.5cm 2.5cm 2.5cm},clip, width=\textwidth]{figures/plot-networks-\x}
+  }
+\end{overprint}
+
+\end{frame}
+
+\end{document}

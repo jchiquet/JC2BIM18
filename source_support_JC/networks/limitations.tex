@@ -1,0 +1,79 @@
+\subsection{Limitations of sparse GGM}
+
+\begin{frame}
+  \frametitle{Practical implications of theoretical results}
+
+  \begin{block}{Selection    consistency    (Ravikumar,    Wainwright,
+      2009-2012)}<1->                                           Denote
+    $d=\max_{j\in\mathcal{P}}(\mathrm{degree_j})$.  Consistency for an
+    appropriate $\lambda$ and
+    \begin{itemize}
+    \item  $n\approx\mathcal{O}(d^2\log(p))$ for  the graphical  Lasso
+      and Clime.
+    \item $n\approx\mathcal{O}(d\log(p))$  for   neighborhood
+      selection (sharp).
+    \end{itemize}
+    \textit{(Irrepresentability) conditions are not strictly
+    comparable\dots}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Ultra high-dimension phenomenon (Verzelen,  2011)}<2>
+    Minimax risk for sparse regression with $d$-sparse models: useless
+    when
+    \begin{equation*}
+    \frac{d \log(p/d)}{n} \geq 1/2, \qquad (\mathrm{e.g.}, n=50, p=200, d\geq 8).
+    \end{equation*}
+    \textit{Good news! when $n$ is small, we don't need to solve
+      huge problems because they can't but fail.}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Model selection}
+  
+  \begin{block}{Cross-validation}
+    Optimal in terms of \alert{prediction}, not in terms of selection
+  \end{block}
+
+  \begin{block}{Information based criteria}
+    \begin{itemize}
+    \item GGMSelect (Girault \textit{et al}, '12) selects among a family of candidates.
+    \item Adapt IC to sparse high dimensional problems, e.g.
+    \begin{equation*}
+      \text{EBIC}_\gamma(\widehat{{\boldsymbol\Theta}}_\lambda)  =   -2 \textrm{loglik}
+      (\widehat{{\boldsymbol\Theta}}_\lambda;\bX) + |\mathcal{E}_\lambda| (\log(n) + 4 \gamma \log(p) ),
+    \end{equation*}
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Resampling/subsampling}
+    \alert{Keep edges frequently selected} on an range of $\lambda$ after sub-samplings
+    \begin{itemize}
+    \item Stability Selection (Meinshausen and B\"uhlman, 2010, Bach 2008)
+    \item Stability approach to Regularization Selection (StaRS) (Liu, 2010).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Concluding remark about GGM}
+
+    \begin{block}{Sparse GGM}
+    \begin{itemize}
+      \item[\textcolor{green}{$+$}]     very     solid
+      \alert{statistical} and \alert{computational} framework
+      \item[\textcolor{green}{$+$}] \alert{competitive}  to other inference
+        methods (DREAM 5 benchmark, 2012)
+      \item[\textcolor{red}{$-$}]        performances        remain
+        \alert{questionable on real data}, as for other methods
+      \end{itemize}
+    \end{block}
+
+    \rsa Network inference is a very difficult problem
+
+    \rsa Some biological questions can be answered without network inference
+
+\end{frame}

@@ -1,11 +1,9 @@
-\documentclass{beamer}
+\documentclass[10pt, c, xcolor=x11names]{beamer}
 
 \def\currentChapter{Variable Selection and Regularization}
 
 <<preamble, child='../common_preamble.Rnw'>>=
 @
-
-\definecolor{genecolor}{RGB}{94,135,173}
 
 <<echo=FALSE, message=FALSE>>=
 rm(list=ls())

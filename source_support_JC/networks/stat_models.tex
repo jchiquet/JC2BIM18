@@ -1,0 +1,489 @@
+\section{Gaussian Graphical Models for genomic data}
+
+\subsection{Steady-state data}
+
+\begin{frame}
+  
+  \frametitle{Steady-state data: scheme}
+  
+  \pgfdeclareimage[width=.2\textwidth]{microarray}{figures/puce}
+
+  \vfill
+
+  \begin{tikzpicture}
+      %% LES DONNES
+        
+    \tikzstyle{every edge}=[->,shorten >=1pt,auto,thin,draw]
+    \node[opacity=.75] (m0) at (-3,1.5) {\pgfuseimage{microarray}};
+    \node[opacity=.9] (m1) at (-2.75,1.25) {\pgfuseimage{microarray}};
+    \node[opacity=.95] (m2) at (-2.5,1) {\pgfuseimage{microarray}};
+    \node at (-2.25,0.75) (m3) {\pgfuseimage{microarray}};
+    
+    \node at (-2.5,-1) {\begin{tabular}{@{}c@{}}
+        \sf \scriptsize $\approx$ 10s microarrays over time\\ 
+        \sf \scriptsize $\approx $ 1000s probes (``genes'') \\
+     \end{tabular}
+    };
+    \node[fill=red, text=white,single arrow] 
+    (inference) at (0,1) {\sf \scriptsize Inference}; 
+    
+    
+    %% UN GRAPH 
+    \tikzstyle{every edge}=[-,>=stealth',shorten >=1pt,auto,thin,draw]
+    \tikzstyle{every node}=[fill=orange!70!white]
+    \tikzstyle{every state}=[draw=none,text=white,scale=0.5, transform shape] 
+    
+    \node[fill=white] at (4.5,-1) {\sf \scriptsize Which interactions?};
+    
+    % premier cluster
+    \node[state] (A1) at (2.5,1.75) {};
+    \node[state] (A2) at (3.5,0.75) {};
+    \node[state] (A3) at (2.5,-.25) {};
+    \node[state] (A4) at (1.5,0.75) {};
+    \node[state] (A5) at (2.5,0.75) {};
+    
+    % second cluster
+    \foreach   \name/\angle/\text   in  {B1/234/G3,   B2/162/G4,
+      B3/90/G5, B4/18/G6, B5/-54/G7} {
+      \node[state,xshift=10cm,yshift=4cm]     (\name)    at
+      (\angle:1cm) {}; }
+    \node[state] (B6) at (5,2) {};
+    
+    % troisime cluster
+    \node[state] (C1) at (6,0.5) {};
+    \node[state] (C2) at (5.2,0) {};
+    
+    % intra cluster edges
+    \path (A5) edge [bend left] (A1);
+    \path (A5) edge [bend left] (A2);
+    \path (A5) edge [bend left] (A3);
+    \path (A5) edge [bend left] (A4);
+    
+    \path (B6) edge [bend right] (B1); 
+    \path (B6) edge [bend right] (B2); 
+    \path (B6) edge [bend right] (B3); 
+    \path (B6) edge [bend right] (B4); 
+    \path (B6) edge [bend right] (B5); 
+    
+    \path (C2) edge [bend left] (C1);
+    % inter cluster edges
+    \path (A5) edge [bend left] (B6)
+    (B6) edge [bend right] (C2);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modeling the underlying distribution (1)}
+  
+  \begin{block}{Model for data generation}
+    \begin{itemize}
+    \item A  microarray   can  be  represented  as   a  multivariate  vector
+      $X=(X_1,\dots,X_p)\in\mathbb{R}^p$,
+    \item  Consider $n$  biological replicate  in the  same condition,
+      which forms a usual $n$-size sample $(X_1,\dots,X_n)$.
+    \end{itemize}
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Consequence: a Gaussian Graphical Model}<2>
+    \begin{itemize}
+    \item   $X\sim\mathcal{N}(\boldsymbol\mu,\boldsymbol\Sigma)$  with
+      $X_1,\dots,X_n$ \alert{i.i.d.} copies of $X$,
+    \item    $\boldsymbol\Theta    =   (\theta_{ij})_{i,j\in\mathcal{P}}
+      \triangleq     {\boldsymbol\Sigma}^{-1}$    is     called    the
+      \alert{concentration matrix}.
+    \end{itemize}
+  \end{block}
+\end{frame}
+  
+  \begin{frame}
+  \frametitle{Modeling the underlying distribution (2)}
+  \framesubtitle{Interpretation as a GGM}
+
+  \begin{block}{Multivariate Gaussian vector and covariance selection}
+    \begin{equation*}
+      -\frac{\theta_{ij}}{\sqrt{\theta_{ii}\theta_{jj}}}
+      =  \mathrm{cor}\left(X_i,X_j|   X_{\mathcal{P}\backslash  i,  j}
+      \right) = \rho_{ij|\mathcal{P}\backslash\{i,j\}},
+    \end{equation*}
+  \end{block}
+
+  \vfill
+  
+  \onslide<2->{%
+    \begin{block}{Graphical Interpretation}
+      $\rightsquigarrow$                   The                  matrix
+      $\boldsymbol\Theta=(\theta_{ij})_{i,j\in\mathcal{P}}$  encodes the
+      network $\mathcal{G}$ we are looking for.
+    
+      \begin{scriptsize}
+        \begin{tikzpicture}
+          %% LES DONNÉES
+          \node     at     (5,0)     {\begin{tabular}{@{}c@{}}     \sf
+              \alert<2>{conditional} dependency between
+              $X_{j}$ and $X_i $\\
+              or\\
+              non-null partial correlation between $X_{j}$ and $X_i $\\
+              $\Updownarrow$ \\
+              $\theta_{ij} \neq 0$\\
+            \end{tabular}
+          };
+        
+          \node[fill=red,double  arrow,text=white]  at  (0,0) {if  and
+            only if};
+        
+          %% UN GRAPH
+          \tikzstyle{every                  state}=[fill=gray!60!white,
+          draw=none,text=black,scale=0.75, transform shape]
+          \tikzstyle{every edge}=[-,>=stealth',shorten >=1pt,auto,thin,draw]
+          
+          % troisième cluster
+          \node[state] (C1)  at (-2,0.25) {$i$};  \node[state] (C2) at
+          (-3,-0.25) {$j$};
+        
+          \path (C2) edge [bend left] node [above right] {?}  (C1);
+        
+        \end{tikzpicture}
+      \end{scriptsize}
+    \end{block}
+  }
+\end{frame}
+
+\subsection{Time-course data}
+
+\begin{frame}
+  
+  \frametitle{Time-course data: scheme}
+
+  \pgfdeclareimage[width=.2\textwidth]{microarray}{figures/puce}
+
+  \vfill
+
+  \begin{tikzpicture}
+      %% LES DONNES
+        
+    \tikzstyle{every edge}=[->,shorten >=1pt,auto,thin,draw]
+    \node[opacity=.75] (m0) at (-3,1.5) {\pgfuseimage{microarray}};
+    \node[opacity=.9] (m1) at (-2.75,1.25) {\pgfuseimage{microarray}};
+    \node[opacity=.95] (m2) at (-2.5,1) {\pgfuseimage{microarray}};
+    \node at (-2.25,0.75) (m3) {\pgfuseimage{microarray}};
+    
+    \draw (m0) node[xshift=-1.75cm,yshift =-.6cm] {$t_0$};
+    \draw (m1) node[xshift=-1.7cm,yshift =-.65cm] {$t_1$};
+    \draw (m2) node[xshift=-1.65cm,yshift =-.7cm] {};
+    \draw (m3) node[xshift=-1.6cm,yshift =-.75cm] {$t_n$};
+    \path[->] (-4.6,1) edge (-3.4,-.15);
+
+    
+    \node at (-2.5,-1) {\begin{tabular}{@{}c@{}}
+        \sf \scriptsize $\approx$ 10s microarrays over time\\ 
+        \sf \scriptsize $\approx $ 1000s probes (``genes'') \\
+     \end{tabular}
+    };
+    \node[fill=red, text=white,single arrow] 
+    (inference) at (0,1) {\sf \scriptsize Inference}; 
+    
+    
+    %% UN GRAPH 
+    \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+    \tikzstyle{every node}=[fill=orange!70!white]
+    \tikzstyle{every state}=[draw=none,text=white,scale=0.5, transform shape] 
+    
+    \node[fill=white] at (4.5,-1) {\sf \scriptsize Which interactions?};
+    
+    % premier cluster
+    \node[state] (A1) at (2.5,1.75) {};
+    \node[state] (A2) at (3.5,0.75) {};
+    \node[state] (A3) at (2.5,-.25) {};
+    \node[state] (A4) at (1.5,0.75) {};
+    \node[state] (A5) at (2.5,0.75) {};
+    
+    % second cluster
+    \foreach   \name/\angle/\text   in  {B1/234/G3,   B2/162/G4,
+      B3/90/G5, B4/18/G6, B5/-54/G7} {
+      \node[state,xshift=10cm,yshift=4cm]     (\name)    at
+      (\angle:1cm) {}; }
+    \node[state] (B6) at (5,2) {};
+    
+    % troisime cluster
+    \node[state] (C1) at (6,0.5) {};
+    \node[state] (C2) at (5.2,0) {};
+    
+    % intra cluster edges
+    \path (A5) edge [bend left] (A1);
+    \path (A5) edge [bend left] (A2);
+    \path (A5) edge [bend left] (A3);
+    \path (A5) edge [bend left] (A4);
+    
+    \path (B6) edge [bend right] (B1); 
+    \path (B6) edge [bend right] (B2); 
+    \path (B6) edge [bend right] (B3); 
+    \path (B6) edge [bend right] (B4); 
+    \path (B6) edge [bend right] (B5); 
+    
+    \path (C2) edge [bend left] (C1);
+    % inter cluster edges
+    \path (A5) edge [bend left] (B6)
+    (B6) edge [bend right] (C2);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Modeling time-course data with DAG}
+  
+  \begin{block}{Collecting gene expression}
+    \begin{enumerate}
+    \item Follow-up of one single experiment/individual; 
+    \item Close enough time-points to ensure 
+      \begin{itemize}
+      \item \alert<2>{dependency} between consecutive measurements;
+      \item \alert<3>{homogeneity} of the Markov process.
+      \end{itemize}
+    \end{enumerate}
+  \end{block}
+  
+  % \vfill
+  
+  \begin{overlayarea}{\textheight}{\textwidth}
+    \only<1,2>{
+   %   \begin{center}
+      \begin{tikzpicture}
+        \tikzstyle{every state}=[fill=orange!80!white,
+        draw=none,text=black,scale=0.7]
+        \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+        
+        \node (x1) [state] at (0,0) {$X_1$};
+        \node (x2) [state] at (1,-1) {$X_2$};
+        \node (x3) [state] at (-1,-1) {$X_3$};
+        \node (x4) [state] at (0,1.5) {$X_4$};
+        \node (x5) [state] at (2.5,-1) {$X_5$};
+        \path[->,=< stealth] 
+        (x1) edge[bend right] (x2)
+        (x1) edge (x3)
+        (x1) edge (x4)
+        (x2) edge (x5)
+        (x2) edge[bend right] (x1);
+       
+        \onslide<2>{
+          \node at (4,0) {stands for}; 
+      %    \node at (4,0) {stands for};
+        % First line:
+        \node (x_11) [state] at (6,2) {$\mathbf{X}^{t}_1$}; 
+        \node (x_12) [state] at (8,2) {$\mathbf{X}^{t+1}_1$}; 
+        % Second line: 
+        \node (x_21) [state] at (6,1) {$\mathbf{X}^{t}_2$}; 
+        \node (x_22) [state] at (8,1) {$\mathbf{X}^{t+1}_2$}; 
+       % Third line: 
+       \node (x_32) [state] at (8,0) {$\mathbf{X}^{t+1}_3$}; 
+       % Fourth line:
+       \node (x_42) [state] at (8,-1) {$\mathbf{X}^{t+1}_4$}; 
+       \node (x_g1) at (6.5,-1) {\LARGE $\mathcal{G}$};    
+        % Fifth line:
+       \node (x_52) [state] at (8,-2) {$\mathbf{X}^{t+1}_5$};        
+        \path[->] 
+        (x_11) edge (x_22)
+        (x_11) edge (x_32)
+        (x_11) edge (x_42)
+        (x_21) edge (x_52)
+        (x_21) edge (x_12);
+        }
+      \end{tikzpicture}
+ %     \end{center}
+    }
+    \only<3>{
+      \centering
+      \begin{tikzpicture}
+        \tikzstyle{every state}=[fill=orange!80!white,
+        draw=none,text=black,scale=0.7]
+        \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+        % First line:
+        \node (x_11) [state] at (-5,2) {$\mathbf{X}^{t}_1$}; 
+        \node (x_12) [state] at (-2,2) {$\mathbf{X}^2_1$}; 
+        \node (x_13) [state] at (1,2) {$\dots$};
+        \node (x_14) [state] at (4,2) {$\mathbf{X}^{n}_1$};
+        % Second line: 
+        \node (x_21) [state] at (-5,1) {$\mathbf{X}^{1}_2$}; 
+        \node (x_22) [state] at (-2,1) {$\mathbf{X}^{2}_2$}; 
+        \node (x_23) [state] at (1,1) {$\dots$}; 
+        \node (x_24) [state] at (4,1) {$\mathbf{X}^{n}_2$}; 
+        % Third line: 
+        \node (x_31) [state] at (-5,0) {$\mathbf{X}^{1}_3$};
+        \node (x_32) [state] at (-2,0) {$\mathbf{X}^{2}_3$}; 
+        \node (x_33) [state] at (1,0) {$\dots$}; 
+        \node (x_34) [state] at (4,0) {$\mathbf{X}^{n}_3$}; 
+        % Fourth line:
+        \node (x_41) [state] at (-5,-1) {$\mathbf{X}^{1}_4$};
+        \node (x_42) [state] at (-2,-1) {$\mathbf{X}^{2}_4$}; 
+        \node (x_43) [state] at (1,-1) {$\dots$}; 
+        \node (x_44) [state] at (4,-1) {$\mathbf{X}^{n}_4$};
+        \node (x_g1) at (-3.5,-1.5) {\LARGE $\mathcal{G}$};
+        \node (x_g2) at (-.5,-1.5) {\LARGE $\mathcal{G}$}; 
+        \node (x_g3) at (2.5,-1.5) {\LARGE $\mathcal{G}$};
+        
+        % Fifth line:
+        \node (x_51) [state] at (-5,-2) {$\mathbf{X}^{1}_5$};
+        \node (x_52) [state] at (-2,-2) {$\mathbf{X}^{2}_5$}; 
+        \node (x_53) [state] at (1,-2) {$\dots$};
+        \node (x_54) [state] at (4,-2) {$\mathbf{X}^{n}_5$};
+        
+        \path[->] 
+        (x_11) edge (x_22)
+        (x_11) edge (x_32)
+        (x_11) edge (x_42)
+        (x_21) edge (x_52)
+        (x_21) edge (x_12);
+        
+        \path[->]
+        (x_12) edge (x_23)
+        (x_12) edge (x_33)
+        (x_12) edge (x_43)
+        (x_22) edge (x_53)
+        (x_22) edge (x_13)
+
+        (x_13) edge (x_24)
+        (x_13) edge (x_34)
+        (x_13) edge (x_44)
+        (x_23) edge (x_54)
+        (x_23) edge (x_14);
+      \end{tikzpicture}
+    }
+
+  \end{overlayarea}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{DAG: remark}
+
+  \begin{center}
+    \begin{tikzpicture}
+      \tikzstyle{every state}=[fill=orange!80!white,draw=none,text=black,scale=0.7]
+      \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+      
+      \node (x1) [state] at (0,0) {$X^1$};
+      \node (x2) [state] at (1,-1) {$X^2$};
+      \node (x3) [state] at (-1,-1) {$X^3$};
+      \node (x4) [state] at (0,1.5) {$X^4$};
+      \node (x5) [state] at (2.5,-1) {$X^5$};
+      \node (rem1) at (0,-3) {Argh, there is a cycle :'(};
+
+      \path[->,=< stealth] 
+      (x1) edge[bend right] (x2)
+      (x1) edge (x3)
+      (x1) edge (x4)
+      (x2) edge (x5)
+      (x2) edge[bend right] (x1);
+       
+      \node at (4,0) {versus}; 
+      % First line:
+      \node (x_11) [state] at (6,2) {$\mathbf{X}_{t}^1$}; 
+      \node (x_12) [state] at (8,2) {$\mathbf{X}_{t+1}^1$}; 
+      % Second line: 
+      \node (x_21) [state] at (6,1) {$\mathbf{X}_{t}^2$}; 
+      \node (x_22) [state] at (8,1) {$\mathbf{X}_{t+1}^2$}; 
+      % Third line: 
+      \node (x_32) [state] at (8,0) {$\mathbf{X}_{t+1}^3$}; 
+      % Fourth line:
+      \node (x_42) [state] at (8,-1) {$\mathbf{X}_{t+1}^4$}; 
+      \node (x_g1) at (6.5,-1) {\LARGE $\mathcal{G}$};    
+      % Fifth line:
+      \node (x_52) [state] at (8,-2) {$\mathbf{X}_{t+1}^5$};        
+      \node (rem2) at (7,-3) {is indeed a DAG};
+
+      \path[->] 
+      (x_11) edge (x_22)
+      (x_11) edge (x_32)
+      (x_11) edge (x_42)
+      (x_21) edge (x_52)
+      (x_21) edge (x_12);
+    \end{tikzpicture}
+  \end{center}
+
+  $\rightsquigarrow$ Overcomes the rather restrictive acyclic requirement
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modeling the underlying distribution (1)}
+  
+  \begin{block}{Model for data generation}
+    A  microarray   can  be  represented  as   a  multivariate  vector
+    $X=(X_1,\dots,X_p)\in\mathbb{R}^p$,  generated  through a
+    \alert{first order vector autoregressive} process $VAR(1)$:
+    \begin{equation*}
+      X^{t}   =   \boldsymbol\Theta   X^{t-1}   +   \mathbf{b}   +
+      \boldsymbol\varepsilon^{t},\quad t \in [1,n]
+    \end{equation*}
+    where  $\varepsilon^{t}$ is  a white  noise to  ensure  the Markov
+    property and $X^{0} \sim \mathcal{N}(0, \boldsymbol\Sigma^0)$.
+  \end{block}
+
+   \vfill
+ 
+   \begin{block}{Consequence: a Gaussian Graphical Model}<2>
+     \begin{itemize}
+     \item        Each       $X^{t}        |        X^{t-1}       \sim
+       \mathcal{N}(\mathbf{\theta}X^{t-1}, \boldsymbol\Sigma)$, 
+     \item  or,  equivalently,  $X_j^{t}  |  X^{t-1}  \sim
+       \mathcal{N}(\boldsymbol\Theta_jX^{t-1}, \boldsymbol\Sigma)$
+     \end{itemize}
+     where $\boldsymbol\Sigma$ is known and $\boldsymbol\Theta_j$ is the
+     $j$th row of $\boldsymbol\Theta$.
+   \end{block}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{Modeling the underlying distribution (2)}
+  \framesubtitle{Interpretation as a GGM}
+
+  \begin{block}{The VAR(1) as a covariance selection model}
+    \begin{equation*}
+      \theta_{ij} = \frac{\mathrm{cov}\left(X^t_i,X^{t-1}_j|
+          X^{t-1}_{\mathcal{P}\backslash j} \right)} 
+      {\mathrm{var}\left(      X^{t-1}_j|X^{t-1}_{\mathcal{P}\backslash
+            j}\right)},
+    \end{equation*}
+  \end{block}
+
+  \vfill
+  
+  \onslide<2->{%
+    \begin{block}{Graphical Interpretation}
+      $\rightsquigarrow$                   The                  matrix
+      $\boldsymbol\Theta=(\theta_{ij})_{i,j\in\mathcal{P}}$  encodes the
+      network $\mathcal{G}$ we are looking for.
+    
+      \begin{scriptsize}
+        \begin{tikzpicture}
+          %% LES DONNÉES
+          \node     at     (5,0)     {\begin{tabular}{@{}c@{}}     \sf
+              \alert<2>{conditional} dependency between
+              $X^{t-1}_{j}$ and $X^{t}_i $\\
+              or\\
+              non-null partial correlation between $X^{t-1}_{j}$ and $X^{t}_i $\\
+              $\Updownarrow$ \\
+              $\theta_{ij} \neq 0$\\
+            \end{tabular}
+          };
+        
+          \node[fill=red,double  arrow,text=white]  at  (0,0) {if  and
+            only if};
+        
+          %% UN GRAPH
+          \tikzstyle{every                  state}=[fill=gray!60!white,
+          draw=none,text=black,scale=0.75, transform shape]
+          \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+          
+          % troisième cluster
+          \node[state] (C1)  at (-2,0.25) {$i$};  \node[state] (C2) at
+          (-3,-0.25) {$j$};
+        
+          \path (C2) edge [bend left] node [above right] {?}  (C1);
+        
+        \end{tikzpicture}
+      \end{scriptsize}
+    \end{block}
+  }
+\end{frame}
+

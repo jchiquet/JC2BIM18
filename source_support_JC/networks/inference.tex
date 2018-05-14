@@ -1,0 +1,156 @@
+\section{Network inference with GGM}
+
+\begin{frame}
+  \frametitle{Some families of methods for network reconstruction}
+
+  \begin{block}{Test-based methods}
+    \begin{itemize}
+    \item Tests the nullity of each entries 
+    \item Combinatorial problem when $p>30$ \dots
+    \end{itemize}    
+  \end{block}
+  
+  \vfill
+
+  \begin{block}{\alert{Sparsity-inducing regularization methods}}
+    \begin{itemize}
+    \item induce sparsity with the $\ell_1$-norm penalization
+    \item Use results from convex optimization
+    \item Versatile and computationally efficient
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Bayesian methods}
+    \begin{itemize}
+    \item Compute the posterior probability of each edge
+    \item Usually more computationally demanding
+    \item For special graphs, computation gets easier
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\subsection{Inducing sparsity for edge selection}
+
+\begin{frame}
+  \frametitle{Inference: maximum likelihood estimator}
+  \framesubtitle{The natural approach for parametric statistics}
+  
+  Let   $X$  be  a   random  vector   with  distribution   defined  by
+  $f_{X}(x;\boldsymbol\Theta)$,  where   $\boldsymbol\Theta$  are  the
+  model parameters.
+
+  \vfill
+
+  \begin{block}{Maximum likelihood estimator}
+    \begin{equation*}
+      \hat{\boldsymbol\Theta}      =      \argmax_{\boldsymbol\Theta}
+      \ell(\boldsymbol\Theta; \mathbf{X})
+    \end{equation*} 
+    where  $\ell$ is  the log  likelihood, a  function  of the
+    parameters:
+    \begin{equation*}
+      \ell(\boldsymbol\Theta;      \mathbf{X})      =     \log
+      \prod_{i=1}^n f_{X}(\mathbf{x}_i;\boldsymbol\Theta),
+    \end{equation*}
+    where $\mathbf{x}_i$ is the $i$th row of $\mathbf{X}$.
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Remarks}
+    \begin{itemize}
+    \item This a convex optimization problem,
+    \item We just need to detect non zero coefficients in $\boldsymbol\Theta$
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{The multivariate Gaussian log-likelihood }
+  
+  Let  $\mathbf{S}  =  n^{-1}\mathbf{X}^\intercal \mathbf{X}$  be  the
+  empirical variance-covariance  matrix: $\mathbf{S}$ is  a sufficient
+  statistic of $ \boldsymbol\Theta$.
+
+  \vfill
+
+  \begin{block}{The log-likelihood}
+    \begin{equation*}
+      \ell(\boldsymbol\Theta; \mathbf{S}) =
+      \frac{n}{2}     \log    \det     (\boldsymbol\Theta)  - \frac{n}{2}
+      \mathrm{Trace}(\mathbf{S} \boldsymbol\Theta) + \frac{n}{2}\log(2\pi).
+    \end{equation*}
+  \end{block}
+  
+  \vfill
+  
+  \begin{itemize}
+  \item[$\rightsquigarrow$]    The     MLE    $=\mathbf{S}^{-1}$    of
+    $\boldsymbol\Theta$ is not defined for $n< p$ and never sparse.
+  \item[$\rightsquigarrow$] The need for regularization is huge.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Application to GGM: the "Graphical-Lasso"} 
+
+  \begin{block}{A penalized likelihood approach}
+    \vspace{-1em}
+    \begin{equation*}
+      \hat{\bTheta}_\lambda=\argmax_{\bTheta \in \mathbb{S}_+}
+      \ell(\bTheta;\mathbf{X})-\lambda
+      \|\bTheta\|_{\ell_1}
+    \end{equation*}
+  where
+  \begin{itemize}
+  \item $\mathcal{\ell}$ is the model log-likelihood,
+  \item $\|\cdot\|_{\ell_1}$ is a \alert{penalty function} tuned by
+    $\lambda>0$. 
+    \vfill
+      \begin{enumerate}
+      \item \textit{regularization} (needed when $n \ll p$), 
+      \item \textit{selection} (sparsity induced by the $\ell_1$-norm),
+      \end{enumerate}
+    \item     solved    in     \texttt{R}-packages    \textbf{glasso},
+      \textbf{quic}, \textbf{huge} ($\mathcal{O}(p^3)$)
+  \end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Application to GGM: "Neighborhood selection"} 
+
+  A close cousin, thank to the relationship between Gaussian vector and linear regression
+  
+  \textcolor{gray}{
+  Remember that
+  \begin{equation*}
+    X_i | X_{ \setminus i} = \sum_{\alert{j \in \text{neighbors}(i)}} \beta_j X_j + \varepsilon_i
+    \quad         \text{with         }         \beta_j         =
+    -\frac{\Theta_{ij}}{\Theta_{ii}}.
+  \end{equation*}
+  }
+  
+  \begin{block}{A penalized least-square approach}
+    Let $\bX_i$ be the $i$th column of the data matrix (i.e data associated to variable (gene) $i$), and $\bX_{\backslash i}$ deprived of colmun $i$. We select the neighbors of variable $i$ by solving
+    \begin{equation*}
+      \widehat{\boldsymbol\beta}^{(i)} = \argmin_{\boldsymbol\beta \in \mathbb{R}^{p-1} }
+      \frac{1}{n} \left\| \mathbf{X}_i - \mathbf{X}_{\backslash i} \,
+        {\boldsymbol\beta} \right\|_2^2 + \lambda \left\| {\boldsymbol\beta} \right\|_{1}
+    \end{equation*}
+
+    \begin{itemize}
+    \item[\textcolor{red}{$-$}] not symmetric, not positive-definite
+    \item[\textcolor{green}{$+$}] $p$
+      Lasso solved with Lars-like algorithms ($\mathcal{O}(npd)$ for $d$ neighbors).
+    \end{itemize}
+
+\end{block}
+
+\end{frame}
+

@@ -1,9 +1,7 @@
 % THEME BEAMER
+\usepackage{../themeJC2BIM}
 
-\usetheme{teaching}
-\usefonttheme[onlymath]{serif}
 \graphicspath{{figures/},{../common_figs/}}
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{tikz}
 \usetikzlibrary{calc,shapes,backgrounds,arrows,automata,shadows,positioning}
 \tikzstyle{every state}=[fill=red,draw=none,scale=0.7,font=\small,text=white]

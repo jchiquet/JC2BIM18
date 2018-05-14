@@ -1,0 +1,167 @@
+\documentclass[10pt, c, xcolor=x11names]{beamer}
+
+\def\currentChapter{Biological Network Inference with Sparse Graphical Models}
+
+<<preamble, child='../common_preamble.Rnw'>>=
+@
+
+\usepackage{hhline}
+
+<<echo=FALSE>>=
+rm(list=ls())
+@
+
+\pgfdeclareimage[width=.3\textwidth]{affymetrix}{../common_figs/tech_affy}
+\pgfdeclareimage[width=.18\textwidth]{microarray}{../common_figs/data_affy}
+\pgfdeclareimage[width=.18\textwidth]{sequencer}{../common_figs/tech_ngs}
+\pgfdeclareimage[width=.25\textwidth]{ngs}{../common_figs/data_ngs}
+\pgfdeclareimage[width=.3\textwidth]{computer}{../common_figs/computer}
+
+\begin{document}
+
+\part<presentation*>{Introduction}
+
+\dotitlepage
+
+\dotoc
+
+\include{motivations}
+
+\begin{frame}
+  \frametitle{Outline}
+
+  \begin{enumerate}
+  \item[Part 1] \alert{Framework}\\
+    \textit{Gaussian graphical models and sparse regularization techniques}\bigskip
+
+  \item[Part 2] \alert{Extensions}\\
+    \textit{Extensions of these methods for omic data analyses}\bigskip
+
+  \end{enumerate}
+\end{frame}
+
+\AtBeginSection[]{
+  \begin{frame}<handout:0>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\part<presentation>{sparse Gaussian Graphical Models}
+\begin{frame}
+  \partpage
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+ 
+\include{ggm}
+
+\include{inference}
+
+\include{limitations}
+
+%% simple simu GGM
+<<huge, child='huge_basics.Rnw'>>=
+@
+
+\part<presentation>{Extensions}
+\begin{frame}
+  \partpage
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Extensions motivated by biological data}
+
+  \begin{block}{\alert{Strengthen the inference } by}
+    \vspace{-.25cm}
+
+    \begin{itemize}
+    \item accounting for biological features
+
+      \begin{enumerate}
+      \item \alert{structure} of the network (organization of biological mechanisms)
+      \item sample \alert{heterogeneity} (structure of the population)
+      \item horizontal \alert{integration} (use multiple data and platforms)
+      \item Deal with \alert{covariates}
+      \end{enumerate}
+
+    \item accounting for data features
+
+      \begin{enumerate}
+      \item What if some \alert{important actor is missing}?
+      \item Extend to \alert{non strictly normal} distribution
+      \item Deal with a \alert{large number} of actors
+      \end{enumerate}
+    \end{itemize}
+
+  $\rightsquigarrow$ How? Essentially by crafting the regularization according to our prior knowledge
+
+  \end{block}
+
+\end{frame}
+
+\pgfdeclareimage[height=0.5\textheight]{optim}{figures/fig_optim2}
+
+\begin{frame}
+  \frametitle{General strategy}
+  \framesubtitle{Revisit ``traditional'' statistical methods under the light of optimization}
+  
+  \begin{overlayarea}{\textwidth}{\textheight}
+    
+    \begin{enumerate}
+      \item statistical problem $\leftrightarrow$ optimization problem
+          \begin{equation*}
+          \minimize_{\btheta}     L(\btheta;\textbf{data})    \quad
+          \text{s.t.} \quad \Omega(\btheta) \leq c.
+          \end{equation*}
+
+      \item  modification  of  the original  problem/regularization
+          \begin{columns}
+            \begin{column}{0.5\textwidth}
+              \begin{tikzpicture}
+                \node (surf) at (0,0) {\pgfuseimage{optim}}
+                node at (surf.west) [rotate=90,yshift=-5mm,xshift=0mm] {\footnotesize$L(\theta_1,\theta_2;\textbf{data})$}
+                node at (surf.south west) [xshift=10mm,yshift=5mm]{\footnotesize$\theta_2$}
+                node at (surf.south east) [xshift=-20mm,yshift=1mm]{\footnotesize$\theta_1$};
+              \end{tikzpicture}
+            \end{column}
+            \begin{column}{0.5\textwidth}
+              \begin{footnotesize}
+                modify $\Omega$ and/or $L$ to
+                \begin{itemize}
+                \item \footnotesize control the computational cost
+                \item \footnotesize control the model complexity
+                \item \footnotesize account for  prior knowledge
+                \end{itemize}
+                looking for
+                \begin{itemize}
+                \item[$\rightsquigarrow$] \footnotesize $\uparrow$ performance and interpretability
+                \item[$\rightsquigarrow$] \footnotesize trade-off between speed and accuracy
+                \end{itemize}
+              \end{footnotesize}
+            \end{column}
+          \end{columns}
+      \end{enumerate}
+  \end{overlayarea}
+
+\end{frame}
+
+%% account for underlying structure of the network
+\include{simone}
+
+%% account for sample heterogeneity
+\include{multitask}
+
+%% account for multivariate data
+\include{multiattribute}
+
+%% Handling count data-> Poisson Log-normal
+<<sparse_PLN, child='PLNnetworks.Rnw'>>=
+@
+
+\end{document}

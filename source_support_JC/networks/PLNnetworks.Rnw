@@ -1,0 +1,276 @@
+\section{Model for count data}
+
+<<echo=FALSE>>=
+library(ggplot2)
+load("~/svn/sparsepca/Data/OTU/oaks.RData")
+counts <- Data$count      # species count (fungal + bacterial)
+covariates <- Data$covariates
+# Code for trees
+covariates$treeStatus = rep('', length(covariates$tree))
+covariates$treeStatus[which(covariates$tree==1)] = 'intermediate'
+covariates$treeStatus[which(covariates$tree==2)] = 'susceptible'
+covariates$treeStatus[which(covariates$tree==3)] = 'resistant'
+covariates$treeStatus = as.factor(covariates$treeStatus)
+covariates$tree = covariates$treeStatus
+covariates$treeStatus <- NULL
+covariates <- covariates[, -c(2, 3, 4)] # tree, orientation, etc.
+offsets <- Data$offset     # median counts per sample (fungal + bacterial)
+colnames(offsets) <- colnames(counts)
+@
+
+\begin{frame}[fragile]
+  \frametitle{Motivations: oak powdery mildew pathobiome}
+
+  \begin{block}{Metabarcoding data from [JFS16]}<1->
+    \begin{itemize}
+    \item $n = 116$ leaves, $p = 114$ species ($66$ bacteria, $47$ fungies + \textit{E. alphitoides})
+    << PLN_oaks_data1, echo = TRUE>>=
+counts[1:3, c(1:4, 48:51)]
+@
+    \item $d = 8$ covariates (tree susceptibility, distance to trunk, orientation, \dots)
+<< PLN_oaks_data2, echo=TRUE, eval=TRUE>>=
+covariates[1:3, ]
+@
+    \item Sampling effort in each sample (bacteria $\neq$  fungi)
+<< PLN_oaks_data3, echo=TRUE, eval=TRUE>>=
+offsets[1:3, c(1:4, 48:51)]
+@
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problematic \& Basic formalism}
+  
+  \begin{block}{Data tables: $\bY = (Y_{ij}), n \times p$;  $\bX = (X_{ik}), n \times d$; $\bO = (O_{ij}), n \times p$ where}
+    \vspace{-.25cm}
+    \begin{itemize}
+    \item $Y_{ij} = $ abundance (read counts) of species (genes) $j$ in sample $i$
+    \item $X_{ik} = $ value of covariate $k$ in sample $i$
+    \item $O_{ij} = $ offset (sampling effort) for species $j$ in sample $i$
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Need for multivariate analysis to}
+    \vspace{-.25cm}
+    \begin{itemize}
+    \item understand \emphase{between-species/genes interactions} \\
+      \rsa 'network' inference (variable/covariance selection)
+    \item correct for technical and \emphase{confounding effects} \\
+      \rsa account for covariables and sampling effort
+    \end{itemize}
+  \end{block}
+
+  \rsa need a generic framework to \alert{model dependences between count variables}
+
+\end{frame}
+
+%====================================================================
+
+\begin{frame}{Models for multivariate count data}
+
+  \begin{block}{If we were in a Gaussian world, the \alert{general linear model} would be appropriate}<1->
+    For each sample $i = 1,\dots,n$, it explains 
+    \begin{itemize}
+    \item the abundances of the $p$ species ($\bY_i$) 
+    \item by the values of the $d$ covariates $\bX_i$ and the $p$ offsets $\bO_i$
+    \end{itemize}
+    \begin{equation*}
+      \bY_i = 
+      \underbrace{\bX_i \mathbf{B}}_{\begin{tabular}{c} \text{account for} \\ \text{covariates}  \end{tabular}} 
+      + \underbrace{\bO_i}_{\begin{tabular}{c} \text{account for} \\ \text{sampling effort}  \end{tabular}}
+      \ + \bvarepsilon_i, 
+      \ \bvarepsilon_i \sim \mathcal{N}(\bzr_p, \underbrace{\bSigma}_{\begin{tabular}{c} \text{\emphase{dependence}} \\ \text{\emphase{between species}}  \end{tabular}})
+    \end{equation*}
+    \begin{itemize}
+      \item[\textcolor{mred}{+}] \only<1>{\emphase{null covariance $\Leftrightarrow$ independence \rsa uncorrelated species do not interact}}
+      \only<2>{\sout{\emphase{null covariance $\Leftrightarrow$ independence \rsa uncorrelated species do not interact}}}
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{But we are not, and there is no generic model for multivariate counts}<2>
+    \begin{itemize}
+      \item Data transformation ($\log{}, \sqrt{} $) : quick and dirty \\
+      \item Non-Gaussian multivariate distributions: do not scale to data dimension yet \\
+      \item \emphase{Latent variable models}: interaction occur in a latent (unobserved) layer\\
+    \end{itemize}
+  \end{block}
+    
+\end{frame}
+
+%====================================================================
+\begin{frame}{{P}oisson-log normal (PLN) distribution}
+
+  \begin{block}{A latent Gaussian model}<1>
+  Originally proposed by Atchisson [AiH89]
+  \[
+    \bZ_i \sim \mathcal{N}(\bzr, \boldsymbol\Sigma)
+  \]
+  \[
+    \bY_i \,|\, \bZ_i \sim \clP(\exp{\{\alert{\bO_i + \bX_i^\intercal \bB} + \bZ_i\}})
+  \]
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Interpretation}
+    \vspace{-.25cm}
+  \begin{itemize}
+   \item Dependency structure encoded in the latent space (i.e. in $\bSigma$)
+   \item Additional effects are fixed
+   \item Conditional Poisson distribution = noise model
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Properties}
+    \vspace{-.25cm}
+      \begin{itemize}
+        \item[\textcolor{green}{+}] over-dispersion
+        \item[\textcolor{green}{+}] covariance with arbitrary signs
+        \item[\textcolor{mred}{-}] maximum likelihood via EM algorithm is limited to a couple of variables
+      \end{itemize}
+  \end{block}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Geometrical view}
+
+<<PLN_geom, echo=FALSE>>=
+set.seed(20171110)
+x <- rnorm(100)
+y <- rnorm(100)
+b <- data.frame(x = x + y, y = y) / 1
+mu <- 0
+##
+data.perfect <- as.data.frame((b + matrix(rep(mu, each = length(x)), ncol = 2)))
+p.latent <- ggplot(data.perfect, aes(x, y)) + geom_point() + ggtitle(expression(Latent~Space~(Z)))
+.rpois <- function(lambda) {
+  unlist(lapply(exp(lambda), function(x) {rpois(1, x)}))
+}
+observation <- as.data.frame(lapply(data.perfect, .rpois))
+mapped.parameter <- as.data.frame(lapply(data.perfect, exp))
+## segment between mapped and observed data
+segment.data <- cbind(mapped.parameter, observation)
+names(segment.data) <- c("x", "y", "xend", "yend")
+## Mapped parameters
+p.mapped <- ggplot(mapped.parameter, aes(x, y)) + geom_point(col = "red") + ggtitle(expression(Observation~Space~(exp(Z))))
+## Observations only
+obs <- group_by(observation, x, y)
+obs <- dplyr::summarize(obs, count = n())
+p.observation.only <- ggplot(obs, aes(x, y)) +
+  geom_point(aes(size = count)) +
+  ggtitle(Observation~Space~(Y)~+'noise') +
+  theme(legend.position = c(.95, .95), legend.justification = c(1, 1),
+        legend.background = element_rect(color = "transparent"),
+        legend.box.background = element_blank())
+## Observations and latent parameters
+p.observation.mixed <- p.observation.only +
+  geom_point(data = mapped.parameter, color = "red", alpha = 0.5) +
+  geom_segment(data = segment.data, aes(xend = xend, yend = yend), color = "black", alpha = 0.2) +
+  ggtitle(Observation~Space~(Y==P(exp(Z)))~+'noise')
+  grid.arrange(p.latent + labs(x = "species 1", y = "species 2"),
+               p.mapped  + labs(x = "species 1", y = "species 2"),
+               p.observation.mixed + labs(x = "species 1", y = "species 2"),
+               p.observation.only + labs(x = "species 1", y = "species 2"),
+               ncol = 2)
+@
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Our contributions}
+
+  \begin{block}{Algorithm/Numerical}
+    A variational approach coupled with convex optimization techniques suited to higher dimensional data sets.
+    
+    \paragraph{{\tt PLNmodels} R/C++-package:}  \text{\url{https://github.com/jchiquet/PLNmodels}}
+  \end{block}
+  
+  \vfill
+  
+  \begin{block}{Extensions for multivariate analysis}
+     \paragraph{Idea:} put some additional constraint on the residual variance.
+      \begin{itemize}
+      \item \emphase{Network Inference} \\
+        \rsa select direct interaction in $\bSigma^{-1}$ via sparsity constraints
+        
+      \item \textcolor{gray}{\it Principal component analysis}\\
+        \textcolor{gray}{\it constraint the rank of $\bSigma$ (most important effect in the variance)}
+
+    \end{itemize}
+
+    \paragraph{Challenge:} a variant of the variational algorithm is required for each model
+  \end{block}
+
+
+\end{frame}
+
+<<PLNnet_load_data, echo=FALSE>>=
+rm(list=ls())
+library(ggplot2)
+library(PLNmodels)
+library(igraph)
+load("~/svn/sparsepca/Pgm/PLNnetwork/oaks_mildew/output_oaks/network_oak.RData")
+@
+
+\begin{frame}[fragile]
+  \frametitle{PLN-network: unravel important interactions}
+
+  \paragraph{Variable selection of direct effects.}
+    \begin{align*}
+      \bZ_i \text{ iid} & \sim \clN_p(\bzr_p, \bSigma), & \emphase{\|\bSigma^{-1}\|_1 \leq c} \\
+      \bY_i \,|\, \bZ_i & \sim \clP(\exp\{\bO_i + \bX_i \bbeta + \bZ_i\})
+      \end{align*}
+
+  \paragraph{Interpretation: conditional independence structure.}
+    \begin{equation*}
+      (i,j)  \notin  \mathcal{E}  \Leftrightarrow  Z_i  \indep  Z_j  |
+      Z_{\backslash \{i,j\}} \Leftrightarrow \bSigma_{ij}^{-1} = 0.
+    \end{equation*}
+
+    \begin{center}
+      \begin{tabular}{c@{\hspace{2cm}}c}
+        \begin{tabular}{c}
+          \small $\mathcal{G}=(\mathcal{P},\mathcal{E})$ \\
+          \includegraphics[width=.3\textwidth]{graph}
+        \end{tabular}
+     &
+       \begin{tabular}{c}
+         \small $\bSigma^{-1}$\\\includegraphics[width=.2\textwidth]{Markovadjacency}
+       \end{tabular}
+      \end{tabular}
+    \end{center}
+
+  \paragraph{PLN-network: find a sparse reconstruction of the latent inverse covariance}
+  
+    Iterate over variational estimator and Graphical-Lasso [BDE08,YL08,FHT07] in the latent layer
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Networks of partial correlations for oak mildew pathobiome}
+
+<< PLNnetwork_oaks_fit, echo=TRUE, eval=FALSE>>=
+  # Models with offset and covariates (tree + orientation)
+  formula <- counts ~ 1 + covariates$tree + covariates$orientation + offset(log(offsets)) 
+  models_PLN <- PLNnetwork(formula, penalties = 10^seq(log10(2), log10(0.6), len = 30))
+@
+
+<<plot-networks, show = FALSE, echo=FALSE, results='hide', fig.show='hide', fig.keep='high'>>=
+moving <- which(diff(c(0,sapply(models_PLN$models, function(model) model$n_edges))) != 0)
+for (penalty in models_PLN$penalties[moving]) {
+  current <- models_PLN$getModel(penalty)
+  current$plot_network("partial_cor")
+}
+@
+\begin{overprint}
+  \foreach\x in{1,...,15}{
+    \includegraphics<\x>[trim={2.5cm 2.5cm 2.5cm 2.5cm},clip, width=\textwidth]{figures/plot-networks-\x}
+  }
+\end{overprint}
+
+\end{frame}

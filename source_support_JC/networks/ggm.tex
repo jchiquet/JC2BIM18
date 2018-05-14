@@ -1,450 +1,638 @@
-\section{Network Inference}
-
-\pgfdeclareimage[height=0.8\textheight]{sparsity1}{figures/sparsity_1}
-\pgfdeclareimage[height=0.8\textheight]{sparsity2}{figures/sparsity_2}
-\pgfdeclareimage[height=0.375\textheight]{sparsity4}{figures/sparsity_4}
+\section{Network and data modeling}
 
 \begin{frame}
-  \frametitle{References}
-
-    \begin{thebibliography}{99}
-      \setbeamertemplate{bibliography item}[book]
-
-    \bibitem[JC]{JC} Habilitation, J. Chiquet, Chapter 2 \href{https://tel.archives-ouvertes.fr/tel-01288976/}{https://tel.archives-ouvertes.fr/tel-01288976/}
-    \bibitem[EI]{EI} The Element of Statistical Learning \textcolor{black}{Hastie, Tibshirani, Friedman}, chapter 17.
-    \end{thebibliography}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Some families of methods for network reconstruction}
-
-  \begin{block}{Test-based methods}
-    \vspace{-.15cm}
-    \begin{itemize}
-    \item Tests the nullity of each entries 
-    \item Combinatorial problem when $p>30$ \dots
-    \end{itemize}    
-  \end{block}
-  
-  \vfill
-
-  \begin{block}{Bayesian methods}
-    \vspace{-.15cm}
-    \begin{itemize}
-    \item Compute the posterior probability of each edge
-    \item Usually more computationally demanding
-    \item For special graphs, computation gets easier
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{\alert{Sparsity-inducing regularization methods}}
-    \vspace{-.15cm}
-    \begin{itemize}
-    \item induce sparsity with the $\ell_1$-norm penalization
-    \item Use results from convex optimization
-    \item Versatile and computationally efficient
-    \end{itemize}
-  \end{block}
-
-\end{frame}
-
-\subsection{Inducing sparsity for edge selection}
-
-\begin{frame}
-  \frametitle{Inference: maximum likelihood estimator}
-  \framesubtitle{The natural approach for parametric statistics}
-
-  Let   $X\sim f_{X}(x;\boldsymbol\Omega)$,  where   $\boldsymbol\Omega$  are  the
-  model parameters.
-
-  \vfill
-
-  \begin{block}{Maximum likelihood estimator}
-    \begin{equation*}
-      \hat{\boldsymbol\Omega}      =      \argmax_{\boldsymbol\Omega}
-      \ell(\boldsymbol\Omega; \mathbf{X})
-    \end{equation*}
-    where  $\ell$ is  the log  likelihood, a  function  of the
-    parameters:
-    \begin{equation*}
-      \ell(\boldsymbol\Omega;      \mathbf{X})      =     \log
-      \prod_{i=1}^n f_{X}(\mathbf{x}_i;\boldsymbol\Omega),
-    \end{equation*}
-    where $\mathbf{x}_i$ is the $i$th row of $\mathbf{X}$.
-  \end{block}
-
-  \vfill
-  
-  \begin{itemize}
-    \item This a convex optimization problem,
-    \item We just need to detect non zero coefficients in $\boldsymbol\Omega$
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{The multivariate Gaussian log-likelihood }
-
-  Let  $\mathbf{S}  =  n^{-1}\mathbf{X}^\intercal \mathbf{X}$  be  the
-  empirical variance-covariance  matrix: $\mathbf{S}$ is  a sufficient
-  statistic of $ \boldsymbol\Omega$.
-
-  \vfill
-
-  \begin{block}{The log-likelihood}
-    \begin{equation*}
-      \ell(\boldsymbol\Omega; \mathbf{S}) =
-      \frac{n}{2}     \log    \det     (\boldsymbol\Omega)  - \frac{n}{2}
-      \mathrm{Trace}(\mathbf{S} \boldsymbol\Omega) + \frac{n}{2}\log(2\pi).
-    \end{equation*}
-  \end{block}
-
-  \vfill
-
-  \begin{itemize}
-  \item[$\rightsquigarrow$]    The     MLE    $=\mathbf{S}^{-1}$    of
-    $\boldsymbol\Omega$ is not defined for $n< p$ and never sparse.
-  \item[$\rightsquigarrow$] The need for regularization is huge.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{A Geometric View of Shrinkage}
-  \framesubtitle{Constrained Optimization}
+  \frametitle{Canonical model settings}
+  \framesubtitle{Biological microarrays in comparable conditions}
 
   \begin{overlayarea}{\textwidth}{\textheight}
-    \begin{columns}
-      \begin{column}{0.475\textwidth}
-        \begin{tikzpicture}
-          \only<1>{%
-            \node (Surf) at (0,0) {\pgfuseimage{sparsity1}}
-            node     at    (Surf.west)    [rotate=90,yshift=5mm]
-            {$L(\Omega_1,\Omega_2;\mathbf{X})$}
-            node at (Surf.south west) [xshift=5mm,yshift=5mm]{$\Omega_2$}
-            node at (Surf.south east) [xshift=-7.5mm,yshift=2.5mm]{$\Omega_1$};
-          }
-          \only<2>{%
-            \node (Surf2) at (0,0) {\pgfuseimage{sparsity2}}
-            node    at    (Surf2.west)    [rotate=90,yshift=5mm]
-            {$L(\Omega_1,\Omega_2;\mathbf{X})$}
-            node at (Surf2.south west) [xshift=5mm,yshift=5mm]{$\Omega_2$}
-            node at (Surf2.south east) [xshift=-7.5mm,yshift=2.5mm]{$\Omega_1$};
-          }
-          \only<3->{%
-            \node (titi) at (0,0) {\phantom{titi}};
-            \node (Surf3) at (0,-4.5) {\pgfuseimage{sparsity4}}
-            node at (Surf3.west) [rotate=90,yshift=2.5mm] {$\Omega_2$}
-            node at (Surf3.south) [yshift=-2.5mm] {$\Omega_1$};
-          }
-        \end{tikzpicture}
-      \end{column}
-      \begin{column}{0.55\textwidth}
-        \only<1>{%
-          We basically want to solve a problem of the form
-          \begin{equation*}
-            \maximize_{\Omega_1,\Omega_2} \ell(\Omega_1,\Omega_2;\mathbf{X})
-          \end{equation*}
-          where $\ell$ is typically a concave likelihood function.
-        }
-        \only<2->{%
-          \begin{equation*}
-            \left\{\begin{array}{ll}
-                \displaystyle    \maximize_{\Omega_1,\Omega_2}   &
-                \ell(\Omega_1,\Omega_2;\mathbf{X})\\
-                \mathrm{s.t.} & \Omega(\Omega_1,\Omega_2) \leq c
-              \end{array}\right.,
-          \end{equation*}
-          where  $\Omega$  defines  a  domain  that  \textit{constrains}
-          $\boldsymbol\beta$.
+    \only<1-2>{\begin{colormixin}{100!white}}
+    \only<3->{\begin{colormixin}{40!white}}
 
-          \begin{center}
-            How shall we define $\Omega$ ?
-          \end{center}
-        }
-      \end{column}
-    \end{columns}
-  \end{overlayarea}
-\end{frame}
-
-
-\pgfdeclareimage[height=0.375\textheight]{sparsity6}{figures/sparsity_6}
-\pgfdeclareimage[height=0.375\textheight]{sparsity8bis}{figures/sparsity_8bis}
-\pgfdeclareimage[height=0.375\textheight]{sparsity9}{figures/sparsity_9}
-\pgfdeclareimage[height=0.375\textheight]{sparsity10}{figures/sparsity_10}
-\pgfdeclareimage[height=0.375\textheight]{sparsity11}{figures/sparsity_11}
-\pgfdeclareimage[height=0.375\textheight]{sparsity12}{figures/sparsity_12}
-
-
-\begin{frame}
-  \frametitle{A Geometric View of Sparsity}
-  \framesubtitle{Dual and Polar Cones}
-
-  {\centerline{Generalizes normals}}
-
-  \bigskip
-
-  \begin{overlayarea}{\textwidth}{\textheight}
-
-
-    \begin{tikzpicture}
-      \only<1>{%
-      \node (Surf2) at (0,0) {\pgfuseimage{sparsity6}}
-              node at (Surf2.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-              node at (Surf2.south) [yshift=-1mm] {$\beta_1$};
-      }
-      \only<1-2>{%
-      \node (Surf3) at (4,0) {\pgfuseimage{sparsity8bis}}
-              node at (Surf3.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-              node at (Surf3.south) [yshift=-1mm] {$\beta_1$};
-      }
-      \only<1-3>{%
-        \node (Surf4) at (8,0) {\pgfuseimage{sparsity9}}
-                node at (Surf4.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-                node at (Surf4.south) [yshift=-1mm] {$\beta_1$};
-      }
-      \only<4>{%
-        \node (Surf5) at (8,0) {\pgfuseimage{sparsity10}}
-                node at (Surf5.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-                node at (Surf5.south) [yshift=-1mm] {$\beta_1$};
-      }
-      \only<3->{%
-        \node (Surf6) at (4,0) {\pgfuseimage{sparsity11}}
-                node at (Surf6.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-                node at (Surf6.south) [yshift=-1mm] {$\beta_1$};
-      }
-      \only<2->{%
-        \node (Surf7) at (0,0) {\pgfuseimage{sparsity12}}
-                node at (Surf7.west) [rotate=90,yshift=2.5mm] {$\beta_2$}
-                node at (Surf7.south) [yshift=-1mm] {$\beta_1$};
-      }
-    \end{tikzpicture}
-
-    \medskip
-
-    Let $C$ be a convex set,
-    \begin{itemize}
-    \item  $C^\star(x_0) =  \set{y|y^T(x-x_0) \geq  0,x\in C}$  is the
-      dual cone in $x_0$,
-    \item $N_C(x_0) = \set{y|y^T(x-x_0) \leq 0,x\in C}$ is the polar (or normal) cone, 
-    \end{itemize}
-
-    \medskip
-
-    \only<4>{%
-      {\centerline{Shape of cones $\Rightarrow$ sparsity pattern}}
-    }
-
-  \end{overlayarea}
-\end{frame}
-
-\begin{frame}
-  \frametitle{The Lasso}
-  \framesubtitle{Least Absolute Shrinkage and Selection Operator}
-
-  \begin{block}{Idea}
-    Suggest  an admissible  set that  induces  \alert{sparsity} (force
-    several entries to exactly zero in $\hat{\bbeta}$).
+  \begin{block}{Notations}
+    \begin{enumerate}
+    \item a set $\mathcal{P} = \{1,\dots,p\}$ of $p$ variables:\\
+      these are typically \alert{the genes} (could be proteins);
+    \item a sample $\mathcal{N}=\{1,\dots,n\}$ of individuals associated to
+      the variables:\\
+      these are typically \alert{the microarray} (could be sequence counts).
+    \end{enumerate}
   \end{block}
 
   \vfill
 
-  \begin{overlayarea}{\textwidth}{.4\textheight}
-    \begin{columns}
-      \begin{column}[c]{.6\textwidth}
-        \begin{block}{Lasso as a regularization problem}
-          The Lasso estimate of $\bbeta$ is the solution to
-          \begin{equation*}
-            \hat{\btheta}^{\text{lasso}}     =    \argmin_{\btheta}
-            -\ell(\btheta),  \quad   \text{s.t.  }  \sum_{j=1}^p
-            \left|\Omega_j\right|
-            \leq s,
-          \end{equation*}
-          where $s$ is a shrinkage factor.
-        \end{block}
-      \end{column}
-      \begin{column}{.4\textwidth}
-        \includegraphics[width=.75\textwidth]{figures/lasso_set}
-      \end{column}
-    \end{columns}
-  \end{overlayarea}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Insights: 2-dimensional example with the square loss}
-
-  \begin{overlayarea}{\textwidth}{\textheight}
-
-    \begin{equation*}
-      \sum_{i=1}^n (y_i-x_i^1\Omega_1 - x_i^2\Omega_2)^2, \qquad
-      \only<1>{\text{no constraints}}
-      \only<2>{\text{s.t. } |\Omega_1| + |\Omega_2| < 0.75}
-      \only<3>{\text{s.t. } |\Omega_1| + |\Omega_2| < 0.66}
-      \only<4>{\text{s.t. } |\Omega_1| + |\Omega_2| < 0.4}
-      \only<5>{\text{s.t. } |\Omega_1| + |\Omega_2| < 0.2}
-      \only<6>{\text{s.t. } |\Omega_1| + |\Omega_2| < 0.0743}
-    \end{equation*}
-
-  \vspace{-.5cm}
-
-    \includegraphics<1>[width=.8\textwidth]{dess11}
-    \includegraphics<2>[width=.8\textwidth]{dess12}
-    \includegraphics<3>[width=.8\textwidth]{dess13}
-    \includegraphics<4>[width=.8\textwidth]{dess14}
-    \includegraphics<5>[width=.8\textwidth]{dess15}
-    \includegraphics<6>[width=.8\textwidth]{dess16}
-
-  \end{overlayarea}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Application to GGM}
-
-  \begin{block}{A penalized likelihood approach}
-    \vspace{-1em}
-    \begin{equation*}
-      \hat{\bTheta}_\lambda=\argmax_{\bTheta \in \mathbb{S}_+}
-      \ell(\bTheta;\mathbf{X})-\lambda
-      \mathrm{pen}_{\ell_1}(\bTheta)
-    \end{equation*}
-  where
-  \begin{itemize}
-  \item $\mathcal{\ell}$ is the model log-likelihood,
-  \item $\mathrm{pen}_{\ell_1}$ is a \alert{penalty function} tuned by
-    $\lambda>0$.
-    \vfill
-      \begin{enumerate}
-      \item \textit{regularization} (needed when $n \ll p$),
-      \item \textit{selection} (sparsity induced by the $\ell_1$-norm).
-      \end{enumerate}
-  \end{itemize}
-\end{block}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Gold standard penalized approaches}
-
-  \vspace{-.25cm}
-  
-  \begin{overlayarea}{\textwidth}{\textheight}
-
-    \begin{block}{Penalized   likelihood  (Banerjee   \textit{et
-          al.}, Yuan and Lin, 2008)}
-      \vspace{-1em}
-      \begin{equation*}
-        \hat{\bTheta}_\lambda=\argmax_{\bTheta \in \mathbb{S}_+}
-        \ell(\bTheta;\mathbf{X})-\lambda
-        \|\bTheta\|_{1}
-      \end{equation*}
-    \end{block}
-    \vspace*{-1.5em}
-    
+  \begin{block}{Basic statistical model}<2->
+    This can be view as
     \begin{itemize}
-    \item[\textcolor{green}{$+$}] symmetric, positive-definite
-    \item[\textcolor{red}{$-$}]       solved      by       the
-      ``Graphical-Lasso''                 ($\mathcal{O}(p^3)$,
-      \textit{Friedman et al, 2007}).
-    \item \texttt{R}-packages \textbf{glasso}, \textbf{quic}, \textbf{huge}.
-    \end{itemize}
-    
-    \vfill
-    
-    \begin{block}{Neighborhood    Selection   (Meinshausen    \&
-        B\"ulhman, 2006)}<2-> \vspace*{-1em}
-      \only<2>{
-         \begin{equation*}
-          \text{For variable $j$, solve} \quad \hatbbeta_j  = \argmin_{\bbeta\in\Rset^{p-1}}
-           \frac{1}{2} \|\bX_j - \bX_{\backslash j} \bbeta \|_2^2  + \lambda \|\bbeta\|_{\ell_1}.
-          \end{equation*}
-      }
-      \only<3->{
-      \begin{equation*}
-        \hat{\mathbf{B}}^{\text{ns}}  = \argmin_{\mathbf{B}\in\Rset^{p\times  p}, \mathrm{diag}(\mathbf{B})
-          = {\boldsymbol 0}_p} \frac{1}{2} \mathrm{tr}(\mathbf{B}^\top\mathbf{S}_n \mathbf{B}) -
-        \mathrm{tr}(\mathbf{B}^\top\mathbf{S}_n) + \lambda \|\mathbf{B}\|_{\ell_1}.
-      \end{equation*}
-      }
-      \vspace*{-1.5em}
-    \end{block}
-    
-    \onslide<2->{
+    \item a \alert{\emph{random  vector} $X$ in $\mathbb{R}^p$}, whose
+      $j$th entry is the $j$th variable,
+    \item a  \alert{$n$-size sample} $(X^1,  \dots, X^n)$, such
+      as $X^i$ is the $i$th microarrays,
       \begin{itemize}
-      \item[\textcolor{red}{$-$}]     not     symmetric,     not
-        positive-definite
-      \item[\textcolor{green}{$+$}]   $p$   Lasso  solved   with
-        Lars-like   algorithms   ($\mathcal{O}(npd)$   for   $d$
-        neighbors).
-      \item \texttt{R}-package \textbf{huge}.
+      \item could be independent identically distributed copies (steady-state)
+      \item could be dependent in a certain way (time-course data)
       \end{itemize}
+    \item  assume  a   parametric  probability  distribution  for  $X$
+      (Gaussian).
+    \end{itemize}
+  \end{block}
+
+  \end{colormixin}
+
+    \only<3->{
+      \vspace{-6cm}
+        \begin{beamerboxesrounded}[upper=sur:head,lower=sur:bloc,shadow=true]{The data}
+          Stacking    $(X^1,\dots,    X^n)$,    we   met    the    usual
+          individual/variable table $\mathbf{X}$
+
+        \begin{tikzpicture}
+          \node[opacity=.75] at (-3,1.5) {\pgfuseimage{ngs}};
+          \node[opacity=.9] at (-2.75,1.25) {\pgfuseimage{ngs}};
+          \node[opacity=.95] at (-2.5,1) {\pgfuseimage{microarray}};
+          \node at (-2.25,0.75) {\pgfuseimage{microarray}};
+          \node[fill=red, text=white,single arrow] 
+          (inference) at (0,1) {\sf \scriptsize stacked in}; 
+          
+          \node at (4.5,1) {%
+            $\mathbf{X} = \begin{pmatrix} 
+              x_1^1 & x_1^2 & x_1^3 & \dots & x_1^p \\
+              \vdots \\
+              x_n^1 & x_n^2 & x_1^2 & \dots & x_n^p \\
+            \end{pmatrix}$};
+        \end{tikzpicture}
+      \end{beamerboxesrounded}
     }
-     
-\end{overlayarea}      
+  \end{overlayarea}      
+  
+\end{frame}
+
+\subsection{Statistical dependence}
+
+\begin{frame}
+  \frametitle{Modeling relationship between variables (1)}
+  \framesubtitle{Independence}
+  
+  \begin{definition}[Independence of events]
+    Two events $A$ and $B$ are independent if and only if
+    \begin{equation*}
+      \prob(A,B) = \prob(A) \prob(B),
+    \end{equation*}
+    which is usually denoted by $A \indep B$. Equivalently,
+    \begin{itemize}
+    \item $A \indep B \Leftrightarrow \prob(A | B) = \prob(A)$,
+    \item $A \indep B \Leftrightarrow \prob(A | B) = \prob(A | B^c) $
+    \end{itemize}
+  \end{definition}
+
+  \begin{example}[class vs party]<2>
+    \begin{table}
+      \centering
+      \begin{tabular}{cc}
+        \begin{tabular}{rrr}
+        & \multicolumn{2}{c}{party} \\
+        class & Labour & Tory \\ \hline
+        working & 0.42 & 0.28 \\
+        bourgeoisie & 0.06 & 0.24 \\
+      \end{tabular} 
+      & 
+      \begin{tabular}{rrr}
+        & \multicolumn{2}{c}{party} \\
+        class & Labour & Tory \\ \hline
+        working & 0.60 & 0.40 \\
+        bourgeoisie & 0.20 & 0.80 \\
+      \end{tabular} 
+      \end{tabular} 
+      \caption{Joint probability (left) vs. conditional probability (right)} 
+    \end{table}
+  \end{example}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modeling relationships between variables (2)}
+  \framesubtitle{Conditional independence}
+  
+  Generalizing  to more  than two  events requires  strong assumptions
+  (mutual independence). Better handle with
+
+  \begin{definition}[Conditional independence of events]<2->
+    Two events $A$ and $B$ are conditionally independent if and only if
+    \begin{equation*}
+      \prob(A,B | C) = \prob(A|C) \prob(B|C),
+    \end{equation*}
+    which is usually denoted by $A \indep B | C$ 
+  \end{definition}
+
+  \begin{example}[Does QI depends on weight?]<3->
+    Consider  the  events $A  =  "\text{having low  QI}"$,  $B  = \text{"having  low
+    weight"}$. \only<3>{Estimating\footnote{stupidly}  $\prob(A,B)$,  $\prob(A)$  and
+    $\prob(B)$ in a sample would lead to
+    \begin{equation*}
+      \prob(A,B) \neq \prob(A) \prob(B)
+    \end{equation*}}
+  \only<4>{But in fact, introducing $C = \text{"having a given age"}$,
+    \begin{equation*}
+      \prob(A,B|C) = \prob(A|C) \prob(B|C)
+    \end{equation*}}
+\end{example}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Limits of correlation for network reconstruction}
+  
+  \includegraphics<1>[width=.7\textwidth]{cor_plot}
+
+  \includegraphics<2>[width=.7\textwidth]{pcor_plot}
+  
+\end{frame}
+
+\subsection{Gaussian Graphical models}
+
+\begin{frame}
+  \frametitle{Correlation networks}
+
+  \begin{block}{Correlation (association network)}
+    Similar expression profile $\rightsquigarrow$ high-correlation
+    \begin{enumerate}
+    \item Compute the correlation matrix (Pearson, Spearman, \dots)
+    \item Predict an edge between two actors if their absolute correlation is above a given threshold
+    \end{enumerate}   
+  \end{block}
+  
+  \vfill
+
+  \begin{block}{Questions}
+    \begin{itemize}
+    \item How to set up the threshold?
+    \item If we target actors with similar profiles, why not clustering?
+    \item Information is drowned (all actors are correlated \dots)
+    \end{itemize}
+    
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Graphical models}
+  \begin{block}{Definition}
+    A graphical model gives  a graphical (intuitive) representation of
+    the dependence structure of a probability distribution, by linking
+    
+    \begin{enumerate}
+    \item a random  vector (or a set of random  variables.)  $X = \{X_1,
+      \dots, X_p\}$ with distribution $\prob$, \bigskip
+    \item a graph $\mathcal{G} = (\mathcal{P}, \mathcal{E})$ where
+      \begin{itemize}
+      \item $\mathcal{P}=\{1,\dots,p\}$ is  the set of nodes associated
+        to each variable,
+      \item $\mathcal{E}$ is a  set of edges describing the dependence
+        relationship of $X\sim \prob$.
+      \end{itemize}
+    \end{enumerate}
+   \end{block}
+
+   \vfill
+
+  \begin{block}{Conditional independence graph}<2> It is the \alert{undirected}  graph $\mathcal{G} =
+    \{\mathcal{P},    \mathcal{E}\}$ where
+    \begin{equation*}
+      (i,j) \notin \mathcal{E} \Leftrightarrow X_i \indep X_j | \mathcal{P} \backslash
+      \{i,j\}.
+    \end{equation*}
+  \end{block}
 
 \end{frame}
 
-\subsection{Limitations and extensions of sparse GGM}
+\begin{frame}
+  \frametitle{The Gaussian case}
+
+  \begin{block}{The data}
+    \begin{tikzpicture}
+      \node[opacity=.75] at (-3,1.5) {\pgfuseimage{microarray}};
+      \node[opacity=.9] at (-2.75,1.25) {\pgfuseimage{microarray}};
+      \node[opacity=.95] at (-2.5,1) {\pgfuseimage{microarray}};
+      \node at (-2.25,0.75) {\pgfuseimage{microarray}};
+      \node[fill=red, text=white,single arrow] 
+      (inference) at (0,1) {\sf \scriptsize Inference}; 
+          
+      \node at (4.5,1) {%
+        $\mathbf{X} = \begin{pmatrix} 
+          x_1^1 & x_1^2 & x_1^3 & \dots & x_1^p \\
+          \vdots \\
+          x_n^1 & x_n^2 & x_1^2 & \dots & x_n^p \\
+        \end{pmatrix}$};
+    \end{tikzpicture}
+  \end{block}
+
+  \begin{block}{Assuming $f_X(\mathbf{X})$ multivariate Gaussian}
+    Greatly simplifies the inference:
+    \begin{itemize}
+    \item[$\rightsquigarrow$]   naturally   links   independence   and
+      conditional   independence  to   the   covariance  and   partial
+      covariance,
+    \item[$\rightsquigarrow$]  gives a  straightforward interpretation
+      to the graphical modeling previously considered.
+  \end{itemize}
+  \end{block}
+\end{frame}
+
 
 \begin{frame}
-  \frametitle{Practical implications of theoretical results}
+  \frametitle{Why Gaussianity helps?}
+  \framesubtitle{Case of 2 variables or size-2 random vector}
 
-  \begin{block}{Selection    consistency    (Ravikumar,    Wainwright,
-      2009-2012)}<1->                                           Denote
-    $d=\max_{j\in\mathcal{P}}(\mathrm{degree_j})$.  Consistency for an
-    appropriate $\lambda$ and
+  Let $X,Y$ be two real random variables.
+  
+  \begin{definitions}
+    \vspace{-.5cm}
+    \begin{equation*}
+      \cov(X,Y)   =  \E\Big[\big(X-\E(X)\big)\big(Y-\E(Y)\big)\Big]  =
+      \E(XY) - \E(X)\E(Y).
+    \end{equation*}
+    \begin{equation*}
+      \rho_{XY} = \cor(X,Y) = \frac{\cov(X,Y)}{\sqrt{\var(X) \ \cdot \ \var(Y)}}.
+    \end{equation*}
+  \end{definitions}
+  
+  \begin{proposition}
+    \vspace{-.25cm}
     \begin{itemize}
-    \item  $n\approx\mathcal{O}(d^2\log(p))$ for  the graphical  Lasso
-      and Clime.
-    \item $n\approx\mathcal{O}(d\log(p))$  for   neighborhood
-      selection (sharp).
+    \item $\cov(X,X) = \var(X) = \E[(X-\E X)(Y-\E Y)]$,
+    \item $\cov(X+Y,Z) = \cov(X,Z) + \cov(X,Z)$,
+    \item $\var(X+Y) = \var(X) + \var(Y) + \cov(X,Y)$.
+    \item $X \indep Y \Rightarrow\cov(X,Y) = 0$.
+    \item<2> \alert{$X  \indep Y  \Leftrightarrow \cov(X,Y) =  0$ when
+        $X,Y$ are Gaussian}.
     \end{itemize}
-    \textit{(Irrepresentability) conditions are not strictly
-    comparable\dots}
-  \end{block}
+  \end{proposition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The bivariate Gaussian distribution}
+
+  \begin{columns}
+    \begin{column}{.4\textwidth}
+      \begin{block}{The Covariance Matrix}
+        Let
+        \begin{equation*}
+          X \sim \mathcal{N}(\mathbf{0}, \boldsymbol\Sigma), 
+        \end{equation*}
+        with unit variance and $\rho_{XY} = \only<1>{0}\only<2>{0.9}$
+        \begin{equation*}
+          \boldsymbol\Sigma =
+          \begin{pmatrix}
+            1 & \only<1>{0}\only<2>{0.9} \\ \only<1>{0}\only<2>{0.9} & 1
+          \end{pmatrix}.
+        \end{equation*}
+        The shape of the 2-D distribution evolves accordingly.
+      \end{block}
+    \end{column}
+    
+    \begin{column}{.6\textwidth}
+      \includegraphics<1>[height=.8\textheight]{multinorm_nocor}
+      \includegraphics<2>[height=.8\textheight]{multinorm_cor}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Generalization: multivariate Gaussian vector}
+  \framesubtitle{Now need partial covariance and partial correlation}
+  
+  Let $X,Y,Z$ be real random variables.
+  \begin{definitions}
+    \begin{equation*}
+      \cov(X,Y|Z) = \cov(X,Y) - \cov(X,Z)\cov(Y,Z)/\var(Z).
+    \end{equation*}
+    \begin{equation*}
+      \rho_{XY|Z}            =            \frac{\rho_{XY}            -
+        \rho_{XZ}\rho_{YZ}}{\sqrt{1-\rho_{XZ}^2}\sqrt{1-\rho_{YZ}^2}}.
+    \end{equation*}
+  \end{definitions}
+  $\rightsquigarrow$  Give   the  interaction  between   $X$  and  $Y$
+  \alert{once removed the effect of $Z$}.
+
+  \vfill
+  
+  \begin{proposition}<2>
+    When $X,Y,Z$ are jointly Gaussian, then
+    \begin{equation*}
+      \alert{\cov(X,Y|Z) = 0  \Leftrightarrow \cor(X,Y|Z) = 0 \Leftrightarrow
+      X \indep Y | Z.}
+    \end{equation*}
+  \end{proposition}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Important properties of Gaussian vectors}
+
+  \begin{proposition}[Gaussian vector and conditioning]
+    Consider a Gaussian vector with the following decomposition
+    \begin{equation*}
+      Z = \begin{pmatrix}
+        Z_1 \\ Z_2
+      \end{pmatrix}  \sim   \mathcal{N}(\mathbf{0},\bSigma),   \quad
+      \bSigma = \begin{pmatrix}
+        \bSigma_{11} & \bSigma_{12} \\
+        \bSigma_{21} & \bSigma_{22} \\
+      \end{pmatrix},\quad
+      \bOmega = \bSigma^{-1} = \begin{pmatrix}
+        \bOmega_{11} & \bOmega_{12} \\
+        \bOmega_{21} & \bOmega_{22} \\
+      \end{pmatrix}.
+    \end{equation*}
+    Then,
+    \begin{equation*}
+      Z_2|Z_1=\mathbf{z} \sim
+      \mathcal{N}\left(-\bOmega_{22}^{-1}\bOmega_{21}\mathbf{z}, \bOmega_{22}^{-1} \right)
+    \end{equation*}
+    and
+    \begin{equation*}
+      \bOmega_{22}^{-1}     =      \bSigma_{22}     -     \bSigma_{21}
+      \bSigma_{11}^{-1} \bSigma_{12}.
+    \end{equation*}
+  \end{proposition}
 
   \vfill
 
-  \begin{block}{Ultra high-dimension phenomenon (Verzelen,  2011)}<2>
-    Minimax risk for sparse regression with $d$-sparse models: useless
-    when
+  \begin{block}{Corollary}
+    Partial correlations are related  to the inverse of the covariance
+    matrix:
     \begin{equation*}
-    \frac{d \log(p/d)}{n} \geq 1/2, \qquad (\mathrm{e.g.}, n=50, p=200, d\geq 8).
-    \end{equation*}
-    \textit{Good news! when $n$ is small, we don't need to solve
-      huge problems because they can't but fail.}
+      \cor(Z_i,Z_j|Z_k, k\neq i,j) = - \frac{\Omega_{ij}}{\sqrt{\Omega_{ii}\Omega_{jj}}}
+  \end{equation*}
   \end{block}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Model selection}
+  \frametitle{Gaussian Graphical Model: canonical settings}
 
-  \begin{block}{Cross-validation}
-    Optimal in terms of \alert{prediction}, not in terms of selection
+  \begin{block}{Biological experiments in comparable Gaussian conditions}
+    Profiles  of  a set  $\mathcal{P}  =  \{1,\dots,p\}$  of genes  is
+    described by $X\in\mathbb{R}^p$ such as
+    \begin{enumerate}
+    \item  $X\sim\mathcal{N}(\boldsymbol\mu,\boldsymbol\Sigma)$,  with
+      $\boldsymbol\Theta = \bSigma^{-1}$ the precision matrix.
+    \item a sample $(X^1, \dots, X^n)$ of exp. stacked in an $n\times
+      p$ data matrix $\mathbf{X}$.
+    \end{enumerate}
   \end{block}
 
-  \begin{block}{Information based criteria}
-    \begin{itemize}
-    \item GGMSelect (Girault \textit{et al}, '12) selects among a family of candidates.
-    \item Adapt IC to sparse high dimensional problems, e.g.
-    \begin{equation*}
-      \text{EBIC}_\gamma(\widehat{{\boldsymbol\Omega}}_\lambda)  =   -2 \textrm{loglik}
-      (\widehat{{\boldsymbol\Omega}}_\lambda;\bX) + |\mathcal{E}_\lambda| (\log(n) + 4 \gamma \log(p) ),
-    \end{equation*}
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Resampling/subsampling}
-    \alert{Keep edges frequently selected} on an range of $\lambda$ after sub-samplings
-    \begin{itemize}
-    \item Stability Selection (Meinshausen and B\"uhlman, 2010, Bach 2008)
-    \item Stability approach to Regularization Selection (StaRS) (Liu, 2010).
-    \end{itemize}
-  \end{block}
+  \begin{overlayarea}{\textwidth}{\textheight}
+        
+        \begin{block}{Conditional independence structure}
+          \vspace{-.5cm}
+          \begin{equation*}
+            (i,j)  \notin  \mathcal{E}  \Leftrightarrow  X_i  \indep  X_j  |
+            X_{\backslash \{i,j\}} \Leftrightarrow \Theta_{ij} = 0.
+          \end{equation*}
+        \end{block}
+        
+        \vspace{-.5cm}
+        \begin{block}{Graphical interpretation}
+          \vspace{-.5cm}
+          \begin{center}
+            \begin{tabular}{c@{\hspace{2cm}}c}
+              \begin{tabular}{c}
+                \small $\mathcal{G}=(\mathcal{P},\mathcal{E})$ \\
+                \includegraphics[width=.3\textwidth]{graph}
+              \end{tabular}
+              &
+              \begin{tabular}{c}
+                \small $\bTheta$\\\includegraphics[width=.2\textwidth]{Markovadjacency}
+              \end{tabular}
+            \end{tabular}
+          \end{center}
+        \end{block}
+        \vspace{-1cm}
+        $\rightsquigarrow$ \alert{``Covariance'' selection}
+   
+  \end{overlayarea}      
 \end{frame}
 
-\subsection{Example: plasmodium data set}
+\begin{frame}
+  \frametitle{Gaussian Graphical Model and Linear Regression}
 
-\input{huge_yeast}
+  \begin{block}{Linear regression viewpoint}
+    Gene expression $X_i$ is linearly explained by the other genes':
+    \begin{equation*}
+      X_i | X_{ \setminus i} = - \sum_{j \neq i}
+      \frac{\Theta_{ij}}{\Theta_{ii}} X_j + \varepsilon_i,\quad \varepsilon_i
+      \sim \mathcal{N}(0,\Omega_{ii}^{-1}), \quad \varepsilon_i \perp X
+      \end{equation*}
+      Conditional  on its  neighborhood,  other profiles  do not  give
+      additional insights
+    \begin{equation*}
+      X_i | X_{ \setminus i} = \sum_{\alert{j \in \text{neighbors}(i)}} \beta_j X_j + \varepsilon_i
+      \quad         \text{with         }         \beta_j         =
+      -\frac{\Theta_{ij}}{\Theta_{ii}}.
+    \end{equation*}
+  \end{block}
+
+  \alert{$\rightsquigarrow$ ``Neighborhood'' selection}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Gaussian Graphical Model and AR process (1)}
+  
+  \begin{block}{Time course data}
+    Time course- data experiment can  be  represented  as   a  multivariate  vector
+    $X=(X_1,\dots,X_p)\in\mathbb{R}^p$,  generated  through a
+    \alert{first order vector autoregressive} process $VAR(1)$:
+    \begin{equation*}
+      X^{t}   =   \boldsymbol\Theta   X^{t-1}   +   \mathbf{b}   +
+      \boldsymbol\varepsilon^{t},\quad t \in [1,n]
+    \end{equation*}
+    where  $\boldsymbol\varepsilon^{t}$ is  a white  noise to  ensure  the Markov
+    property and $X^{0} \sim \mathcal{N}(0, \boldsymbol\Sigma^0)$.
+  \end{block}
+
+   \vfill
+ 
+   \begin{block}{Consequence: a Gaussian Graphical Model}<2>
+     \begin{itemize}
+     \item        Each       $X^{t}        |        X^{t-1}       \sim
+       \mathcal{N}(\mathbf{\theta}X^{t-1}, \boldsymbol\Sigma)$, 
+     \item  or,  equivalently,  $X_j^{t}  |  X^{t-1}  \sim
+       \mathcal{N}(\boldsymbol\Theta_jX^{t-1}, \boldsymbol\Sigma)$
+     \end{itemize}
+     where $\boldsymbol\Sigma$ is known and $\boldsymbol\Theta_j$ is the
+     $j$th row of $\boldsymbol\Theta$.
+   \end{block}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{Gaussian Graphical Model and AR process (2)}
+  \framesubtitle{Interpretation as a GGM}
+
+  \begin{block}{The VAR(1) as a covariance selection model}
+    \begin{equation*}
+      \theta_{ij} = \frac{\mathrm{cov}\left(X^t_i,X^{t-1}_j|
+          X^{t-1}_{\mathcal{P}\backslash j} \right)} 
+      {\mathrm{var}\left(      X^{t-1}_j|X^{t-1}_{\mathcal{P}\backslash
+            j}\right)},
+    \end{equation*}
+  \end{block}
+
+  \vfill
+  
+    \begin{block}{Graphical Interpretation}
+      $\rightsquigarrow$                   The                  matrix
+      $\boldsymbol\Theta=(\theta_{ij})_{i,j\in\mathcal{P}}$  encodes the
+      network $\mathcal{G}$ we are looking for.
+    
+      \begin{scriptsize}
+        \begin{tikzpicture}
+          %% LES DONNÉES
+          \node     at     (5,0)     {\begin{tabular}{@{}c@{}}     \sf
+              \alert{conditional} dependency between
+              $X^{t-1}_{j}$ and $X^{t}_i $\\
+              or\\
+              non-null partial correlation between $X^{t-1}_{j}$ and $X^{t}_i $\\
+              $\Updownarrow$ \\
+              $\theta_{ij} \neq 0$\\
+            \end{tabular}
+          };
+        
+          \node[fill=red,double  arrow,text=white]  at  (0,0) {if  and
+            only if};
+        
+          %% UN GRAPH
+          \tikzstyle{every                  state}=[fill=gray!60!white,
+          draw=none,text=black,scale=0.75, transform shape]
+          \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+          
+          % troisième cluster
+          \node[state] (C1)  at (-2,0.25) {$i$};  \node[state] (C2) at
+          (-3,-0.25) {$j$};
+        
+          \path (C2) edge [bend left] node [above right] {?}  (C1);
+        
+        \end{tikzpicture}
+      \end{scriptsize}
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Gaussian Graphical Model and AR process (3)}
+  \framesubtitle{Graphical interpretation}
+  
+    \begin{enumerate}
+    \item Follow-up of one single experiment/individual; 
+    \item Close enough time-points to ensure 
+      \begin{itemize}
+      \item \alert<1>{dependency} between consecutive measurements;
+      \item \alert<2>{homogeneity} of the Markov process.
+      \end{itemize}
+    \end{enumerate}
+
+  % \vfill
+  
+  \begin{overlayarea}{\textheight}{\textwidth}
+    \only<1>{
+   %   \begin{center}
+      \begin{tikzpicture}
+        \tikzstyle{every state}=[fill=orange!80!white,
+        draw=none,text=black,scale=0.7]
+        \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+        
+        \node (x1) [state] at (0,0) {$X_1$};
+        \node (x2) [state] at (1,-1) {$X_2$};
+        \node (x3) [state] at (-1,-1) {$X_3$};
+        \node (x4) [state] at (0,1.5) {$X_4$};
+        \node (x5) [state] at (2.5,-1) {$X_5$};
+        \path[->,=< stealth] 
+        (x1) edge[bend right] (x2)
+        (x1) edge (x3)
+        (x1) edge (x4)
+        (x2) edge (x5)
+        (x2) edge[bend right] (x1);
+       
+          \node at (4,0) {stands for}; 
+      %    \node at (4,0) {stands for};
+        % First line:
+        \node (x_11) [state] at (6,2) {$\mathbf{X}^{t}_1$}; 
+        \node (x_12) [state] at (8,2) {$\mathbf{X}^{t+1}_1$}; 
+        % Second line: 
+        \node (x_21) [state] at (6,1) {$\mathbf{X}^{t}_2$}; 
+        \node (x_22) [state] at (8,1) {$\mathbf{X}^{t+1}_2$}; 
+       % Third line: 
+       \node (x_32) [state] at (8,0) {$\mathbf{X}^{t+1}_3$}; 
+       % Fourth line:
+       \node (x_42) [state] at (8,-1) {$\mathbf{X}^{t+1}_4$}; 
+       \node (x_g1) at (6.5,-1) {\LARGE $\mathcal{G}$};    
+        % Fifth line:
+       \node (x_52) [state] at (8,-2) {$\mathbf{X}^{t+1}_5$};        
+        \path[->] 
+        (x_11) edge (x_22)
+        (x_11) edge (x_32)
+        (x_11) edge (x_42)
+        (x_21) edge (x_52)
+        (x_21) edge (x_12);
+      \end{tikzpicture}
+ %     \end{center}
+    }
+    \only<2>{
+      \centering
+      \begin{tikzpicture}
+        \tikzstyle{every state}=[fill=orange!80!white,
+        draw=none,text=black,scale=0.7]
+        \tikzstyle{every edge}=[->,>=stealth',shorten >=1pt,auto,thin,draw]
+        % First line:
+        \node (x_11) [state] at (-5,2) {$\mathbf{X}^{t}_1$}; 
+        \node (x_12) [state] at (-2,2) {$\mathbf{X}^2_1$}; 
+        \node (x_13) [state] at (1,2) {$\dots$};
+        \node (x_14) [state] at (4,2) {$\mathbf{X}^{n}_1$};
+        % Second line: 
+        \node (x_21) [state] at (-5,1) {$\mathbf{X}^{1}_2$}; 
+        \node (x_22) [state] at (-2,1) {$\mathbf{X}^{2}_2$}; 
+        \node (x_23) [state] at (1,1) {$\dots$}; 
+        \node (x_24) [state] at (4,1) {$\mathbf{X}^{n}_2$}; 
+        % Third line: 
+        \node (x_31) [state] at (-5,0) {$\mathbf{X}^{1}_3$};
+        \node (x_32) [state] at (-2,0) {$\mathbf{X}^{2}_3$}; 
+        \node (x_33) [state] at (1,0) {$\dots$}; 
+        \node (x_34) [state] at (4,0) {$\mathbf{X}^{n}_3$}; 
+        % Fourth line:
+        \node (x_41) [state] at (-5,-1) {$\mathbf{X}^{1}_4$};
+        \node (x_42) [state] at (-2,-1) {$\mathbf{X}^{2}_4$}; 
+        \node (x_43) [state] at (1,-1) {$\dots$}; 
+        \node (x_44) [state] at (4,-1) {$\mathbf{X}^{n}_4$};
+        \node (x_g1) at (-3.5,-1.5) {\LARGE $\mathcal{G}$};
+        \node (x_g2) at (-.5,-1.5) {\LARGE $\mathcal{G}$}; 
+        \node (x_g3) at (2.5,-1.5) {\LARGE $\mathcal{G}$};
+        
+        % Fifth line:
+        \node (x_51) [state] at (-5,-2) {$\mathbf{X}^{1}_5$};
+        \node (x_52) [state] at (-2,-2) {$\mathbf{X}^{2}_5$}; 
+        \node (x_53) [state] at (1,-2) {$\dots$};
+        \node (x_54) [state] at (4,-2) {$\mathbf{X}^{n}_5$};
+        
+        \path[->] 
+        (x_11) edge (x_22)
+        (x_11) edge (x_32)
+        (x_11) edge (x_42)
+        (x_21) edge (x_52)
+        (x_21) edge (x_12);
+        
+        \path[->]
+        (x_12) edge (x_23)
+        (x_12) edge (x_33)
+        (x_12) edge (x_43)
+        (x_22) edge (x_53)
+        (x_22) edge (x_13)
+
+        (x_13) edge (x_24)
+        (x_13) edge (x_34)
+        (x_13) edge (x_44)
+        (x_23) edge (x_54)
+        (x_23) edge (x_14);
+      \end{tikzpicture}
+    }
+
+  \end{overlayarea}
+  
+\end{frame}
+
