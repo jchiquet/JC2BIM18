@@ -1,0 +1,98 @@
+% Maths
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+% \newtheorem{assumption}{Assumption}
+% \newtheorem{algorithm}{Algorithm}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem{remark}{Remark}
+% \newtheorem{exercise}{Exercise}
+% \newcommand{\propname}{Prop.}
+% \newcommand{\proof}{\noindent{\sl Proof:}\quad}
+% \newcommand{\eproof}{$\blacksquare$}
+
+%\renewcommand{\thesection}{\arabic{section}}
+%\renewcommand{\thechapter}{\Roman{chapter}}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\newcommand{\pref}[1]{\ref{#1} p.\pageref{#1}}
+\newcommand{\qref}[1]{\eqref{#1} p.\pageref{#1}}
+
+% Commands
+% \input{TikZcommands.tex}
+\definecolor{darkred}{rgb}{0.65,0.15,0.25}
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+\newcommand{\emphase}[1]{\textcolor{darkred}{#1}}
+% \newcommand{\emphase}[1]{{#1}}
+\newcommand{\paragraph}[1]{\textcolor{darkred}{#1}}
+\newcommand{\refer}[1]{{\small{\textcolor{blue}{{[\cite{#1}]}}}}}
+% \newcommand{\Refer}[1]{{\small{\textcolor{gray}{{[#1]}}}}}
+\renewcommand{\newblock}{}
+
+% Symboles
+\renewcommand{\d}{\text{d}}
+% \newcommand{\tr}{\text{tr}}
+\newcommand{\Cov}{{\mathbb C}\text{ov}}
+\newcommand{\cl}{\text{\it c}\ell}
+\newcommand{\Ccal}{\mathcal{C}}
+\newcommand{\Esp}{\xspace\mathbb E}
+\newcommand{\Espt}{\widetilde{\Esp}}
+\newcommand{\Covt}{\widetilde{\Cov}}
+\newcommand{\Ibb}{\mathbb I}
+\newcommand{\Hcal}{\mathcal{H}}
+\newcommand{\Mt}{\widetilde{M}}
+\newcommand{\mt}{\widetilde{m}}
+\newcommand{\Nbb}{\mathbb{N}}
+\newcommand{\Ncal}{\mathcal{N}}
+\newcommand{\pt}{\widetilde{p}}
+\newcommand{\Pcal}{\mathcal{P}}
+\newcommand{\Qcal}{\mathcal{Q}}
+\newcommand{\Rbb}{\mathbb{R}}
+\newcommand{\Sbb}{\mathbb{S}}
+\newcommand{\st}{\widetilde{s}}
+\newcommand{\St}{\widetilde{S}}
+\newcommand{\Var}{\mathbb V}
+\newcommand{\cst}{\text{cst}}
+% \newcommand{\diag}{\text{diag}}
+\newcommand{\Un}{\math{1}}
+
+\newcommand{\trace}[1]{\text{tr}\left(#1\right)}
+\newcommand{\matr}[1]{\boldsymbol{#1}}
+\newcommand{\matrbf}[1]{\mathbf{#1}}
+\newcommand{\vect}[1]{\matr{#1}} %% un peu inutile
+\newcommand{\vectbf}[1]{\matrbf{#1}} %% un peu inutile
+\newcommand{\trans}{\intercal}
+\newcommand{\transpose}[1]{\matr{#1}^\trans}
+\newcommand{\crossprod}[2]{\transpose{#1} \matr{#2}}
+\newcommand{\tcrossprod}[2]{\matr{#1} \transpose{#2}}
+\newcommand{\matprod}[2]{\matr{#1} \matr{#2}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\tr}{tr}
+\newcommand{\ra}{\emphase{$\rightarrow$} \xspace}
+
+% Hadamard, Kronecker and vec operators
+\DeclareMathOperator{\Diag}{Diag} % matrix diagonal
+\DeclareMathOperator{\diag}{diag} % vector diagonal
+\DeclareMathOperator{\mtov}{vec} % matrix to vector
+\newcommand{\kro}{\otimes} % Kronecker product
+\newcommand{\had}{\odot}   % Hadamard product
+
+% TikZ
+\newcommand{\nodesize}{2em}
+\newcommand{\edgeunit}{2.5*\nodesize}
+\tikzstyle{hidden}=[draw, circle, fill=gray!50, minimum width=\nodesize, inner sep=0]
+\tikzstyle{observed}=[draw, circle, minimum width=\nodesize, inner sep=0]
+\tikzstyle{eliminated}=[draw, circle, minimum width=\nodesize, color=gray!50, inner sep=0]
+\tikzstyle{empty}=[]
+\tikzstyle{arrow}=[->, >=latex, line width=1pt]
+\tikzstyle{edge}=[-, line width=1pt]
+\tikzstyle{dashedarrow}=[->, >=latex, dashed, line width=1pt]
+\tikzstyle{lightarrow}=[->, >=latex, line width=1pt, fill=gray!50, color=gray!50]

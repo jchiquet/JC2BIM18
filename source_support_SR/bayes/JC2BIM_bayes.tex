@@ -1,0 +1,108 @@
+\documentclass[9pt]{beamer}
+
+% Beamer style
+%\usetheme[secheader]{Madrid}
+% \usetheme{CambridgeUS}
+\useoutertheme{infolines}
+\usecolortheme[rgb={0.65,0.15,0.25}]{structure}
+% \usefonttheme[onlymath]{serif}
+\beamertemplatenavigationsymbolsempty
+%\AtBeginSubsection
+
+% Packages
+%\usepackage[french]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{dsfont, stmaryrd}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{epsfig}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{/home/robin/LATEX/Biblio/astats}
+%\usepackage[all]{xy}
+\usepackage{graphicx}
+
+\input{Commands}
+
+% Directory
+\newcommand{\fignet}{/home/robin/Bureau/RECHERCHE/RESEAUX/EXPOSES/FIGURES}
+\newcommand{\figchp}{/home/robin/Bureau/RECHERCHE/RUPTURES/EXPOSES/FIGURES}
+
+
+%====================================================================
+%====================================================================
+
+%====================================================================
+%====================================================================
+\begin{document}
+%====================================================================
+%====================================================================
+
+%====================================================================
+\title{An introduction to Bayesian statistical inference}
+
+\author{S. Robin}
+
+\institute[INRA / AgroParisTech]{~ \\%INRA / AgroParisTech \\
+%   \vspace{-.1\textwidth}
+  \begin{tabular}{ccc}
+    \includegraphics[height=.06\textheight]{\fignet/LogoINRA-Couleur} & 
+    \hspace{.02\textheight} &
+    \includegraphics[height=.06\textheight]{\fignet/logagroptechsolo} % & 
+%     \hspace{.02\textheight} &
+%     \includegraphics[height=.09\textheight]{\fignet/logo-ssb}
+    \\ 
+  \end{tabular} \\
+  \bigskip
+  }
+
+\date[JC(2)BIM]{JC(2)BIM, June 2018, Fréjus}
+
+%====================================================================
+%====================================================================
+\maketitle
+%====================================================================
+
+%====================================================================
+\section{Statistical inference: Bayesian point-of-view}
+\input{bayes-inference}
+
+%====================================================================
+\section{Evaluating the posterior distribution}
+\input{posterior-sampling}
+
+%====================================================================
+\section{Approximate Bayesian Computation}
+\input{approximate-bayes}
+
+%====================================================================
+\frame{ \frametitle{References}
+{\tiny
+  \bibliography{/home/robin/Biblio/BibGene}
+%   \bibliographystyle{/home/robin/LATEX/Biblio/astats}
+  \bibliographystyle{alpha}
+  }
+}
+
+%====================================================================
+\appendix 
+\backupbegin
+\backupend
+
+%====================================================================
+%====================================================================
+\end{document}
+%====================================================================
+%====================================================================
+
+  \begin{tabular}{cc}
+    \begin{tabular}{p{.5\textwidth}}
+    \end{tabular}
+    & 
+    \hspace{-.02\textwidth}
+    \begin{tabular}{p{.5\textwidth}}
+    \end{tabular}
+  \end{tabular}
+
