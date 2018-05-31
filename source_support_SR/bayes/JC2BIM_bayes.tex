@@ -1,4 +1,4 @@
-\documentclass[9pt]{beamer}
+\documentclass[10pt]{beamer}
 
 % Beamer style
 %\usetheme[secheader]{Madrid}
@@ -17,7 +17,6 @@
 \usepackage{dsfont, stmaryrd}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{epsfig}
-\usepackage{array}
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{/home/robin/LATEX/Biblio/astats}
@@ -29,6 +28,7 @@
 % Directory
 \newcommand{\fignet}{/home/robin/Bureau/RECHERCHE/RESEAUX/EXPOSES/FIGURES}
 \newcommand{\figchp}{/home/robin/Bureau/RECHERCHE/RUPTURES/EXPOSES/FIGURES}
+\newcommand{\figfig}{../figs}
 
 
 %====================================================================
@@ -65,16 +65,21 @@
 \maketitle
 %====================================================================
 
+\frame{\frametitle{Outline} \tableofcontents}
+
 %====================================================================
 \section{Statistical inference: Bayesian point-of-view}
+\frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{bayes-inference}
 
 %====================================================================
 \section{Evaluating the posterior distribution}
+\frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{posterior-sampling}
 
 %====================================================================
 \section{Approximate Bayesian Computation}
+\frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{approximate-bayes}
 
 %====================================================================
@@ -89,6 +94,12 @@
 %====================================================================
 \appendix 
 \backupbegin
+%====================================================================
+\section{Appendix}
+\frame{\frametitle{Outline} \tableofcontents[currentsection]}
+\input{bayes-appendix}
+
+
 \backupend
 
 %====================================================================

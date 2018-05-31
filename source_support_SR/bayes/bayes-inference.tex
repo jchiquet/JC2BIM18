@@ -1,32 +1,302 @@
 %====================================================================
 \subsection{Statistical inference: frequentist / Bayesian}
 %====================================================================
-\frame{ \frametitle{}
-Frequentist: fixed parameter $\theta$
+\frame{ \frametitle{An example}
 
-Bayesian: random parameter $\theta$
+  \paragraph{Example:} 
+  \begin{itemize}
+   \item $n$ patients: $i = 1 \dots n$
+   \item $Y_i =$ status (0 = healthy, 1 = sick) of patient $i$ 
+   \item $\xbf_i = (x_{i1}, \dots x_{ip}) =$ vector of gene expression for patient $i$ (gene $j = 1 \dots p$)
+  \end{itemize}
+  
+  \bigskip \bigskip 
+  \paragraph{Dataset:}
+  \begin{center} {\tt \begin{tabular}{lrrrcr}
+  & AB033066  & NM003056  & NM000903  & \dots & Status \\ 
+  \hline 
+  1  & 0.178  & 0.116  & 0.22  & & 0 \\ 
+  2  & 0.065  & -0.073  & -0.014  & & 0 \\ 
+  3  & -0.077  & 0.03  & 0.043  & & 0 \\ 
+  4  & 0.176  & -0.041  & 0.362  & & 0 \\ 
+  5  & -0.089  & -0.164  & -0.266  & & 0 
+  \end{tabular} } \end{center}
+  }
+  
+%====================================================================
+\frame{ \frametitle{A statistical model}
 
-Source: Bayes formula
+  \paragraph{Logistic regression} Logistic regression
+  \begin{itemize}
+   \item The patients are independent.
+   \item The probability for patient $i$ to be sick depends on $\xbf_i$:
+   $$
+   \Pr\{Y_i = 1\} = \frac{e^{\xbf_i^\intercal \thetabf}}{1 + e^{\xbf_i^\intercal \thetabf}}, 
+   \qquad \qquad
+   \xbf_i^\intercal \thetabf = \sum_{j=1}^p x_{ij} \theta_j
+   $$
+   \item $\thetabf = (\theta_1, \dots \theta_p):$ unknown parameter (regression coefficients, incl. intercept)
+  \end{itemize}
+  
+  $$
+  \includegraphics[width=.6\textwidth, height=.4\textheight]{\figfig/logistic-curve}
+  $$
+}  
 
-Caution: 'Bayesian' network, 'Bayesian' ... 
+%====================================================================
+\frame{ \frametitle{Frequentist inference}
+
+  \paragraph{$\thetabf =$ fixed parameter:}
+  \begin{itemize}
+   \item Statistical model:
+   $$
+   \Ybf \sim p_\thetabf
+   $$
+   \item Inference: get a (point) estimate $\widehat{\thetabf}$ e.g.
+   $$
+   \widehat{\thetabf}: \qquad \log p_{\widehat{\thetabf}}(\Ybf) = \max_\thetabf \log p_{\thetabf}(\Ybf)
+   $$
+   \item The estimate $\widehat{\thetabf}$ itself is random (depends on the data) \ra confidence interval, tests, ...
+  \end{itemize}
+  
+  \bigskip \bigskip \pause
+  \paragraph{Output:} {\tt GLM = glm(Y $\sim$ X, family=binomial)}
+  \begin{center} {\tt \begin{tabular}{lrrrr}
+    & Estimate  & Std. Error  & z value  & Pr($>|$z$|$) \\ 
+    \hline 
+    (Intercept)  & -0.7212697  & 0.6512707  & -1.107481  & 0.2680861 \\ 
+    XAB033066  & 7.23375  & 2.505118  & 2.887589  & 0.003882068 \\ 
+    XNM003056  & -0.6116423  & 1.854695  & -0.3297806  & 0.7415658 \\ 
+    XNM000903  & 1.732625  & 1.199888  & 1.443988  & 0.1487423 \\
+    \dots
+    \end{tabular} } \end{center}
 }
 
 %====================================================================
-\subsection{Random parameter $\theta$}
-%====================================================================
-\frame{ \frametitle{}
-Inference = $p(\theta | Y)$
+\frame{ \frametitle{Bayesian inference}
 
-Example: logistic regression
+  \paragraph{$\thetabf =$ random parameter:}
+  \begin{itemize}
+   \item Statistical model:
+   $$
+   p(\Ybf \gv \thetabf)  \qquad \text{($=$ {\sl likelihood})}
+   $$
+   \item Inference: provide the conditional distribution of $\thetabf$ given the observed data $\Ybf$:
+   $$
+   p(\thetabf \gv \Ybf) \qquad \text{($=$ {\sl posterior} distribution)}
+   $$
+   \ra credibility intervals
+   \item Requires to define a marginal distribution: 
+   $$
+   p(\thetabf) \qquad \text{($=$ {\sl prior} distribution)}
+   $$  
+  \end{itemize}
 }
 
 %====================================================================
-\subsection{Some typical use of Bayesian inference}
+\subsection{Basics of Bayes inference}
 %====================================================================
-\frame{ \frametitle{}
-Posterior distribution and confidence intervals
+\frame{ \frametitle{Why 'Bayes'}
 
-Model comparison / selection / averaging (uncertainty on models)
+  \paragraph{Bayes formula:}
+  $$
+  P(A|B) = \frac{P(A, B)}{P(B)} = \frac{P(A)}{P(B)} P(B \gv A)
+  $$
+  \begin{itemize}
+   \item $P(B) =$ marginal probability of $B$
+   \item $P(A, B) =$ joint probability of $A$ and $B$
+   \item $P(A \gv B) =$ conditional probability of $A$ given $B$ \footnote{see Appendix \# \ref{app:JointMargCond}}
+  \end{itemize}
 
-Transfer of uncertainty from one experience to another
+  \bigskip \bigskip \pause
+  \paragraph{Be careful.} Many methods, e.g.
+  $$
+  \text{Bayesian network, Naive Bayes, ...}
+  $$
+  \begin{itemize}
+  \item use conditional probabilities
+  \item but have nothing to do with Bayesian inference (in the statistical sense)
+  \end{itemize}
 }
+
+%====================================================================
+\frame{ \frametitle{Bayes formula for Bayesian inference}
+
+  \paragraph{Posterior distribution.}
+  $$
+  p(\thetabf \gv \Ybf) = \frac{p(\Ybf, \thetabf)}{p(\Ybf)} = \frac{\overset{prior}{\overbrace{p(\thetabf)}} \; \overset{likelihood}{\overbrace{p(\Ybf \gv \thetabf)}}}{\emphase{p(\Ybf)}}
+  $$
+  \ra Requires to evaluate the {\sl integrated likelihood} (i.e. marginal)
+  $$
+  p(\Ybf) = \int p(\thetabf) p(\Ybf \gv \thetabf) \d \thetabf,
+  $$
+  which act as the normalizing constant of the posterior $p(\thetabf \gv \Ybf)$.
+}
+
+%====================================================================
+\frame{ \frametitle{Back to logistic regression}
+
+  \paragraph{Model}
+  \begin{itemize}
+   \item Prior: all coefficient $\theta_j$ independent:
+   $$
+   \theta_j \sim \Ncal(0, 100)
+   $$
+   \item Likelihood: all patients independent, {\sl conditionally} on $\thetabf$:
+   $$
+   \Pr\{Y_i = 1 \gv \thetabf\} = e^{\xbf_i^\intercal \thetabf} \left/ \left( 1 + e^{\xbf_i^\intercal \thetabf} \right) \right. 
+   $$
+  \end{itemize}
+  
+  \paragraph{Inference:}
+  $$
+  \thetabf \gv \Ybf \sim \; ? 
+  $$
+  
+  \bigskip
+  (see later, but $p(\thetabf \gv \Ybf) \neq \Ncal(\cdot, \cdot)$, for sure.)
+}
+
+%====================================================================
+\frame{ \frametitle{Bayesian inference}
+
+  \paragraph{Output:} 
+  $$
+  \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/posterior-density}
+  $$
+}
+
+%====================================================================
+\subsection{Some typical uses of Bayesian inference}
+%====================================================================
+\frame{ \frametitle{Posterior distribution and confidence intervals} \label{sec:CI}
+
+  \paragraph{Parameter 'estimate'.}
+  \begin{align*}
+   \text{posterior mean:} \qquad \widehat{\theta}_j & = \Esp(\theta_j|\Ybf) = \int \theta_j \; p(\theta_j \gv \Ybf) \d \theta_j \\
+   \text{posterior mode:} \qquad \widehat{\theta}_j & = \arg\max _{\theta_j} \; p(\theta_j|\Ybf)
+  \end{align*}
+
+  \bigskip
+  \paragraph{Credibility interval (CI).} With level $1 - \alpha$ (e.g. 95\%):
+  $$
+  CI_{1-\alpha}(\theta_j) = [\theta_j^\ell, \theta_j^u]:
+  \qquad 
+  \Pr\{\theta_j^\ell < \theta_j < \theta_j^u \gv \Ybf\} = 1-\alpha
+  $$
+
+  \bigskip \pause
+  \paragraph{Example.} 
+  \begin{center} {\tt \begin{tabular}{lrrrcr}
+    & post.mean  & post.mode  & lower.CI  & upper.CI \\ 
+    \hline 
+    Intercept  & -0.9816181  & -0.8652166  & -2.41342  & 0.3704264 \\ 
+    AB033066  & 8.395169  & 8.587083  & 3.271464  & 13.98373 \\ 
+    NM003056  & -1.042483  & -0.9854149  & -5.046639  & 2.819764 \\ 
+    NM000903  & 1.911312  & 1.677234  & -0.4240319  & 4.452512 
+    \end{tabular} } \end{center}
+}
+
+%====================================================================
+\frame{ \frametitle{Accounting for uncertainty}
+
+  \paragraph{Question:} What is the probability for patient 0 (with profile $\xbf_0$) to be sick?
+
+  \bigskip \bigskip 
+  \paragraph{Model answer:}
+  $$
+  \Pr\{Y_0 = 1 \gv \thetabf\} = e^{\xbf_0^\intercal \thetabf} \left/ \left( 1 + e^{\xbf_0^\intercal \thetabf} \right) \right. 
+  $$
+  but $\thetabf$ is unknown (and random).
+  
+  \bigskip \bigskip 
+  \paragraph{Bayesian answer:} {\sl posterior predictive} probability
+  $$
+  \Pr\{Y_0 = 1 \gv \Ybf\} = \int \Pr\{Y_0 = 1 \gv \thetabf\} p(\thetabf \gv \Ybf) \d \thetabf
+  $$
+}
+
+%====================================================================
+\frame{ \frametitle{Model comparison (1/2)}
+
+  \paragraph{Problem.} Which model fits the data better:
+  \begin{align*}
+   M_0 &: \text{none of the genes has an effect, i.e. $\thetabf = (\theta_0, 0, \dots, 0)$} \\
+   M_1 &: \text{only the fist gene has an effect, i.e. $\thetabf = (\theta_0, \theta_1, 0, \dots, 0)$} \\
+   & \dots
+   \\
+   M_p &: \text{all genes have an effect, i.e. $\thetabf = (\theta_0, \theta_1, \dots,  \theta_p)$} 
+   \end{align*}
+
+   \bigskip \bigskip 
+   \paragraph{Bayesian model comparison.} For each model $M \in \Mcal =\{M_0, \dots, M_p\}$, evaluate
+   $$
+   p(M \gv \Ybf)
+   $$
+}
+   
+%====================================================================
+\frame{ \frametitle{Model comparison (2/2)}
+
+  \paragraph{Ingredients:}
+  \begin{itemize}
+   \item Prior on the models: $p(M)$, e.g.
+   $$
+   p(M_k) = \Pr\{M = M_k\} = 1/ (p+1) \qquad \text{(uniform prior)}
+   $$
+   \item Conditional prior on the parameters: $p(\thetabf|M)$, e.g.
+   $$
+   \theta_j \gv M_k \; \left\{ 
+   \begin{array} {rll}
+   \sim & \Ncal(0, 100) & \text{if $ j \leq k$} \\
+   = & 0 & \text{otherwise}
+   \end{array}\right.
+   $$
+  \end{itemize}
+
+  \bigskip \pause
+  \paragraph{Recipe:}
+  \begin{itemize}
+  \item Evaluate the marginal likelihood of the data for each model $M$:
+  $$
+  p(\Ybf \gv M) = \int p(\Ybf \gv \thetabf) p(\thetabf \gv M) \d \thetabf
+  $$
+  \item \pause Evaluate the $p(M_k \gv \Ybf)$ using Bayes rule
+  $$
+  \Pr\{M = M_k \gv \Ybf\} = \frac{p(M_k) p(\Ybf \gv M_k)}{p(\Ybf)} = \frac{p(M_k) p(\Ybf \gv M_k)}{\sum_{k'} p(M_{k'}) p(\Ybf \gv M_{k'})}
+  $$
+  \end{itemize}
+ }
+
+%====================================================================
+\frame{ \frametitle{Model averaging (uncertainty on models)}
+
+  \paragraph{Question:} Probability for patient 0 to be sick?
+  
+  \bigskip \bigskip \pause
+  \paragraph{Model selection.}
+  \begin{itemize}
+   \item Select the 'best' model $\widehat{M}$, i.e. with largest posterior $p(M \gv \Ybf)$
+   \item Compute
+   $$
+  \Pr\{Y_0 = 1 \gv \Ybf, \widehat{M} \} = \int \Pr\{Y_0 = 1 \gv \thetabf\} p(\thetabf \gv \Ybf, \widehat{M}) \d \thetabf
+   $$
+  \end{itemize}
+
+  \bigskip \pause
+  \paragraph{Model averaging.}
+  \begin{itemize}
+   \item Keep all models
+   \item Compute
+   $$
+   \Pr\{Y_0 = 1 \gv \Ybf\} = \sum_M \Pr\{Y_0 = 1 \gv \Ybf, M\} p(M \gv \Ybf)
+   $$
+  \end{itemize}
+
+}
+
+%====================================================================
+\frame{ \frametitle{Transfer of uncertainty from one experience to another}
+
+}
+
