@@ -16,6 +16,7 @@ data = list(X=X, Y=Y)
 M = 1e5
 beta.prior.mean = rep(0, d); beta.prior.var = 1e2*diag(d)
 beta.shift.var = 1e-1*diag(d)
+save(beta.prior.mean, beta.prior.var, file='../res/VEER1-prior.Rdata')
 
 ###############################################################################
 # Importance sampling 
@@ -60,6 +61,22 @@ if(file.exists(paste0('../res/VEER1-MH-full-M', M,'.Rdata'))==F){
    beta.nb = nrow(beta.sample)
    CI.MH.full = WeightedCI(IS=list(beta.sample=beta.sample, weight.sample=rep(1, beta.nb)/beta.nb))
    save(MH.full, beta.sample, beta.nb, CI.MH.full, file=paste0('../res/VEER1-MH-full-M', M,'.Rdata'))
+}
+
+###############################################################################
+# Metropolis-Hastings : full model, half data
+if(file.exists(paste0('../res/VEER1-MH-half-M', M,'.Rdata'))==F){
+   sample1 = sort(sample(1:n, round(n/2)))
+   sample2 = (1:n)[-sample1]
+   MH.half = MH(data=list(X=X[sample1, ], Y=Y[sample1]), beta.prior.mean, beta.prior.var, beta.shift.var, M=M)
+   cat('acceptance =', MH.half$sample/MH.half$iter, '\n')
+   for (j in 1:d){plot(MH.half$beta.path[, j], main='', xlab='', ylab='', type='l')}
+   # Remove burn-in period
+   beta.path = MH.half$beta.path[(MH.half$M.MH-M+1):MH.half$M.MH, ]
+   beta.sample = beta.path[seq(1, M, by=10), ]
+   beta.nb = nrow(beta.sample)
+   CI.MH.half = WeightedCI(IS=list(beta.sample=beta.sample, weight.sample=rep(1, beta.nb)/beta.nb))
+   save(MH.half, beta.sample, beta.nb, CI.MH.half, sample1, file=paste0('../res/VEER1-MH-half-M', M,'.Rdata'))
 }
 
 ###############################################################################

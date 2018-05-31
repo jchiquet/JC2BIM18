@@ -1,5 +1,6 @@
 %====================================================================
 \subsection{Statistical inference: frequentist / Bayesian}
+\frame{\frametitle{Outline} \tableofcontents[currentsubsection]}
 %====================================================================
 \frame{ \frametitle{An example}
 
@@ -11,7 +12,7 @@
   \end{itemize}
   
   \bigskip \bigskip 
-  \paragraph{Dataset:}
+  \paragraph{Dataset:} $n = 78$, $p=15$
   \begin{center} {\tt \begin{tabular}{lrrrcr}
   & AB033066  & NM003056  & NM000903  & \dots & Status \\ 
   \hline 
@@ -79,7 +80,7 @@
   \begin{itemize}
    \item Statistical model:
    $$
-   p(\Ybf \gv \thetabf)  \qquad \text{($=$ {\sl likelihood})}
+   \emphase{\ell(\Ybf \gv \thetabf)} := p(\Ybf \gv \thetabf) \qquad \text{($=$ {\sl likelihood})}
    $$
    \item Inference: provide the conditional distribution of $\thetabf$ given the observed data $\Ybf$:
    $$
@@ -88,24 +89,25 @@
    \ra credibility intervals
    \item Requires to define a marginal distribution: 
    $$
-   p(\thetabf) \qquad \text{($=$ {\sl prior} distribution)}
+   \emphase{\pi(\thetabf)} := p(\thetabf) \qquad \text{($=$ {\sl prior} distribution)}
    $$  
   \end{itemize}
 }
 
 %====================================================================
 \subsection{Basics of Bayes inference}
+\frame{\frametitle{Outline} \tableofcontents[currentsubsection]}
 %====================================================================
 \frame{ \frametitle{Why 'Bayes'}
 
   \paragraph{Bayes formula:}
   $$
-  P(A|B) = \frac{P(A, B)}{P(B)} = \frac{P(A)}{P(B)} P(B \gv A)
+  P(A \gv B) = \frac{P(A, B)}{P(B)} = \frac{P(A)}{P(B)} P(B \gv A)
   $$
   \begin{itemize}
    \item $P(B) =$ marginal probability of $B$
    \item $P(A, B) =$ joint probability of $A$ and $B$
-   \item $P(A \gv B) =$ conditional probability of $A$ given $B$ \footnote{see Appendix \# \ref{app:JointMargCond}}
+   \item $P(A \gv B) =$ conditional probability of $A$ given $B$ \appref{app:JointMargCond}
   \end{itemize}
 
   \bigskip \bigskip \pause
@@ -120,17 +122,96 @@
 }
 
 %====================================================================
-\frame{ \frametitle{Bayes formula for Bayesian inference}
+\frame{ \frametitle{Bayes formula for Bayesian inference (1/2)}
 
   \paragraph{Posterior distribution.}
   $$
-  p(\thetabf \gv \Ybf) = \frac{p(\Ybf, \thetabf)}{p(\Ybf)} = \frac{\overset{prior}{\overbrace{p(\thetabf)}} \; \overset{likelihood}{\overbrace{p(\Ybf \gv \thetabf)}}}{\emphase{p(\Ybf)}}
+  p(\thetabf \gv \Ybf) = \frac{p(\Ybf, \thetabf)}{p(\Ybf)} = \frac{\overset{prior}{\overbrace{\pi(\thetabf)}} \; \overset{likelihood}{\overbrace{\ell(\Ybf \gv \thetabf)}}}{\emphase{p(\Ybf)}}
   $$
   \ra Requires to evaluate the {\sl integrated likelihood} (i.e. marginal)
   $$
-  p(\Ybf) = \int p(\thetabf) p(\Ybf \gv \thetabf) \d \thetabf,
+  p(\Ybf) = \int \pi(\thetabf) \ell(\Ybf \gv \thetabf) \d \thetabf,
   $$
   which act as the normalizing constant of the posterior $p(\thetabf \gv \Ybf)$.
+}
+
+%====================================================================
+\frame{ \frametitle{Bayes formula for Bayesian inference (2/2)}
+
+  \paragraph{Some remarks.}
+  \begin{enumerate}
+   \item \pause $p(\cdot)$ is sometimes denotes $[\cdot]$:
+   $$
+   p(\thetabf \gv \Ybf) = \frac{\pi(\thetabf) \; \ell(\Ybf \gv \thetabf)}{p(\Ybf)}
+   \qquad \Leftrightarrow \qquad
+   [\thetabf \gv \Ybf] = \frac{[\thetabf] \; [\Ybf \gv \thetabf]}{[\Ybf]}
+   $$ \\ ~
+   \item \pause Computing $p(\Ybf)$ is generally (very) difficult: see Section \ref{sec:MCMC} \\~
+   \item \pause Obviously
+   $$
+   p(\thetabf \gv \Ybf) \propto \pi(\thetabf) \; \ell(\Ybf \gv \thetabf),
+   $$
+   \ra $p(\thetabf \gv \Ybf)$ and $p(\thetabf' \gv \Ybf)$ can be compared, \emphase{without computing $p(\Ybf)$} \\~
+   \item \pause Obviously, the posterior $p(\thetabf \gv \Ybf)$ depends on the prior $\pi(\thetabf)$: see next slides.
+  \end{enumerate}
+
+}
+%====================================================================
+\frame{ \frametitle{The posterior depends on the prior} \label{slide:prior}
+
+  \begin{tabular}{cc}
+    \begin{tabular}{p{.5\textwidth}}
+    \paragraph{Data \& Model:}
+    \begin{itemize}
+     \item $Y_i =1$ if sick, $0$ otherwise
+     \item $n = 10$ patients
+     \item $\vdots:$ number sicks $/ n$
+    \end{itemize}
+
+    \bigskip \pause
+    \paragraph{Param:}
+    \begin{itemize}
+     \item $\theta =$ proba. sick
+     \item $\textcolor{blue}{\boldsymbol{-}}:$ prior $\pi(\theta)$
+    \end{itemize}
+
+    \bigskip \pause
+    \paragraph{Output:}
+    \begin{itemize}
+     \item $\boldsymbol{-}:$  posterior $p(\theta \gv \Ybf)$
+    \end{itemize}
+
+    \end{tabular}
+    & 
+    \hspace{-.02\textwidth}
+    \begin{tabular}{p{.5\textwidth}}
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b10-n10-p33} \\
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a5-b5-n10-p33} \\
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b1-n10-p33} 
+    \end{tabular}
+  \end{tabular}
+}
+
+%====================================================================
+\frame{ \frametitle{Dependency vanishes when $n$ increases}
+
+  \begin{tabular}{ccc}
+    $n = 10$ & $n = 100$ & $n = 1000$ \\
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n10-p33} & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n10-p33} 
+	 & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n100-p33} 
+	 \\
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n1000-p33} & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n100-p33} 
+	 & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n1000-p33} 
+	 \\
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n10-p33} & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n100-p33} 
+	 & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n1000-p33} 
+  \end{tabular}
 }
 
 %====================================================================
@@ -168,25 +249,26 @@
 
 %====================================================================
 \subsection{Some typical uses of Bayesian inference}
+\frame{\frametitle{Outline} \tableofcontents[currentsubsection]}
 %====================================================================
 \frame{ \frametitle{Posterior distribution and confidence intervals} \label{sec:CI}
 
   \paragraph{Parameter 'estimate'.}
   \begin{align*}
-   \text{posterior mean:} \qquad \widehat{\theta}_j & = \Esp(\theta_j|\Ybf) = \int \theta_j \; p(\theta_j \gv \Ybf) \d \theta_j \\
-   \text{posterior mode:} \qquad \widehat{\theta}_j & = \arg\max _{\theta_j} \; p(\theta_j|\Ybf)
+   \text{posterior mean:} \qquad \widehat{\theta}_j & = \Esp(\theta_j \gv \Ybf)  \\
+   \text{posterior mode:} \qquad \widehat{\theta}_j & = \arg\max _{\theta_j} \; p(\theta_j \gv \Ybf)
   \end{align*}
 
   \bigskip
   \paragraph{Credibility interval (CI).} With level $1 - \alpha$ (e.g. 95\%):
   $$
-  CI_{1-\alpha}(\theta_j) = [\theta_j^\ell, \theta_j^u]:
+  CI_{1-\alpha}(\theta_j) = [\theta_j^\ell; \theta_j^u]:
   \qquad 
   \Pr\{\theta_j^\ell < \theta_j < \theta_j^u \gv \Ybf\} = 1-\alpha
   $$
 
   \bigskip \pause
-  \paragraph{Example.} 
+  \paragraph{Example.} \appref{app:CIcontrast}
   \begin{center} {\tt \begin{tabular}{lrrrcr}
     & post.mean  & post.mode  & lower.CI  & upper.CI \\ 
     \hline 
@@ -242,9 +324,9 @@
   \begin{itemize}
    \item Prior on the models: $p(M)$, e.g.
    $$
-   p(M_k) = \Pr\{M = M_k\} = 1/ (p+1) \qquad \text{(uniform prior)}
+   p(M) = \cst \qquad \text{(uniform prior)}
    $$
-   \item Conditional prior on the parameters: $p(\thetabf|M)$, e.g.
+   \item Conditional prior on the parameters: $\pi(\thetabf \gv M)$, e.g.
    $$
    \theta_j \gv M_k \; \left\{ 
    \begin{array} {rll}
@@ -259,11 +341,11 @@
   \begin{itemize}
   \item Evaluate the marginal likelihood of the data for each model $M$:
   $$
-  p(\Ybf \gv M) = \int p(\Ybf \gv \thetabf) p(\thetabf \gv M) \d \thetabf
+  p(\Ybf \gv M) = \int \ell(\Ybf \gv \thetabf) \pi(\thetabf \gv M) \d \thetabf
   $$
   \item \pause Evaluate the $p(M_k \gv \Ybf)$ using Bayes rule
   $$
-  \Pr\{M = M_k \gv \Ybf\} = \frac{p(M_k) p(\Ybf \gv M_k)}{p(\Ybf)} = \frac{p(M_k) p(\Ybf \gv M_k)}{\sum_{k'} p(M_{k'}) p(\Ybf \gv M_{k'})}
+  p(M_k \gv \Ybf) = \frac{p(M_k) p(\Ybf \gv M_k)}{p(\Ybf)} = \frac{p(M_k) p(\Ybf \gv M_k)}{\sum_{k'} p(M_{k'}) p(\Ybf \gv M_{k'})}
   $$
   \end{itemize}
  }
@@ -292,11 +374,34 @@
    \Pr\{Y_0 = 1 \gv \Ybf\} = \sum_M \Pr\{Y_0 = 1 \gv \Ybf, M\} p(M \gv \Ybf)
    $$
   \end{itemize}
-
 }
 
 %====================================================================
 \frame{ \frametitle{Transfer of uncertainty from one experience to another}
 
+  \paragraph{Combining samples.} Consider two independent but similar datasets $\Ybf_1$ and $\Ybf_2$.
+  
+  \bigskip
+  Simple algebra gives:
+  $$
+  p(\thetabf \gv \Ybf_1, \Ybf_2) 
+  = \frac{p(\thetabf \gv \Ybf_1) p(\Ybf_2 \gv \thetabf, \Ybf_1) }{p(\Ybf_2 \gv \Ybf_1)}
+  $$
+  
+  \bigskip \pause
+  \paragraph{In practice:}
+  \begin{enumerate}
+  \item Perform inference using $\Ybf_1$ to get $p(\thetabf \gv \Ybf_1)$ from prior $\pi(\thetabf)$
+  \item Then perform inference using $\Ybf_2$ to get $p(\thetabf \gv \Ybf_1, \Ybf_2)$ \emphase{using  $p(\thetabf \gv \Ybf_1)$ as a prior}
+  \end{enumerate}
+}
+
+%====================================================================
+\frame{ \frametitle{Combining experiments}
+
+  \paragraph{Output:} $n_1 = n_2 = 39$
+  $$
+  \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/posterior-combine}
+  $$
 }
 

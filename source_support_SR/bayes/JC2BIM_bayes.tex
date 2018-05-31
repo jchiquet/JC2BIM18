@@ -23,7 +23,7 @@
 %\usepackage[all]{xy}
 \usepackage{graphicx}
 
-\input{Commands}
+\input{commands}
 
 % Directory
 \newcommand{\fignet}{/home/robin/Bureau/RECHERCHE/RESEAUX/EXPOSES/FIGURES}
@@ -68,17 +68,17 @@
 \frame{\frametitle{Outline} \tableofcontents}
 
 %====================================================================
-\section{Statistical inference: Bayesian point-of-view}
+\section{Statistical inference: Bayesian point-of-view} \label{sec:Intro}
 \frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{bayes-inference}
 
 %====================================================================
-\section{Evaluating the posterior distribution}
+\section{Evaluating the posterior distribution: Monte-Carlo} \label{sec:MCMC}
 \frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{posterior-sampling}
 
 %====================================================================
-\section{Approximate Bayesian Computation}
+\section{Extensions} \label{sec:ABC}
 \frame{\frametitle{Outline} \tableofcontents[currentsection]}
 \input{approximate-bayes}
 
