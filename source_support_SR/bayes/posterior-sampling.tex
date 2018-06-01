@@ -338,13 +338,21 @@
 }
 
 %===================================================================
-\frame{ \frametitle{Variational Bayes as prior}
+\frame{ \frametitle{Variational Bayes \& ML as a prior}
 
   $\textcolor{blue}{\boldsymbol{-}}:$ prior, $\textcolor{red}{\boldsymbol{-}}:$ VB, $\textcolor{green}{\boldsymbol{-}}:$ MLE, $\boldsymbol{-}:$ posterior 
   $$
   \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/ISproposal-density}
   $$
+}
 
+%===================================================================
+\frame{ \frametitle{Variational Bayes as a prior: joint distribution}
+
+  $\textcolor{red}{\boldsymbol{-}}:$ VB, $\boldsymbol{-}:$ posterior 
+  $$
+  \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/ISproposal-density2D}
+  $$
 }
 
 %====================================================================
@@ -437,9 +445,39 @@
    = \prod_i \left(\frac{e^{\xbf_i^\intercal \thetabf}}{1 + e^{\xbf_i^\intercal \thetabf}}\right)^{y_i} \left(\frac{e^{\xbf_i^\intercal \thetabf}}{1 + e^{\xbf_i^\intercal \thetabf}}\right)^{1-y_i}
   \end{align*}
 
-  \bigskip \pause
-  \paragraph{Property.} 
+  \bigskip \bigskip \pause
+  \paragraph{Algorithm settings.} 
+  $$\thetabf^0 = \Obf_p$$
+  $$\lambda( \cdot \gv \thetabf) = \Ncal(\Obf_p, .5 \, \Ibf_p)$$
+}
 
+%====================================================================
+\frame{ \frametitle{M-H for logistic regression: R code}
+
+  \pause
+  \footnotesize{\tt 
+  mu.prior = rep(0, p); Sigma.prior = 100*diag(p); Sigma.shift = .5*diag(p) \\ \pause
+  theta.sample = matrix(0, M, p) \\ \pause
+  theta.cur = theta.sample[1, ] \\ \pause
+  logprior.cur = dmvnorm(theta.cur, mean=mu.prior, sigma=Sigma.prior, log=T) \\ \pause
+  prob.cur = plogis(X\%*\%theta.cur) \\ \pause
+  loglik.cur = sum(dbinom(Y, 1, prob.cur, log=T)) \\ \pause
+  for (m in 2:M)\{ \\ \pause
+  \qquad theta.tmp = rmvnorm(1, mean=theta.sample[m-1, ], sigma=Sigma.shift)[1, ] \\ \pause
+  \qquad logprior.tmp = dmvnorm(theta.tmp, mean=mu.prior, sigma=Sigma.prior, log=T) \\ \pause
+  \qquad prob.tmp = plogis(X\%*\%theta.tmp) \\ \pause
+  \qquad loglik.tmp = sum(dbinom(Y, 1, prob.tmp, log=T)) \\ \pause
+  \qquad alpha = exp(logprior.tmp + loglik.tmp - logprior.cur - loglik.cur) \\ \pause
+  \qquad if(runif(1) < alpha)\{ \\ \pause
+  \qquad \qquad theta.sample[m, ] = theta.tmp; \\ 
+  \qquad \qquad logprior.cur = logprior.tmp; \\ 
+  \qquad \qquad loglik.cur = loglik.tmp \\ \pause
+  \qquad \qquad \}else\{ \\
+  \qquad \qquad theta.sample[m, ] = theta.sample[m-1, ] \\
+  \qquad \qquad \} \\ 
+  \qquad \} \\ \pause
+  \} \\
+  }
 }
 
 %====================================================================

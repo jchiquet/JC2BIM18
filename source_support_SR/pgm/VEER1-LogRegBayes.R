@@ -15,7 +15,7 @@ data = list(X=X, Y=Y)
 # Prior & MC parms
 M = 1e5
 beta.prior.mean = rep(0, d); beta.prior.var = 1e2*diag(d)
-beta.shift.var = 1e-1*diag(d)
+beta.shift.var = .5*diag(d)
 save(beta.prior.mean, beta.prior.var, file='../res/VEER1-prior.Rdata')
 
 ###############################################################################
@@ -47,6 +47,25 @@ if(file.exists(paste0('../res/VEER1-IS-MLE-M', M,'.Rdata'))==F){
    hist(log10(IS.MLE$weight.sample), breaks=sqrt(M), main=round(IS.MLE$ESS, 2))
    CI.MLE = WeightedCI(IS.MLE); print(CI.MLE)
    save(MLE, IS.MLE, CI.MLE, file=paste0('../res/VEER1-IS-MLE-M', M,'.Rdata'))
+}
+
+###############################################################################
+# Metropolis-Hastings : for code display
+p = d
+mu.prior = rep(0, p); Sigma.prior = 100*diag(p); Sigma.shift = .5*diag(p)
+theta.sample = matrix(0, M, p)
+logprior.cur = dmvnorm(theta.sample[1, ], mean=mu.prior, sigma=Sigma.prior, log=T)
+prob.cur = plogis(X%*%theta.sample[1, ])
+loglik.cur = sum(dbinom(Y, 1, prob.cur, log=T))
+for (m in 2:M){
+   theta.tmp = rmvnorm(1, mean=theta.sample[m-1, ], sigma=Sigma.shift)[1, ]
+   logprior.tmp = dmvnorm(theta.tmp, mean=mu.prior, sigma=Sigma.prior, log=T)
+   prob.tmp = plogis(X%*%theta.tmp)
+   loglik.tmp = sum(dbinom(Y, 1, prob.tmp, log=T))
+   alpha = exp(logprior.tmp + loglik.tmp - logprior.cur - loglik.cur)
+   if(runif(1) < alpha){
+      theta.sample[m, ] = theta.tmp; logprior.cur = logprior.tmp; loglik.cur = loglik.tmp
+   }else{theta.sample[m, ] = theta.sample[m-1, ]}
 }
 
 ###############################################################################

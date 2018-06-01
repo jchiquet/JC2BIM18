@@ -4,6 +4,8 @@ rm(list=ls())
 source('Functions-BayesLogReg.R')
 source('Functions-Print.R')
 library(plotrix)
+library(ks)
+library(mvtnorm)
 
 M = 1e5
 
@@ -47,6 +49,23 @@ sapply(1:4, function(j){
    lines(beta.grid, dnorm(beta.grid, mean=MLE$coefficients[j], sd=sqrt(MLE.var[j, j])), col=3, lwd=2)
    lines(density(beta.sample[, j]), lwd=2)
 })
+dev.off()
+
+# IS from approximate posterior: 2D density
+pdf('../figs/ISproposal-density2D.pdf')
+prob = .025
+par(mfrow=c(2, 2), mex=.5)
+for (j in 2:3){
+   for(k in (j+1):4){
+      KDE = kde(beta.sample[, c(j, k)])
+      plot(KDE, main='', xlab=colnames(X)[j], ylab=colnames(X)[j], lwd=2, xlim=quantile(beta.sample[, j], probs=c(prob, 1-prob)), 
+           ylim=quantile(beta.sample[, k], probs=c(prob, 1-prob)))
+      abline(v=mean(beta.sample[, j]), h=mean(beta.sample[, k]), lty=2, lwd=2)
+      plotmixt(mus=VB$Parms.vb$mean[c(j, k)], Sigmas=VB$Parms.vb$Variance[c(j, k), c(j, k)], props=1, 
+               col=2, lwd=2, add=T)
+      abline(v=VB$Parms.vb$mean[j], h=VB$Parms.vb$mean[k], col=2, lty=2, lwd=2)
+   }
+}
 dev.off()
 
 ###############################################################################
