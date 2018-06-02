@@ -1,0 +1,57 @@
+---
+title: "(JC)2BIM 2018 Research School"
+author: "G. Rigaill"
+date: June, 2018
+output:
+  beamer_presentation:
+    toc: true
+    includes:
+      in_header: some_macros.sty
+---
+
+## Statistical Inference
+
+\center{(JC)2BIM 2018 Research School}
+
+\center{Guillem Rigaill}
+
+```{r, out.width = "100px", echo=FALSE, fig.width=2}
+library(knitr)
+knitr::include_graphics("logo_sfbi.png")
+knitr::include_graphics("Empty.png")
+knitr::include_graphics("logo_inra.png")
+```
+
+
+
+# Introduction
+
+
+```{r child = 'chapter1.Rmd'}
+```
+
+
+# Probability survival kit
+
+```{r child = 'chapter2.Rmd'}
+```
+
+# Estimation
+
+```{r child = 'chapter3.Rmd'}
+```
+
+# Confidence intervals
+
+```{r child = 'chapter4.Rmd'}
+```
+
+# Hypothesis testing
+
+```{r child = 'chapter5.Rmd'}
+```
+
+
+# Multiple testing (a quick introduction)
+```{r child = 'chapter6.Rmd'}
+```

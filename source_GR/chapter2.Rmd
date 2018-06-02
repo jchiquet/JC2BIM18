@@ -1,0 +1,502 @@
+## Outline
+
+1. **Probability**
+2. Expectation, Variance and Covariance
+
+
+
+
+## Probability Space
+
+**Informal definition**
+
+  - $\Omega$ the set of all possible outcomes
+  - $F$ a set of subsets of $\Omega$, an $\omega$ in $F$ is called an event
+  - $p$ a function from $F$ to $[0, 1]$
+
+    - $p(\Omega)=1$
+    - For two disjoint events $\omega_1, \omega_2$, i.e. $\omega_1 \cap \omega_2 = \emptyset$,
+  $$p(\omega_1 \cup \omega_2) = p(\omega_1)+p(\omega_2)$$
+    - more generally $p$ is countably additive (but this outside the scope of this summary)
+
+    
+## Probability Space
+
+**Some examples**
+
+  1. Throw of a coin 
+  2. Throw of two dices
+  3. Throw of a disc
+  4. Expression of a gene in an RNAseq experiment
+
+## Some usefull properties
+
+  - For an event $\omega$ $$p(\bar{\omega}) = p(\Omega \setminus \omega) = 1 - p(\omega)$$
+  - For two events $\omega_1, \omega_2$
+   $$p(\omega_1 \cup \omega_2) = p(\omega_1)+p(\omega_2) - p(\omega_1 \cap \omega_2)$$
+  
+## Independence and conditionnal probability
+
+1. $\omega_1$ is independent of $\omega_2$ if 
+$$p(\omega_2 \cap \omega_1) = p(\omega_1)P(\omega_2)$$
+
+2. For an event $\omega_1$ with $p(\omega_1) > 0$ we define the conditionnal probability
+$p(\omega_2|\omega_1)$ as 
+
+$$p(\omega_2|\omega_1) = p(\omega_1 \cap \omega_2) / p(\omega_1)$$
+
+**Note:** If $\omega_2$ is independent of $\omega_1$ then $P(\omega_2|\omega_1) = P(\omega_2)$
+
+
+## Random Variables
+
+**Definition**
+
+$Y$ is a function from $\Omega$ to a space $Def(Y)$ 
+
+
+- Typically $Def(Y)$ is the set of integers or of real numbers...
+- We have:
+
+$$p(Y \in S) = p(\{ \omega \in F | Y(\omega) \in S\})$$
+
+## Random Variables
+
+**Some examples** 
+
+  - $Y$ a binary variable - throw of a coin 
+  - $Y$ an integer smaller than $6$ - a throw of a six face dice
+  - $Y$ a real number - distance of a javelin throw
+  - $Y$ an integer - expression of a gene in an RNAseq experiment
+  - ...
+
+## Independence and random variables
+
+**Definition**
+
+Two random variables $Y_1$ and $Y_2$ are independent if
+for all $y_1$ in $Def(Y_1)$ and $y_2$ in $Def(Y_2)$ we 
+have $$p(Y_1=y_1 \cap Y_2=y_2)= P(Y_1=y_1) P(Y_2=y_2)$$
+
+
+
+## Probability and cumulative probability for discrete variables
+
+0. We call $Def(Y)$ the discrete set of values taken by $Y$ (e.g $\{0, 1\}$, $\mathbb{N}$)
+
+1. For any $y$ in $Def(Y)$ we have access to \textcolor{blue}{$p(Y=y)=p(y)$}
+
+2. We define the cumulative distribution function as \textcolor{red}{$P(Y \leq y)$}.
+
+$$\textcolor{red}{P(Y \leq y)} = \underset{y' \in Def(Y)}{\underset{y' \leq y}{\sum}} \textcolor{blue}{p(y')}$$
+
+## Probability and cumulative probability for discrete variables
+
+3. A graphical example Binomial with parameter $n=3$ and $\pi=0.5$
+
+
+```{r, echo=FALSE}
+q <- seq(-2, 5, by=0.01)
+
+plot(q, pbinom(size=3, prob=0.5, q=q), type="l", 
+     xlab="value", ylab="P(Y <= y)", lwd=4, col="red")
+segments(0:3, 0, 0:3, dbinom(size=3, prob=0.5, x=0:3), col="blue")
+points(0:3, dbinom(size=3, prob=0.5, x=0:3), col="blue", pch=20)
+
+```
+
+
+## Density and cumulative probability for absolutely continuous random variable
+
+For continuous variable we can proceed fairly similarly:
+
+0. Take $Def(Y) = \mathbb{R}$ the set of values taken by $Y$
+
+1. For any $y$ in $Def(Y)$ we have a continuous density function \textcolor{blue}{$p(y)$} (or \textcolor{blue}{$f(y)$})
+
+2. We define the cumulative distribution function as \textcolor{red}{$P(Y \leq y)$} as
+
+$$\textcolor{red}{P(Y \leq y)} \int_{y' \leq y} \textcolor{blue}{p(y')}dy'$$
+
+
+## Density and cumulative probability for a Gaussian
+
+3. A graphical example with $p(y)= \frac{1}{\sqrt{2\pi}} e^{-y^2}$
+
+```{r, echo=FALSE}
+q <- seq(-4, 4, by=0.01)
+plot(q, pnorm(q=q), type="l", xlab="value", ylab="P(Y <= y)", lwd=2, col="red")
+lines(q, dnorm(q), col="blue")
+```
+
+
+
+## Independence of random variables
+
+Two random variables $Y_1$ and $Y_2$ are independent
+if for all $y_1$ and $y_2$ 
+$$p(Y_1=y_1 \cap Y_2=y_2) = p(Y_1=y_1)P(Y_2=y_2)$$
+
+
+## Simulation exercices 
+
+## Simulating simple random variables (Bernoulli)
+
+Throw of a coin or Bernoulli variable:
+
+  - $Y=0$ with probability $\pi$
+  - $Y=1$ with probability $1 - \pi$
+  
+
+```{r}
+## One throw
+rbinom(n=1, prob=0.5, size=1)
+```
+
+## Simulating simple random variables (Bernoulli)
+```{r}
+## 10^4 independent throws Y_1, Y_2, Y_3...
+Y <- rbinom(n=10^4, prob=0.5, size=1)
+table(Y)
+
+```
+
+
+## Simulating simple random variables (Binomial)
+
+```{r}
+## 10^4 independent throws Y_1, Y_2, Y_3...
+Y <- rbinom(n=10^4, prob=0.5, size=5)
+table(Y)
+
+```
+
+## Simulating simple random variables (Normal)
+
+Throw of a Normal o variable:
+
+  - $Y$ takes continuous values $\mathcal{N}(\mu, \sigma^2)$
+  - the density is $$f(y)= \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{1}{\sigma^2}(y-\mu)^2}$$
+  
+
+```{r}
+## One throw
+rnorm(n=1, mean=0, sd=1)
+```
+
+## Simulating simple random variables (Normal)
+
+```{r, cache=T}
+## 10^4 independent throws Y_1, Y_2, Y_3...
+Y <- rnorm(n=10^3, mean=0, sd=1)
+x <- seq(-3, 3, by=0.01)
+hist(Y, col=rgb(0,0,1,1/4), freq=FALSE, ylab="density")
+lines(x, dnorm(x), col="red",lty=3, lwd=3)
+```
+
+
+## Simulating simple random variables (Poisson)
+
+Throw of a Poisson:
+
+  - $Y$ takes integer values $\mathcal{P}(\lambda)$
+  - density $p(y)= \frac{\lambda^y e^{-\lambda}}{y!}$
+  
+
+```{r}
+## One throw
+rpois(n=1, lambda = 10)
+```
+
+
+## Simulating simple random variables (Poisson)
+
+```{r, cache=TRUE}
+## 10^4 independent throws Y_1, Y_2, Y_3...
+Y <- rpois(n=10^3, lambda=10)
+x <- 0:40
+plot(table(Y)/10^3, col="blue", ylab="Proba")
+lines(x, dpois(seq(0, 40), lambda=10), 
+      col="red",lty=3, lwd=3)
+```
+
+
+##
+
+
+## Outline
+
+1. Probability
+2. **Expectation, Variance and Covariance**
+
+
+## Expectation
+
+
+**Definition**
+
+1. For discrete variables with probability $p$
+
+$$ E(Y) = \underset{y \in Def(Y)}{\sum} yp(y) $$
+
+2. Similarly for absolutely continuous variables with a density $p$
+$$ E(Y) = {\underset{y \in Def(Y)}{\int}} yp(y)dy $$
+
+## Some expectations
+
+
+1. Expectation of a Bernouilli of parameter $\pi$
+
+2. Expectation of a Binomial distribution of paramters $\pi$ and $n$. 
+
+  - number of successes in n independent experiments
+
+$$p(Y=y) = {n \choose y} \pi^y (1-\pi)^{n-y}$$ 
+
+  - a bit two difficult for now...
+
+3. Expectation of a Normal distribution of parameters $\mu$ and $\sigma^2$
+
+## Expectation is linear
+
+
+  1. For two random variables $Y_1$, $Y_2$: $$E(Y_1+Y_2) = E(Y_1) + E(Y_2)$$
+  2. For a constant $c$ and a random variable $Y_1$:  $$E(cY_1) = c E(Y_1)$$
+  3. For two random variables: $E(Y_2) = E( E(Y2 | Y_1) )$
+
+
+## Some expectations
+
+
+1. Expectation of a Binomial distribution of paramters $\pi$ and $n$
+
+$$p(Y=y) = {n \choose y} \pi^y (1-\pi)^{n-y}$$ 
+
+
+## Some exercices on the expectation
+
+## Ex: on the expectation (1)
+
+1. Expectation of the sum of 10^4 throws of a dice.
+
+We have $n$ r.v $Y_1, ... Y_n$ taking value in $\{1, 2, 3, 4, 5, 6 \}$.
+
+  - We have $E(Y_i)=\sum_{i=1}^6 \frac{i}{6} = 3.5$
+  - and so we get
+
+$E(\sum_{i=1}^n Y_i) = \sum_{i=1}^n E(Y_i) = n E(Y_1)= 3.5 \times 10^4$
+
+Using simulations and assuming the throws are independent
+
+```{r, cache=T}
+exper <- replicate(10^4, sum(
+        sample.int(6, 10^4, replace=TRUE)) )
+mean(exper)
+```
+
+
+## Ex: on the expectation (2)
+
+2. Expectation of the average of 10^4 throws of a  dice.
+
+$$E(\frac{1}{n}\sum_{i=1}^n Y_i) = \frac{1}{n}\sum_{i=1}^n E(Y_i) = \frac{n}{n} E(Y_1)= 3.5$$
+
+Using simulations and assuming the throws are independent 
+
+```{r, cache=T}
+exper <- replicate(10^4, mean(
+        sample.int(6, 10^4, replace=TRUE)) )
+mean(exper)
+```
+
+## Ex: on the expectation (3)
+
+3. Expectation of $6(Y_1-1) + Y_2 - 1$ where $Y_1$ and $Y_2$ correspond 
+to the throws of two dices.
+
+$$E(6(Y_1-1) + Y_2 - 1) = 6 E(Y_1) - 6 + E(Y_2) - 1 = 17.5$$
+
+Using simulations and assuming the throws are independent 
+
+```{r, cache=T}
+exper <- replicate(10^4, sum( (
+  sample.int(6, 2, replace=TRUE)-1) * c(6, 1)))
+mean(exper)
+```
+
+## Ex: on the expectation (4)
+
+- Consider $Y_1$ a gaussian r.v. with parameters $\mu_1=0$ and $\sigma_1^2=1$.
+- Given $Y_1$ the r.v. $Y_2$ is gaussian with parameters $\mu_2=y_1$ and $\sigma_2^2=1$
+
+4. What is the expected value of $Y_2$?
+
+$$E(Y2) = E( E(Y_2|Y_1) ) = E(Y_1)= 0$$
+
+Using simulations and assuming independence
+
+```{r, cache=TRUE}
+n  <- 10^4
+Y1 <- rnorm(n)
+Y2 <- rnorm(n=n, mean=Y1)
+mean(Y2)
+```
+
+
+
+##
+
+
+## Variance
+
+**Definition**
+
+$$V(Y) = E( (Y - E(Y))^2) = E(Y^2) - E(Y)^2$$
+
+- Intuitively what does it represent ?
+
+## Variance 
+
+
+**Properties**
+
+  1. For two **independent** random variables $Y_1$ and $Y_2$: $$V(Y_1+Y_2) = V(Y_1) + V(Y_2)$$
+  2. For a constant $c$ and a random variable $Y_1$,  $$V(cY_1) = c^2 V(Y_1)$$
+  3. For two random variables: $$V(Y_2) = E( V(Y2 | Y_1) ) + V( E(Y_2|Y_1) )$$
+
+
+## Some exercices on the variance
+
+## Some exercices on the variance (1)
+
+1. Variance of the sum of 10^4 *independent* throws of a dice.
+
+  - We have $n$ r.v $Y_1, ... Y_n$ taking value in $\{1, 2, 3, 4, 5, 6 \}$.
+  - We have $$V(Y_i) = E(Y_i^2) - E(Y_i)^2 = \frac{1+4+9+16+25+36}{6} - 3.5^2 = \frac{35}{12}$$
+
+
+## Ex: on the variance (1)
+
+  - As the throws are independent we have
+$$V(\sum_{i=1}^n Y_i) = \sum_{i=1}^n V(Y_i) = n V(Y_1)= \frac{35}{12} \times 10^4$$
+
+  - Using simulations and assuming the throws are independent.
+
+```{r, cache=T}
+exper <- replicate(10^4, sum(
+      sample.int(6, 10^4,replace=TRUE)) )
+var(exper)
+```
+
+
+## Ex: on the variance (2)
+
+2. Variance of the average of 10^4 independent throws of a  dice.
+
+  - Using independence:
+
+$$V(\frac{1}{n}\sum_{i=1}^n Y_i) = \frac{1}{n^2}\sum_{i=1}^n V(Y_i) = \frac{n}{n^2} V(Y_1)= \frac{35}{12n} $$
+
+  - Using simulations and assuming the throws are independent 
+
+```{r, cache=T}
+exper <- replicate(10^4, mean(
+        sample.int(6, 10^4,replace=TRUE)) )
+var(exper)
+```
+
+## Ex: on the variance (3)
+
+3. Expectation of $6(Y_1-1) + Y_2 - 1$ where $Y_1$ and $Y_2$ correspond 
+to the throws of two dices.
+
+  - Using independence
+
+$$V(6(Y_1-1) + Y_2 - 1) = 6^2 (Y_1) + V(Y_2) = 3\times35 + \frac{35}{12} = 35 \times (3 + \frac{1}{12})$$
+
+Using simulations and assuming the throws are independent 
+
+```{r, cache=T}
+exper <- replicate(10^4, sum( (
+  sample.int(6, 2, replace=TRUE)-1)*c(6, 1) ))
+var(exper)
+```
+
+## Ex: on the variance (4)
+
+- Consider $Y_1$ a gaussian r.v. with parameters $\mu_1=0$ and $\sigma_1^2=1$.
+- Given $Y_1$, the r.v. $Y_2$ is gaussian  with parameters $\mu_2=y_1$ and $\sigma_2^2=1$
+
+5. What is the variance of $Y_2$ ?
+
+$$V(Y_2) = E( V(Y_2|Y_1) ) + V( E(Y_2|Y_1))= E(1) + V(Y_1)= 1+1 = 2$$
+
+## Ex: on the variance (5)
+
+Using simulations and assuming independence
+
+```{r, cache=TRUE}
+n  <- 10^4
+Y1 <- rnorm(n)
+Y2 <- rnorm(n=n, mean=Y1)
+var(Y2)
+```
+
+
+
+##
+
+## Covariance
+
+**Definition**
+
+$$Cov(Y_1, Y_2) = E( (Y_1 - E(Y_1)) (Y_2 - E(Y_2)))$$
+
+$$Cov(Y_1, Y_2) = E(Y_1Y_2) - E(Y_1) E(Y_2)$$
+
+
+- What is $Cov(Y_1, Y_1)$
+- If $Y_1$ and $Y_2$ are independent ?
+- Intuitively what does the covariance represent ?
+
+ 
+
+## Covariance
+
+**Properties**
+
+ 1. Covariance is bilinear:
+    - For two random variables $Y_1$, $Y_2$: $Cov(Y_1, Y_2)= Cov(Y_2, Y_1)$
+    - For three random variables $Y_1$, $Y_2$, $Y_3$: $Cov(Y_1+Y_2, Y_3) = Cov(Y_1, Y_3)+Cov(Y_2, Y_3)$
+    - For a constant $c$ and two random variable $Y_1$: $Cov(cY_1, Y_2)= c Cov(Y_1, Y_2)$
+    
+    
+  2. For three random variables $Cov(Y_1, Y_2) = E( cov(Y_1, Y_2 |Y_3) ) + cov(E(Y_1|Y_3) E(Y_2|Y_3))$
+
+
+
+## An exercice on the covariance
+
+## Exercices on the covariance (1)
+
+1. Consider $Y_1$ a gaussian r.v. with parameter $\mu_1=0$ and $\sigma_1^2=1$.
+Given $Y_1$, the r.v. $Y_2$ is  gaussian with parameters $\mu_2=y_1$ and $\sigma_2^2=1$
+
+What is the covariance of $Y_2$ and $Y_1$ ?
+
+$$Cov(Y_1, Y_2) = E( Cov(Y_1, Y_2 |Y_1) ) + Cov(E(Y_1|Y_1), E(Y_2|Y_1))$$
+$$Cov(Y_1, Y_2) = E( 0 ) + Cov(Y_1, Y_1) = V(Y_1) = 1$$
+
+Using simulations and assuming independence
+
+```{r, cache=TRUE}
+n  <- 10^4
+Y1 <- rnorm(n)
+Y2 <- rnorm(n=n, mean=Y1)
+cov(Y1, Y2)
+```
+
+##
+
+
+

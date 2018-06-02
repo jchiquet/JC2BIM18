@@ -1,0 +1,381 @@
+
+
+
+## A few examples of test-like questions
+
+- Is the expression of gene HER2 large in breast cancer ?
+- Is a new variety of tomoto more resistant to meldew than the previous one ?
+- Is a drug better than a placebo ?
+- Is the increased popularity of a candidate worth commenting ?
+
+## When can you use a test ?
+
+* A Yes/No question
+* You have data
+* These data can be considered as the result of some r.v. (known through a model)
+* The question shoud be about a parameter of the distribution
+
+## Outcome of a test
+
+Only two possibilities:
+
+1. Either your accept the hypothesis $H_0$ (data are not in disagreement with your assumption)
+2. Or you reject it (data are in disagreement with your assumption)
+
+
+## Four elements of a test
+
+1. Data $y_1, ..., y_n$ realisation of r.v. $Y_1, ..., Y_n$
+2. A statistical model: 
+  * distribution of  $Y_1,..., Y_n$ depending on some parameters $\theta$
+3. An assumption: 
+  * a statement about $\theta$. 
+  * This is the so called $H_0$ hypothesis ($H_1$ is the alternative)
+4. A decision rule 
+	* If $T=f(X_1,..., X_n)$ is a test statistic
+	* $R$  is subset of values for $T$ that is improbable if $H_0$ is true
+
+## Four elements of a test
+
+1. Data $y_1, ..., y_n$ realisation of r.v. $Y_1, ..., Y_n$
+2. A statistical model: 
+3. An assumption: 
+4. A decision rule 
+
+- A test can be viewed as a probabilistic extension of "argument to absurdity"
+
+## Efficiency of a test (intuition)
+
+- Two types or error
+
+	1. Reject $H_0$ when it is true
+	2. Keep $H_0$ when it is false
+
+- Typically it is not possible to control both of these errors at the same time.
+
+
+## Efficiency of a test (intuition)
+
+- Type I risk: $\alpha$ the probability under $H_0$ to reject $H_0$
+- Type II risk: $\beta$ the probability under $H_1$ to keep $H_0$.
+- We call power $\pi = 1 - \beta$
+
+- Make a table...
+
+
+## Construction of a test
+
+- Fabrication of a 100 cl bottle
+
+1. **Data** $y_1,..., y_n$ some measurements realisation of r.v $Y_1, ... Y_n$.
+2. **Model** 
+$$ Y_i \sim \mathcal{N}(\mu, \sigma^2) \qquad \text{i.i.d}$$
+3. **Hypothesis** $$H_0= \{\mu = 100cl\}$$
+4. **Rule**:
+	* $T= \frac{1}{n} \sum Y_i$
+	* Reject if $(T- 100)$ is too large:
+	
+$$\ell = u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}}$$
+
+
+
+## Construction of test (2)
+
+- If all $Y_i$ are normal and independent
+$$ \bar{Y} \sim \mathcal{N}(\mu, \frac{\sigma^2}{n}) $$
+
+- So under $H_0$ (taking $\mu_0=100$)
+$$ P( u_{\frac{\alpha}{2}} \leq \frac{\bar{X} - \mu_0}{\frac{\sigma}{\sqrt{n}}} 
+\leq u_{1-\frac{\alpha}{2}}) = 1- \alpha  $$ 
+
+## Construction of test (3)
+
+
+- Visually
+
+```{r, echo=FALSE}
+x <- seq(-4, 4, by=0.01)
+plot(x, dnorm(x), type="l", col="blue")
+abline(v=qnorm(c(0.025, 0.975)), col="red")
+abline(h=0, lty=1, col="black")
+
+```
+
+## Construction of a test (4)
+
+- So we get
+$$ P( u_{\frac{\alpha}{2}} \leq \frac{\bar{X} - \mu_0}{\frac{\sigma}{\sqrt{n}}} 
+\leq u_{1-\frac{\alpha}{2}}) = 1- \alpha  $$
+
+- If we study the two inequalities
+
+$$ u_{\frac{\alpha}{2}} \leq \frac{\bar{X} - \mu_0}{\frac{\sigma}{\sqrt{n}}} \qquad \text{et} \qquad
+\frac{\bar{X} - \mu_0}{\frac{\sigma}{\sqrt{n}}} \leq u_{1-\frac{\alpha}{2}} $$
+
+- we get
+
+ $$ \mu_0 + u_{\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \leq \bar{X} \qquad \text{et} \qquad
+\bar{X}  \leq \mu_0 + u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} $$
+
+
+## Construction of a test (5)
+
+- Fabrication of a 100 cl bottle
+
+1. **Data** $y_1,..., y_n$ some measurements realisation of r.v $Y_1, ... Y_n$.
+2. **Model** 
+$$ Y_i \sim \mathcal{N}(\mu, \sigma^2) \qquad \text{i.i.d}$$
+3. **Hypothesis** $$H_0= \{\mu = 100cl\}$$
+4. **Rule**:
+	* $T= \frac{1}{n} \sum Y_i$
+	* Reject if $(T- 100)$ is too large:
+	
+$$\ell = u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}}$$
+
+
+
+## Implementation in R
+
+- We know the variance and scale the data using the variance
+
+
+```{r}
+## simulate some bottles 
+Y <- rnorm(10, mean=101, sd=2)
+Y.scaled <- Y/2
+mu0 <- 100/2
+
+## probability of a value so far from 0 under H0
+p.val <- 2*pnorm(abs(mean(Y)-mu0), 
+                 sd= 1/sqrt(10), lower.tail=FALSE)
+
+```
+
+
+## Exercice: Check that this is working ?
+
+What should we check ?
+  
+- control that we indeed control at level $\alpha$
+- control that under $H_1$ we have some power
+
+
+```{r}
+n.test <- function(Y.sc, mean.H0=0){
+  min(1, 2*pnorm(abs(mean(Y.sc-mean.H0)), 
+                 sd= 1/sqrt(length(Y.sc)), 
+                 lower.tail=FALSE) )
+}
+
+one.simu <- function(n, mean){
+  ## no-need to scale here (sd=1)
+  Y <- rnorm(n, mean=mean, sd=1) 
+  return( n.test(Y, 0) )
+}
+```
+
+## Ex: Type I error control
+
+- If we make $n$ simulations under $H_0$ a proportion $\alpha$
+of those experiements should have a p-value under $\alpha$.
+
+- That is the p-values should be uniform
+
+```{r, cache=TRUE, fig.height=5}
+pval <- replicate(10^5, one.simu(10, 0))
+hist(pval)
+```
+
+## Ex: Power 
+
+- If we make $n$ simulations under $H_1$ a proportion higher than $\alpha$
+of those experiements should have a p-values under $\alpha$.
+
+
+```{r, cache=TRUE, fig.height=5}
+pval <- replicate(10^5, one.simu(10, 0.2))
+hist(pval)
+```
+
+
+## Ex: Power 
+
+- At level $\alpha=0.05$ and $\alpha=0.01$ the power is
+
+
+```{r, cache=TRUE, fig.height=5}
+mean(pval <= 0.05)
+
+mean(pval <= 0.01)
+```
+
+## Ex: 
+
+- What happens when $n$ increases ?
+
+## Ex: Type I error control
+
+- Larger $n$
+
+- The p-values should still be uniform
+
+```{r, cache=TRUE, fig.height=5}
+pval <- replicate(10^5, one.simu(100, 0))
+hist(pval)
+```
+
+## Ex: Power 
+
+- We should have more power
+
+
+```{r, cache=TRUE, fig.height=5}
+pval <- replicate(10^5, one.simu(100, 0.2))
+hist(pval)
+```
+
+
+## Ex: Power 
+
+- At level $\alpha=0.05$ and $\alpha=0.01$ the power is
+
+
+```{r, cache=TRUE, fig.height=5}
+mean(pval <= 0.05)
+
+mean(pval <= 0.01)
+```
+
+## Homework: 
+
+- What happens if you change the distrubution of the $Y_i$
+
+
+##
+
+## Test if $\sigma^2$ is not know
+
+- If $\sigma$ is not known, similar calculations using the student distribution with $n-1$ degrees of freedom lead to the famous
+T-test
+
+- Namely we start from 
+$$ \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim\mathcal{T}_{n-1}$$
+
+**In R**
+
+```{r}
+Y <- runif(10, min=0, max=1)
+t.test(Y)$p.val
+```
+
+
+## Many other test...
+
+1. In general many statistical methods provide
+hypothesis testing
+2. Computationnal or mathematical derivation of those is often complex
+3. But same principle
+  * A statistical model: check that it is reasonable for your application
+  * An $H_0$ hypothesis: check that it adress your question
+  * In doubt check using simulations that the test is working
+
+	
+## Two populations t-test with same variance
+
+
+
+  - $Y_{11}, ... Y_{1n}$ i.i.d with mean $\theta_1$ and variance $\sigma^2$
+  - $Y_{21}, ... Y_{2n'}$ i.i.d with mean $\theta_2$ and variance $\sigma^2$
+  
+  - $H_0$ $\theta_1 = \theta_2$  
+  - $H_1$ $\theta_1 \neq= \theta_2$
+
+Similar calculations lead to another student statistics. In R:
+
+```{r}
+Y1 <- rnorm(10, sd=2)
+Y2 <- rnorm(8, sd=2)
+
+t.test(Y1, Y2, var.equal = TRUE)$p.value
+
+```
+
+
+		
+## Exercice: Power of the two sample t-test
+
+## Ex: Power of two sample t-test
+
+Two populations 
+
+  - $Y_{11}, ... Y_{1n}$ i.i.d with mean $\theta_1$ and variance $\sigma^2$
+  - $Y_{21}, ... Y_{2n'}$ i.i.d with mean $\theta_2$ and variance $\sigma^2$
+
+We fix $N= n+n'$. 
+
+1. Check that the t-test is indeed controling $\alpha$
+2. Assess the power of the t-test to detect a difference of $0.5$ for an $\alpha$ level of 5%
+
+```{r}
+one.simu <- function(n=10, N=20, diff=0){
+  Y1 <- runif(n, min=0, max=1)
+  Y2 <- runif(N-n, min=0, max=1)+diff
+  t.test(Y1, Y2, var.equal = TRUE)$p.value
+}
+```
+
+## Ex: Type I error control
+
+```{r, cache=TRUE}
+type1 <- numeric(19)
+for(n in 2:18){
+  type1[n] <- mean( replicate(10^4, 
+                    one.simu(n=n)) <= 0.05)
+}
+```
+
+
+## Ex: Type I error control
+
+```{r}
+plot(type1, ylim=c(0, 0.2), type="b", xlab="n", col="red")
+abline(h=0.05, lty=2)
+```
+
+## Ex: Power
+
+```{r, cache=TRUE}
+puis <- numeric(19)
+for(n in 2:18){
+  puis[n] <- mean( replicate(10^4, 
+                    one.simu(n=n, diff=0.5)) <= 0.05)
+}
+```
+
+
+## Ex: Power
+
+```{r}
+plot(puis, type="b", col="red")
+
+```
+
+
+## Homework: Compare the t-test and wilocoxon-test
+
+Compare the following three following testin R for various
+normal distributed data and $\chi^2$ distributed data. You should assess for various
+sample sizes:
+
+1. The type I error control
+2. The power to detect a mean difference of 0.5 at level $\alpha=0.01$
+
+```{r}
+Y1 <- runif(10)
+Y2 <- runif(12)
+
+wilcox.test(Y1, Y2)$pval
+t.test(Y1, Y2, var.equal=FALSE)$pval
+t.test(Y1, Y2, var.equal=TRUE)$pval
+
+```

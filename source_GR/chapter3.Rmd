@@ -1,0 +1,578 @@
+
+## Statistical inference
+
+* A population (possibly infinite)
+* Cannot do a census
+* What can we say about the whole population given a sample
+
+  - We need assumptions = a model
+  
+* Small schema (population, sample, model, inference)
+
+## Data
+
+Given a sample of size $n$
+
+* $y_1, y_2 ... y_n$ 
+* Assume that they are realisations of $n$
+random variables
+ $$Y_1, Y_2, ..., Y_n$$
+
+## Modeling
+
+Model of the experiment
+
+* Define the law of the r.v $Y_1, ..., Y_n$
+* Sometimes it is difficult
+* In simple case one assumes that $Y_i$ are i.i.d:
+$$ Y_i \sim \mathcal{P}(\theta) $$
+
+with distribution $p_{\theta}$
+
+
+* Often $\theta$ is the parameter we want to estimate.
+
+
+
+## Estimator
+
+An estimator is a function of $Y_1, ... Y_n$.
+
+* It is a random variable
+* A simple example: $$ \bar{Y} = \sum_i Y_i /n $$
+* Propose an estimator for the variance of Y ?
+
+
+
+
+
+
+## Estimation
+
+Realisation of an estimator
+
+* This is not a random variable
+* For example $$ \bar{y} = \sum_i y_i /n $$
+
+## An exercice
+
+## Exercice: viscosity of a polymer
+
+We have 4 viscosity measurements of a polymer used by a company to make microprocessors: 
+$78, 85, 91, 76$. For the polymer to be used we need that the viscosity is 
+between $75$ and $95$
+
+**Exercice**
+
+* Data?
+* Model?
+* Estimator?
+* Estimation?
+
+## Ex: viscosity of a polymer
+
+* Data : $y_1= 78, y_2=85, y_3=91, y_4=76$
+
+* Model
+ $$ Y_i \sim \mathcal{N}(\mu, \sigma^2) \quad i.i.d $$
+
+
+* $\mu$ and $\sigma^2$ are respectivelythe expected value and the variance
+
+* Estimators
+
+  1. For the mean
+  $$\hat{\mu}=\bar{X} = \sum Y_i / n $$
+  
+  2. For the variance
+	$$ \hat{\sigma}^2 = \sum (Y_i - \hat{\mu})^2 / (n-1) $$
+
+
+## Ex: viscosity of a polymer
+
+
+* Estimation
+
+```{r}
+y <- c(78, 85, 91, 76)
+mean(y); var(y); sd(y)
+
+```
+
+
+* The mean is indeed in $[75, 95]$ but the variance seems quite large...
+
+
+##
+
+## Quality of an estimator (1)
+
+1. The mean Squared Error (MSE)
+
+$$E((\hat{\theta}_n - \theta)^2) = MSE(\hat{\theta}_n)$$
+
+## Quality of an estimator (2)
+
+Lets try to decompose the error:
+$$ \hat{\theta}_n - \theta = \hat{\theta}_n - E(\hat{\theta}_n) + E(\hat{\theta_n}) - \theta$$
+2. The expectation of the first part is called the bias
+
+$$E(\hat{\theta}_n) - \theta = Bias(\hat{\theta}_n)$$
+
+
+
+3. The expectation of the second part is called the variance
+
+$$E((\hat{\theta}_n - E(\hat{\theta}))^2)  = V(\hat{\theta}_n)$$
+
+## Quality of an estimator (3)
+
+4. It can be shown that 
+
+$$ MSE(\hat{\theta}_n) = E((\hat{\theta}_n - \theta)^2) = Bias(\hat{\theta}_n)^2 + V(\hat{\theta}_n)$$
+
+- Infering a very complex model (without a little bias) is not necesarily better
+than infering a simpler model (with larger bias)
+- Variance counts.
+
+## Quality of an estimator (4)
+
+5. Convergence
+
+$$\underset{n \rightarrow \infty} \lim \hat{\theta}_n = \theta$$
+
+## Quality of the empirical mean estimator
+
+
+
+We consider a sample of size $n$ : $y_1, ... y_n$. We assume 
+
+  - $Y_i$ are i.i.d 
+  - $E(Y_i) = \theta$ 
+  - $V(Y_i) = \sigma^2$
+
+
+$$\hat{\theta}_n = \frac{1}{n} \sum_{i=1}^n  Y_i$$
+
+## Quality of the empirical mean estimator
+
+1. Bias
+
+Using the linearity of the expectation
+
+$$E(\hat{\theta}_n) = \frac{1}{n} \sum_{i=1}^n  E(Y_i) = \theta$$
+
+ - On average we do not make any mistake.
+
+## Quality of the empirical mean estimator
+
+2. Variance 
+
+Using the independence:
+
+$$V(\hat{\theta_n}) = \frac{1}{n^2} \sum_{i=1}^n V(Y_i) =  \frac{\sigma^2}{n}$$
+
+
+  - On average we are not too far from $\theta$
+  - On average we are closer if $\sigma$ is smaller
+  - On average we are closer if we have more data.
+  
+
+
+## Quality of the empirical mean estimator
+
+  - Knowing the mean and variance of a distribution is usefull
+but not particularly precise. 
+  - We would like to know the distribution of $\hat{\theta}_n$
+
+## Distribution with same mean and variances
+
+Consider the density of a Gaussian, Student and Uniform distribution with the same mean and variance.
+
+```{r, echo=F}
+x <- seq(-5, 5, by=0.01)
+## Normal
+plot(x, dnorm(x), col="blue", type="l", lwd=3)
+
+## Student
+df <- 3; sd_t <- sqrt(df/(df-2))
+lines(x, dt(x, df=3) / sd_t, col="red", lwd=3)
+
+## Uniform
+lines(x, dunif(x, min = -sqrt(3), max=sqrt(3)), col="orange", lwd=3)
+```
+
+## An exercice on the mean and median
+
+## Exercice: should we use the mean or median ?
+
+Consider a sample of size $n$. Assume with $Y_i$ i.i.d.
+
+Compare the Bias, Variance and MSE of the empirical mean and empirical median estimators
+
+  1. if the data are drawn from a Gaussian distribution
+  2. if the data are drawn from a Student distribution with a degree of freedom $k=3$
+    
+  3. if the data are drawn from a $\chi^2$ distribution with a degree of freedom $k=5$
+
+
+## Ex: Mean or median with a Gaussian
+
+```{r, cache=TRUE}
+## simulation function
+one.simu <- function(n){
+  y <- rnorm(n)
+  c(mean(y), median(y))
+}
+
+## replication
+es <- t(replicate(10^5, one.simu(3)))
+colnames(es) <- c("mean", "median")
+```
+
+
+## Ex: Mean or median with a Gaussian: distribution
+
+```{r}
+plot(density(es[, 1]), col="blue", lwd=3, 
+     main="density of empirical mean and median")
+lines(density(es[, 2]), col="red", lwd=3)
+```
+
+## Ex: Mean or median with a Gaussian: bias and variance
+
+```{r}
+colMeans(es) ## Bias (compare to 0)
+apply(es, 2, var) ## Variance
+```
+
+
+## Ex: Mean or median with a Gaussian:  MSE
+
+
+```{r}
+colMeans(es^2) ## MSE
+```
+
+
+## Ex: Mean or median with a Student
+
+```{r, cache=TRUE}
+k <- 3
+one.simu <- function(n){
+  y <- rt(n, df=k)
+  c(mean(y), median(y))
+}
+
+
+es <- t(replicate(10^5, one.simu(3)))
+colnames(es) <- c("mean", "median")
+
+```
+
+## Ex: Mean or median with a Student: distribution
+
+```{r}
+plot(density(es[, 1]), col="blue", lwd=3, 
+     main="density of empirical mean and median", xlim=c(-3, 3))
+lines(density(es[, 2]), col="red", lwd=3)
+```
+
+## Ex: Mean or median with a Student : bias and variance 
+
+```{r}
+colMeans(es) ## Bias (compare to 0)
+apply(es, 2, var) ## Variance
+```
+
+
+## Ex: Mean or median with a Student : MSE
+
+
+```{r}
+colMeans(es^2) ## MSE
+
+```
+
+## Ex: Mean or median with a $\chi^2$ 
+
+```{r, cache=TRUE}
+k <- 5
+one.simu <- function(n){
+  y <- rchisq(10, df=k)
+  c(mean(y), median(y))
+}
+
+
+es <- t(replicate(10^5, one.simu(3)))
+colnames(es) <- c("mean", "median")
+```
+
+## Ex: Mean or median with a $\chi^2$: distribution
+
+```{r}
+plot(density(es[, 1]), col="blue", lwd=3)
+lines(density(es[, 2]), col="red", lwd=3)
+```
+
+## Ex: Mean or median with a $\chi^2$: distribution
+
+ - Looking at wikipedia we found that the mean and median of a $\chi^2$ are not equal... 
+
+      1. The expectation is equal to the degree of freedom $k$
+      2. The median is close to $k*(1-2/(9*k))^3$
+      
+ - So in fact we are not even trying to estimate the same thing...
+ 
+ 
+## Ex: Mean or median with a $\chi^2$: bias and variance
+
+```{r}
+mean(es[, 1])-k ## mean bias
+
+mean(es[, 2])-k*(1-2/(9*k))^3 ## median bias
+
+apply(es, 2, var) ## Variance
+```
+
+## Ex: Mean or median with a $\chi^2$: MSE
+
+
+```{r}
+mean((es[, 1] - k)^2) ## mean
+mean((es[, 1] - k*(1-2/(9*k))^3 )^2) ## median
+```
+
+
+##
+
+
+## Homework exercice: Sampling and estimation
+
+- Consider $Y_1$ a random variable with a Poisson distribution of parameter $\lambda_1=10$
+- Knowing $Y_1=y_1$ $Y_2$ is a Poisson random variable of parameter $\lambda_2=y_1$
+
+1. What is the expectation and variance of $Y_2$ ? 
+2. What is the covariance of $Y_1$ and $Y_2$ ?
+
+
+## H-Ex: Sampling and estimation an exercice
+
+3. Estimate the expectation, variance and covariance using sampling.
+
+```{r, cache=TRUE}
+n <- 10^3
+Y1 <- rpois(n, lambda=10)
+Y2 <- rpois(n, lambda = Y1)
+mean(Y2)    # using math we know that E(Y2) = 10
+var(Y2)     # using math we know that V(Y2) = 20
+cov(Y1, Y2) # using math we know that Cov(Y1, Y2) = 10
+```
+
+
+## H-Ex: Estimation of $E(Y_2)=\lambda_2$
+
+We try to estimate $E(Y_2)$ using $\sum_{i=1}^n Y_{2,i}/n = \hat{\lambda}_2$.
+
+**Quality of the estimator** $\hat{\lambda}_2$ ?
+
+4. Bias ?
+5. Variance ?
+6. Distribution ?
+
+
+## H-Ex: Estimator $\hat{\lambda}_2$
+
+4. Bias ?
+
+We already checked that $E(Y_2) = E(\hat{\lambda}_2)$
+
+  - No bias = on average we do not make any mistake
+  - This doesn't tell us anything about the magnitude of our mistakes
+
+5. What is the variance $V(\hat{\lambda}_2)$
+
+after some calculations we get $V(\hat{\lambda}_2) = V(Y_2)/n$
+
+  - On average we are not too far
+  - Still we would like to quantify the error more precisely (probability)
+
+
+
+## H-Ex: Distribution of $\hat{\lambda}_2$
+
+6. What is the distribution of $\hat{\lambda}_2$ ?
+
+  - It looks a bit difficult mathematically (harder than for the expectation or variance at least).
+  - But using simulations ...
+
+```{r, cache=TRUE}
+one.rep <- function(n=10^3){
+  Y1 <- rpois(n, lambda=10)
+  Y2 <- rpois(n, lambda = Y1)
+  return(mean(Y2))
+}
+
+theta_n = replicate(10^5, one.rep())
+
+```
+
+
+## H-Ex: Distribution of $\hat{\lambda}_2$
+
+3. What is the distribution of $\hat{\lambda}_2$
+
+```{r}
+plot(density(theta_n), col="blue")
+
+```
+
+## H-Ex: To continue at home
+
+7. Compare the density you get for larger and smaller $n$
+8. Consider an estimator of $V(Y_2)$. Use simulations to get and idea of the bias, variance and distribution of this estimator.
+9. Consider an estimator of $Cov(Y_2, Y_1)$. Use simulations to get and idea of the bias, variance and distribution of this estimator.
+
+##
+
+## How do we get formula for estimators ?
+
+  - For the mean it is fairly natural to take the empirical mean.
+  - For the variance it is fairly natural to take the empirical variance.
+  - For the covariance it is fairly natural to take the empirical covariance.
+  
+  - How do you get estimators for more "complex"" parameters ?
+  
+  - Call a statistician
+  - Many more or less generic approaches
+  
+      1. Method of Moments
+      2. Minimum Mean square error
+      3. Maximum likelihood
+      4. Bayessian inference
+      
+      
+## A brief introduction to the maximum likelihood approach
+
+
+The likelihood of a sample $y_1, ...y_n$ and of parameters $\theta$
+is defined as
+$$\mathcal{V}(y_1, ..., y_n, \theta) = p_{\theta}(Y_1=y_1, ... , Y_n=y_n)$$
+
+Assuming all the $Y_i$ are i.i.d
+
+$$\mathcal{V}(y_1, ..., y_n, \theta) = \prod_{i=1}^n p_{\theta}(Y_i=y_i)$$
+
+## The log-Likelihood 
+
+
+The likelihood of a sample $y_1, ...y_n$ and of parameters $\theta$
+is defined as
+$$\mathcal{V}(y_1, ..., y_n, \theta) = p_{\theta}(Y_1=y_1, ... , Y_n=y_n)$$
+
+Assuming all the $Y_i$ are i.i.d and taking the log
+
+$$\mathcal{L}(y_1, ..., y_n, \theta) = \sum_{i=1}^n \log( p_{\theta}(Y_i=y_i) )$$
+
+
+
+## An example with Bernouilli variables
+
+Assume $Y_i$ are i.i.d Bernouilli variables of parameter $\pi$
+
+  - $p_{\theta}(Y_i= 0) = 1-\pi$
+  - $p_{\theta}(Y_i= 1) = \pi$
+  - $n_1$ the number of $y_i$ equal to $1$
+  
+  $$\mathcal{V}(y_1, ..., y_n, \theta) = \prod_{i=1}^n p_{\theta}(Y_i=y_i) = \pi^{n - n_1}(1-\pi)^{n_1}$$
+
+  - taking the log
+  
+    $$\mathcal{L}(y_1, ..., y_n, \theta) = (n-n_1)\log(\pi) + n_1 \log(1-\pi)$$
+
+## An example with Gaussian variables
+
+
+Assume $Y_i$ are i.i.d Gaussian variables of parameter $\mu$ and $\sigma$
+
+  - $p_{\mu,\sigma}(Y_i= y_i) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{\frac{-(y_i-\mu)^2}{2\sigma^2}}$
+
+  
+  $$\mathcal{V}(y_1, ..., y_n, \theta) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi \sigma^2}} e^{\frac{-(y_i-\mu)^2}{2\sigma^2}}$$
+
+- taking the log
+
+$$\mathcal{L}(y_1, ..., y_n, \theta) = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(\sigma^2) - \frac{1}{2\sigma^2} \sum_i (y_i-\mu)^2$$
+
+## Maximum likelihood  ?
+
+1. Given some sample what value of $\theta$ should we take ?
+2. Idea take $\theta$ that maximise the log-likelihood
+3. The log-likelihood is used a a measure of fit to the data
+
+
+**Why should we do this:**
+
+  1. Fairly generic (as soon as you have a model)
+  2. In a number of cases ML has good statistical properties
+      (asymptotically unbiased and Gaussian...)
+
+
+## Maximum likelihood for $n$ i.i.d Bernoulli r.v.
+
+Maximization of the likelihood for $n$ i.i.d Bernouilli variables
+
+  - Idea: derivative of $\mathcal{L}$ as a function of $\pi$
+
+
+## Visually for $n$ i.i.d Bernoulli r.v. (1)
+
+```{r}
+Y <- rbinom(n=20, size=1, prob=0.5)
+mean(Y)
+pr <- seq(0, 1, by=0.01)
+loglik <- dbinom(sum(Y), size=20, prob=pr, log=TRUE)
+pr[which.max(loglik)]
+
+```
+
+
+## Visually for $n$ i.i.d Bernoulli r.v. (2)
+
+```{r}
+
+plot(pr, loglik, col="red", type="b")
+
+```
+
+
+
+## An exercice maximum likelihoodof a Gaussian r.v
+
+
+## Ex: Maximum likelihood for a Gaussian r.v. (1)
+
+Maximization of the likelihood for $n$ i.i.d Gaussian variables
+  
+  - Idea: derivative of $\mathcal{L}$ as a function of $\mu$ and $\sigma^2$
+
+
+## Ex: Visually for $n$ i.i.d Gaussian r.v.  (2)
+
+```{r}
+Y <- rnorm(n=10, mean=1)
+mean(Y)
+mr <- seq(-1, 3, by=0.01)
+loglik <- dnorm(mean(Y), mean=mr, sd=1/sqrt(10), log=TRUE)
+
+mr[which.max(loglik)]
+```
+
+
+## Ex: Visually for $n$ i.i.d Gaussian r.v.  (3)
+
+
+```{r}
+plot(mr, loglik, col="red", type="b")
+```
+  
