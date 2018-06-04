@@ -15,6 +15,9 @@ output:
 
 \center{Guillem Rigaill}
 
+https://github.com/jchiquet/JC2BIM18/blob/master/source_GR/Inference_Tutorial.pdf
+
+
 ```{r, out.width = "100px", echo=FALSE, fig.width=2}
 library(knitr)
 knitr::include_graphics("logo_sfbi.png")
