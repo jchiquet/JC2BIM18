@@ -1,0 +1,383 @@
+
+## Idea / Definition
+
+**Idea:** Rather than giving one value for a parameter, we aim to give two bounds
+$B_1$ and $B_2$ and we hope that the true value is between the two
+
+
+1. Random interval
+
+**Definition:** Let $B_1 = m(Y_1, ..., Y_n)$ et  $B_2 = M(Y_1, ..., Y_n)$ two r.v. We define a random interval for $\theta$ with the couple $(B_1, B_2)$.
+We call $P(B_1 < \theta < B_2)$ the level of confidence.
+
+2. Confidence interval
+
+**Definition:** A confidence interval at level $1-\alpha$ for $\theta$ is a realisation
+$[b_1, b_2]$ of a random interval with confidence $1-\alpha$
+
+## Confidence interval for the mean knowing the variance (1)
+
+* Data $y_1, ..., y_n$
+* Estimator $$\bar{Y} = \sum Y_i /n$$
+* We suppose that $V(Y_i) = \sigma^2$ is known
+* Model for the estimator [using TCL]
+
+$$\bar{Y} \sim \mathcal{N}(\mu, \sigma^2/\sqrt{n})$$
+
+
+$$ \frac{\bar{Y} - \mu}{\sigma/\sqrt{n}} \sim\mathcal{N}(0, 1)$$
+
+## Confidence interval for the mean knowing the variance (2)
+
+
+- Visually
+
+```{r, echo=F}
+x <- seq(-4, 4, by=0.01)
+plot(x, dnorm(x), type="l", col="blue")
+abline(v=qnorm(c(0.025, 0.975)), col="red")
+abline(h=0, lty=1, col="black")
+
+```
+
+
+## Confidence interval for the mean knowing the variance (3)
+
+* So we have
+$$ P( u_{\frac{\alpha}{2}} \leq \frac{\bar{Y} - \mu}{\frac{\sigma}{\sqrt{n}}} 
+\leq u_{1-\frac{\alpha}{2}}) = 1- \alpha  $$
+
+* If we study the two inequalities
+
+$$ u_{\frac{\alpha}{2}} \leq \frac{\bar{Y} - \mu}{\frac{\sigma}{\sqrt{n}}} \qquad \text{and} \qquad
+\frac{\bar{Y} - \mu}{\frac{\sigma}{\sqrt{n}}} \leq u_{1-\frac{\alpha}{2}} $$
+
+* We get
+
+ $$ \mu \leq \bar{Y} - u_{\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \qquad \text{and} \qquad
+\bar{Y} - u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \leq \mu$$
+
+## Confidence interval for the mean knowing the variance (4)
+
+* We get
+$$ P( \bar{Y} - u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \leq \mu 
+\leq \bar{Y} - u_{\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}}) = 1 - \alpha  $$
+$$ B_1 = \bar{Y} - u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \qquad \text{and} \qquad 
+B_2 = \bar{Y} - u_{\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} $$
+
+* The interval is larger for
+	* larger $\sigma$ 
+	* smaller $\alpha$ 
+	* smaller $n$
+
+
+## Exercice: Check that a c.i returned by a given approach works reasonably well
+
+## Exercice: First implement in R the previous c.i
+
+Our two bounds are:
+
+$$ B_1 = \bar{Y} - u_{1-\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} \qquad \text{and} \qquad 
+B_2 = \bar{Y} - u_{\frac{\alpha}{2}}{\frac{\sigma}{\sqrt{n}}} $$
+
+```{r}
+
+  y <- rnorm(10) ## 0 mean and sd=1
+  n <- length(y)
+  theta.h <- mean(y)
+  alpha <- 0.05
+  b1 <- theta.h + qnorm(p=alpha/2)/sqrt(n)
+  b2 <- theta.h + qnorm(p=1-alpha/2)/sqrt(n)
+  
+
+```
+
+
+## Exercice: Check using simulations that our c.i works reasonably well (1)
+
+- What should we check exactly ?
+- The claim is : the probability that the random interval with confidence level $1-\alpha$
+contains the true mean is $1 - \alpha$
+- We got our c.i assuming 
+
+$$\bar{Y} \sim \mathcal{N}(\mu, \sigma^2/\sqrt{n})$$
+
+- Is it a reasonable assumption?
+
+## Ex: Check that our c.i works reasonably well (2)
+
+A function to do that simulating uniform $Y_i$:
+
+For now we simulate uniform $Y_i$
+
+```{r}
+one.simu <- function(n=2, alpha=0.05){
+  y <- runif(n, -0.5, 0.5)*sqrt(12) ## 0 mean and sd=1
+  theta <- mean(y)
+  b1 <- theta + qnorm(p=alpha/2)/sqrt(n)
+  b2 <- theta + qnorm(p=1-alpha/2)/sqrt(n)
+  return((b1 < 0) & (0 < b2))
+}
+```
+
+## Ex: Check that our c.i works reasonably well (3)
+
+A few test
+
+```{r}
+## n=2, clearly not perfect
+res1 <- replicate(10^5, one.simu(2))
+mean(res1)
+
+## n=10, fairly close
+res2 <- replicate(10^5, one.simu(10))
+mean(res2)
+```
+
+
+
+## Ex: Check that our c.i works reasonably well (4)
+
+If we now test for many values of $n$
+
+```{r, cache=TRUE}
+InsideProb <- numeric(10)
+for(n in c(1:10)){
+  InsideProb[n] <- mean( replicate(10^4, one.simu(n)) )
+}
+```
+
+
+
+## Ex: Check that our c.i works reasonably well (5)
+
+
+```{r}
+plot(InsideProb, type="b", lwd=3, col="red", xlab="n", 
+     ylim=c(0.8, 1))
+abline(h=0.95, lty=2)
+```
+
+For large enough (in fact not so large) it works.
+With probability 95% the interval
+
+## H-Ex: Check that our c.i works reasonably well (6)
+
+ - We used a uniform distribution for the $Y_i$
+ - Test for two times a Bernoulli r.v. of parameter $0.5$
+ 
+
+```{r}
+one.simu <- function(n=2, alpha=0.05){
+  y <- 2*rbinom(n=n, size=1, prob=0.5) ## 0 mean and sd=1
+  theta <- mean(y)
+  b1 <- theta + qnorm(p=alpha/2)/sqrt(n)
+  b2 <- theta + qnorm(p=1-alpha/2)/sqrt(n)
+  return((b1 < 1) & (1 < b2))
+}
+```
+
+## H-Ex: Check that our c.i works reasonably well (7)
+
+```{r, cache=TRUE}
+InsideProb <- numeric(100)
+for(n in c(1:100)){
+  InsideProb[n] <- mean( replicate(10^4, one.simu(n)) )
+}
+```
+
+
+## H-Ex: Check that our c.i works reasonably well (8)
+
+
+```{r}
+plot(InsideProb, type="b", lwd=3, col="red", xlab="n", 
+     ylim=c(0.8, 1))
+abline(h=0.95, lty=2)
+```
+
+##
+
+## Confidence interval for the mean not knowing the variance 
+
+- If $\sigma$ is not known, similar calculations using the T distribution leads to a confidence interval:
+
+- Namely we start from 
+$$ \frac{\bar{X} - \mu}{\hat{\sigma}/\sqrt{n}} \sim\mathcal{T}_{n-1}$$
+
+## Confidence interval for the mean not knowing the variance 
+
+**In R**
+
+```{r}
+x <- runif(10)
+t.test(x)$conf.int
+```
+
+
+## Exercice and the student confidence interval
+
+## Exercice: Student confidence interval
+
+
+1. Check that the Student c.i "works" when simulating $Y_i$ as 
+
+- independent Student r.v of degree $2.1$ (in R rt).
+- (HW) independant $\chi^2$ r.v of degree $3$ (in R rchisq)
+
+2. Study the effet of $n$.
+
+```{r}
+one.simu <- function(n=2, alpha=0.05){
+  y <- rt(n=n, df=2.1) ## 0 mean and sd=1
+  CI <- t.test(y)$conf.int
+  return((CI[1] < 0) & (0 < CI[2]))
+}
+```
+
+## Ex: Student c.i
+
+We test for various $n$
+
+```{r, cache=TRUE}
+InsideProb <- numeric(100)
+InsideProb[1] <- 1
+for(n in c(2:100)){
+  InsideProb[n] <- mean( replicate(10^4, one.simu(n)) )
+}
+  
+```
+
+
+## Ex: Student c.i
+
+We plot
+
+```{r}
+plot(InsideProb, type="b", lwd=3, col="red", xlab="n", 
+     ylim=c(0.8, 1))
+abline(h=0.95, lty=2)
+```
+
+
+
+
+## H-Ex: $\chi^2$ distribution
+
+```{r}
+one.simu <- function(n=2, alpha=0.05){
+  y <- rchisq(n=n, df=5) ## 0 mean and sd=1
+  CI <- t.test(y)$conf.int
+  return((CI[1] < 5) & (5 < CI[2]))
+}
+```
+
+## H-Ex: $\chi^2$ c.i
+
+We test for various $n$
+
+```{r, cache=TRUE}
+InsideProb <- numeric(80)
+InsideProb[1] <- 1
+for(n in c(2:100)){
+  InsideProb[n] <- mean( replicate(10^4, one.simu(n)) )
+}
+  
+```
+
+
+## H-Ex: $\chi^2$ c.i
+
+We plot
+
+```{r}
+plot(InsideProb, type="b", lwd=3, col="red", xlab="n", 
+     ylim=c(0.8, 1))
+abline(h=0.95, lty=2)
+```
+
+##
+
+## Confidence intervals 
+
+- Many statistical methods provide
+confidence intervals
+- Computationnal or mathematical derivation of those c.i can be complex
+- From an application point of view always the same principle
+
+
+**Principle**
+A statistical model with some assumptions on the signal
+
+1. Check that those assumptions are reasonable for your application
+2. In doubt check using simulations that this is working
+
+
+## Exercice on polymer
+
+## Student interval
+
+* Polymer viscosity
+
+Is the viscocity of the polymer in the interval $[75, 95]$ ?
+
+```{r}
+## the data was
+y <- c(78, 85, 91, 76)
+t.test(y)$conf.int[1:2]
+```
+
+
+What do we conclude ?
+
+
+##
+
+## An other example simple linear regression
+
+* Linear regression
+
+$Y_i = \alpha x_i + \beta + \varepsilon_i$
+$$\varepsilon_i \sim \mathcal{N}(0, \sigma^2) \quad i.i.d$$
+
+```{r, echo=FALSE}
+x <- runif(100, 0, 3)
+y <- rnorm(100)+2*x
+model <- lm(y ~ x)
+```
+
+```{r, fig.width=3, fig.height=3, fig.cap="Regression"}
+model <- lm(y ~ x) ## Regression
+plot(x, y, pch=20); abline(model, col="red"); ## graphe
+```
+
+## Simple linear regression (2)
+
+
+```{r}
+confint(model) ## IC à 95%
+```
+
+- Can we conclude that the slope is different from 0?
+- What about the origin ?
+
+
+
+## A schematic view of what a 95% confidence interval does
+
+
+```{r, echo=FALSE,fig.width=4.5, fig.height=3.5, fig.cap="200 confidence intervals", cache=TRUE}
+n <- 1000
+IC <- matrix(nrow=n, ncol=2)
+for(i in 1:n) IC[i, ] <- t.test(rnorm(5))$conf.int[1:2] ## exp 1
+plot(x=c(),ylim=c(-5, 5), xlim=c(-1, 1), ylab="B1 and B2", xlab="Draws of c.i")
+x <- seq(-1, 1, length.out=n)
+couleur <- c("red", "grey")[(IC[, 1] < 0 & IC[, 2] >0)+ 1]
+lwd <- c(2, 1)[(IC[, 1] < 0 & IC[, 2] >0)+ 1]
+out.ic <- which(couleur =="red")
+arrows(x, IC[, 1], x, IC[, 2], col=couleur, code=3, length=0.05, lwd=lwd);
+arrows(x[out.ic], IC[out.ic, 1], x[out.ic], IC[out.ic, 2], col="red", code=3, length=0.05, lwd=2);
+abline(h=0, lty=3, lwd=1, col="blue")
+
+```
+

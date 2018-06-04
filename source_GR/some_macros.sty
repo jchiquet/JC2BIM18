@@ -1,0 +1,184 @@
+% does not look nice, try deleting the line with the fontenc.
+\usepackage{pdfpages}
+\usepackage{ulem}
+\usepackage{graphics}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{enumerate}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{natbib}
+\usepackage{bbm}
+\usepackage{array}
+\usepackage{dcolumn}
+\usepackage[vlined]{algorithm2e}
+\usepackage{textpos}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\newcommand{\var}{\mathrm{Var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\cor}{\mathrm{cor}}
+
+\newcommand{\argmax}{\mathop{\mathrm{arg\ max}}}
+\newcommand{\argmin}{\mathop{\mathrm{arg\ min}}}
+\newcommand{\minimize}{\mathop{\mathrm{minimize}}}
+\newcommand{\maximize}{\mathop{\mathrm{maximize}}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\Rset}{\mathbb{R}}
+% definitions related to groups
+\newcommand{\norm}[2][]{\left|\left|#2\right|\right|_{#1}}
+\newcommand{\group}[1][k]{{\mathcal G}_{#1}}
+\newcommand{\positive}{{\mathcal P}}
+\newcommand{\negative}{{\mathcal N}}
+\newcommand{\zero}{{\mathcal Z}}
+%\renewcommand{\active}[1][k]{{\mathcal A}_{#1}}
+\newcommand{\1}{\mathds{1}}
+
+\newcommand{\sign}{\mathrm{sign}}
+\newcommand{\trace}{\mathrm{trace}}
+\newcommand{\weights}{\mathbf{w}}
+\newcommand{\supp}{\mathcal{A}}
+\newcommand{\prob}{\mathbb{P}}
+
+%definitions related to convergences
+\newcommand{\inprob}{\overset{P}{\longrightarrow}}
+\newcommand{\inlaw}{\overset{D}{\longrightarrow}}
+ 
+%-------------------------------------------------------------------------% 
+% Definitions
+%-------------------------------------------------------------------------%
+\def\Argmin{\mathop{\mbox{\rm argmin}}}
+\def\Argmax{\mathop{\mbox{\rm argmax}}}
+
+\newcommand{\hatbeta}{\hat{\beta}}
+\newcommand{\hatbbeta}{\,\hat{\!\bbeta}}
+\newcommand{\hatbetalasso}{\,\hat{\!\beta}^{\mathrm{lasso}}}
+\newcommand{\hatbetacoop}{\,\hat{\!\beta}^{\mathrm{coop}}}
+\newcommand{\hatbetagroup}{\,\hat{\!\beta}^{\mathrm{group}}}
+\newcommand{\hatbetaspgroup}{\,\hat{\!\beta}^{\mathrm{spgroup}}}
+\newcommand{\hatbetaridge}{\,\hat{\!\beta}^{\mathrm{ridge}}}
+\newcommand{\hatbetaols}{\,\hat{\!\beta}^{\mathrm{ols}}}
+\newcommand{\hatbbetacoop}{\,\hat{\!\bbeta}^{\mathrm{coop}}}
+\newcommand{\hatbbetagroup}{\,\hat{\!\bbeta}^{\mathrm{group}}}
+\newcommand{\hatbbetaridge}{\,\hat{\!\bbeta}^{\mathrm{ridge}}}
+\newcommand{\hatbbetaols}{\,\hat{\!\bbeta}^{\mathrm{ols}}}
+\newcommand{\tildebbeta}{\,\tilde{\!\bbeta}}
+\newcommand{\bbetaridge}{\bbeta^{\mathrm{ridge}}}
+\newcommand{\bbetacoop}{\bbeta^{\mathrm{coop}}}
+\newcommand{\bbetagroup}{\bbeta^{\mathrm{group}}}
+\newcommand{\bbetaols}{\bbeta^{\mathrm{ols}}}
+
+\newcommand{\bbeta}{\boldsymbol\beta}
+\newcommand{\bPsi}{\boldsymbol\Psi}
+\newcommand{\bTheta}{\boldsymbol\Theta}
+\newcommand{\bSigma}{\boldsymbol\Sigma}
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bb}{\mathbf{b}}
+
+\newcommand{\clA}{\mathcal{A}}
+\newcommand{\clD}{\mathcal{D}}
+\newcommand{\clH}{\mathcal{H}}
+\newcommand{\clO}{\mathcal{O}}
+\newcommand{\clS}{\mathcal{S}}
+
+\newcommand{\be}{\mathbf{e}}
+\newcommand{\bg}{\mathbf{g}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bX}{\mathbf{X}}
+
+\newcommand{\bD}{\mathbf{D}}
+\newcommand{\bT}{\mathbf{T}}
+\newcommand{\bS}{\mathbf{S}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bZ}{\boldsymbol{\Delta}_\bX}%\mathbf{Z}}
+\newcommand{\balpha}{\boldsymbol\alpha}
+\newcommand{\bkappa}{\boldsymbol\kappa}
+\newcommand{\bvarphi}{\boldsymbol\varphi}
+\newcommand{\btheta}{\boldsymbol\theta}
+\newcommand{\bgamma}{{\boldsymbol\gamma}}
+\newcommand{\bepsilon}{\boldsymbol\epsilon}
+\newcommand{\blambda}{\boldsymbol\lambda}
+
+
+\newcommand\xylabellarge[4]{% #1 Image, #2=XText, #3=YText,, #4=Title,
+  \setlength{\unitlength}{0.9\textwidth}%
+  \begin{picture}(1,0.6)%
+    \put(0.025,0.025){\includegraphics[width=0.95\unitlength]{#1}}
+    \put(0.525,0){\makebox[0cm]{\small#2}}
+    \put(0,0.3){\rotatebox{90.0}{\makebox[0cm]{\small#3}}}
+    \put(0.525,0.6){\makebox[0cm]{#4}}
+  \end{picture}%
+}
+
+\newcommand\xylabelsquare[4]{% #1 Image, #2=XText, #3=YText,, #4=Title,
+  \setlength{\unitlength}{0.5\linewidth}%
+  \begin{picture}(1,1)%
+    \put(0.05,0.05){\includegraphics[width=\unitlength]{#1}}
+    \put(0.575,-0.025){\makebox[0cm]{\small#2}}
+    \put(-0.05,0.575){\rotatebox{90.0}{\makebox[0cm]{\small#3}}}
+    \put(0.575,1.075){\makebox[0cm]{#4}}
+  \end{picture}%
+}
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage{graphicx,ae,fancyvrb}
+\IfFileExists{upquote.sty}{\RequirePackage{upquote}}{}
+\setkeys{Gin}{width=0.8\textwidth}
+
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+
+\newenvironment{Schunk}{}{}
+
+\usepackage{listings}
+
+\definecolor{lightgray}{gray}{0.90}
+\definecolor{mpurple}{cmyk}{0.6,0.6,0.1,0.1}
+\definecolor{lpurple}{cmyk}{0.4,0.4,0.1,0}
+\definecolor{mblue}{cmyk}{0.6,0.2,0,0.1}
+\definecolor{lblue}{cmyk}{0.4,0.1,0,0}
+\definecolor{white}{cmyk}{0,0,0,0}
+\definecolor{silver}{cmyk}{0,0,0,0.3}
+
+\colorlet{mred}{red!80!black}
+
+\lstloadlanguages{R}
+
+\lstnewenvironment{Sinput}[1][]{
+  \lstset{%
+    language={R},
+    basicstyle=\footnotesize,
+    keywordstyle=\sf,
+    alsoletter={.},
+    emph={plot,log10,sum,sign,system.time,head,in,print,proc.time,library,rep,factor,matrix,length,toeplitz,bdiag,chol,rnorm,as.matrix}, 
+    emphstyle=\bfseries, 
+    emph={[2]TRUE,FALSE,crossval,stability,elastic.net,deviance}, 
+    emphstyle=[2]\bfseries\color{mred}, 
+    emph={[3]TRUE,FALSE}, 
+    emphstyle=[2]\bfseries\color{mblue}, 
+    frame=none, 
+    backgroundcolor=\color{lightgray}, 
+    commentstyle=\color{mred}, 
+    showspaces=false, 
+    stringstyle=\color{mblue}, 
+    showstringspaces=false, 
+    #1
+  }
+}{}
+
+\lstnewenvironment{Soutput}[1][]{
+  \lstset{%
+    language={R},
+    keywordstyle=\itshape\scriptsize,
+    breaklines=true,
+    emphstyle=\itshape\scriptsize,     
+    basicstyle=\itshape\scriptsize,
+    frame=none, 
+    backgroundcolor=\color{lightgray}, 
+    showspaces=false, 
+    showstringspaces=false, 
+    #1
+  }
+}{} 

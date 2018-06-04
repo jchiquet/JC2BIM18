@@ -1,0 +1,166 @@
+## Multiple testing in genomics
+
+- Differential analysis : one test per gene 
+- ChipSeq : one test per window
+- GWAS : one test per SNP
+
+
+## Why performing many tests is a problem?
+
+Suppose you are performing $G$ tests at level $\alpha$. 
+	
+$$P(\text{at least one FP if H}_0\mbox{ is always true}) = 1 - (1-\alpha)^G$$
+
+
+- Ex: for $\alpha=5$\% and $G=20$, 
+
+$$P(\mbox{at least one FP if H}_0\mbox{ is always 
+true}) \simeq 64$$
+
+- This probability increases with the number of test $G$
+  * For more than 75 tests
+  * if H$_0$ is always true the probability to have at least one false positive is very close to 100%!
+	
+
+## Error Rate for $G$ tests
+
+	
+Instead of the risk $\alpha$, control:
+
+- the Family-Wise Error Rate: FWER $= \mathbb{P}(U>0)$ 
+    * probability to have at least one false positive decision
+      
+- the False Discovery Rate: FDR $= \mathbb{E}(Q)$ with 
+	   $$Q = \left\{ \begin{array}{cl} U/R & \mbox{if }R>0\\ 0 & \mbox{otherwise} 
+        \end{array} \right.$$
+
+
+
+## Adjusted p-values
+
+Settings: p-values $p_1$, \ldots, $p_G$ ({\it 
+e.g.}, corresponding to $G$ tests)
+
+**Adjusted p-values**
+		adjusted p-values are $\tilde{p}_1$, \ldots, $\tilde{p}_G$ such that
+		
+$$\mbox{Rejecting tests such that }\;\tilde{p}_g < \alpha$$
+
+\center{is equivalent to}
+
+$$ P(U > 0) \leq \alpha \quad \mbox{ or } \quad
+\mathbb{E}(Q) \leq \alpha$$
+	
+	
+## Calculating adjusted p-values
+
+1. order the p-values $p_{(1)} \leq p_{(2)} \leq \ldots \leq 
+p_{(G)}$
+		
+2. calculate $\tilde{p}_ {(g)} = a_g p_{(g)}$ 
+	* with *Bonferroni* method: $a_g=G$ (FWER)
+	*	with *Benjamini and Hochberg* method: $a_g=G/g$ (FDR)
+		
+        
+3. if $\tilde{p}_{(g)}$ is larger than 1 replace it by 1
+		
+	
+## Implementation in R
+
+We simulate 1000 test under H0.
+
+```{r}
+pval <- replicate(1000, t.test(rnorm(10))$p.value)
+
+## adjustement
+fdr <- p.adjust(pval, method="BH")
+bfr <- p.adjust(pval, method="bonferroni")
+
+```
+
+
+## Exercice: Check that the "BH" approach is working reasonable well
+
+
+- What should we do ?
+- For a given threshold $\alpha$ check that the average proportion of false positive is indeed
+less than $\alpha$.
+
+
+```{r}
+one.simu <- function(n0=90, n1=10, p=20, 
+                     alpha=0.05, meanH1=0.5){
+  pval0 <- replicate(n0, t.test(rnorm(p))$p.value)
+  pval1 <- replicate(n1, t.test(rnorm(p)+meanH1)$p.value)
+  pval <- c(pval0, pval1)
+  padj <- p.adjust(pval, method="BH")
+  sum(padj[1:n0] <= alpha) / max(1, sum(padj <= alpha))
+}
+
+```
+
+## Ex: Check that "BH" is working reasonable well (1)
+
+One simulation:
+
+```{r, cache=TRUE}
+eFPR <- replicate(10^4, one.simu())
+mean(eFPR)
+
+
+```
+
+**We do control the FPR on average.**
+
+## Ex: Check that "BH" is working reasonable well (2)
+
+
+```{r}
+hist(eFPR, col="blue")
+```
+
+Sometimes we are a bit unlucky...
+
+## Ex: Check that "BH" is working reasonable well (3)
+
+For various proportion of H1 and H0
+
+```{r, cache=TRUE}
+res <- lapply(10*1:9, FUN=function(i) 
+  replicate(10^3, one.simu(n0=i, n1=100-i)))
+
+mat <- do.call(cbind, res)
+colnames(mat) <- paste0("n0=", 10*1:9)
+
+```
+
+
+## Ex: Check that "BH" is working reasonable well (4)
+
+On average we get
+
+```{r}
+signif(colMeans(mat), 1)
+```
+
+- **We indeed control the FDR** 
+- Our control is not always tight.
+
+## Ex: Check that "BH" is working reasonable well (5)
+
+In details things are even more complex:
+
+```{r}
+boxplot(mat, col=rainbow(9)); 
+abline(h=0.05, lty=2, col="red")
+```
+
+## Homework: Check that "bonferroni" is working reasonable well 
+
+
+## Conclusion FDR, BH and beyound...
+
+- There are other approaches 
+  * possibly more complex mathematically
+  * see for example: https://mathforgenomics.github.io/neuvial.pdf
+
