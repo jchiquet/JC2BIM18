@@ -6,8 +6,6 @@
   
  2. Statistical reasonning
     - Is now a fondamental part of experimental science 
-
-   
   
   
 
@@ -48,18 +46,21 @@ Hence the data we collect on this population are not "perfect".
     - if the data is such and such do this and this...
     - apply the code instructions of a vignette/tutorial online
 
-2. **Applied statistics** level
+2. **Applied statistics**
   
-    - understand statistical models and how to assess whether a method is valid (or not) to infer a model
-    - this is doable using mostly highschool mathematics and a bit of R coding
+    - understand statistical models
+    - under how to assess whether a method is valid (or not) to infer a model
+  
+*this is understandable using mostly highschool mathematics and some R coding*
   
 
 ## Undestanding statistical reasonning (2)
 
-3. **Apprentice statistician** level
+3. **Apprentice statistician**
 
     - understand mathematical and algorithmic techniques behind statistical methods
-    - this is doable for simple models using highschool mathematics and basic algorithmics
-    - this doable for slightly more complex models with the help of a statistician
-   
-4. Master statistician level
+
+*for simple models this is understandable using mostly highschool mathematics and basic algorithmics*
+
+
+4. Master statistician...

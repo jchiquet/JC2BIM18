@@ -24,7 +24,7 @@ Model of the experiment
 
 * Define the law of the r.v $Y_1, ..., Y_n$
 * Sometimes it is difficult
-* In simple case one assumes that $Y_i$ are i.i.d:
+* In simple cases one assumes that $Y_i$ are i.i.d:
 $$ Y_i \sim \mathcal{P}(\theta) $$
 
 with distribution $p_{\theta}$
@@ -39,7 +39,7 @@ with distribution $p_{\theta}$
 An estimator is a function of $Y_1, ... Y_n$.
 
 * It is a random variable
-* A simple example: $$ \bar{Y} = \sum_i Y_i /n $$
+* A simple example: $$ \bar{Y} = \frac{\sum_i Y_i}{n} $$
 * Propose an estimator for the variance of Y ?
 
 
@@ -52,7 +52,7 @@ An estimator is a function of $Y_1, ... Y_n$.
 Realisation of an estimator
 
 * This is not a random variable
-* For example $$ \bar{y} = \sum_i y_i /n $$
+* For example $$ \bar{y} = \frac{\sum_i y_i}{n} $$
 
 ## An exercice
 
@@ -82,10 +82,10 @@ between $75$ and $95$
 * Estimators
 
   1. For the mean
-  $$\hat{\mu}=\bar{X} = \sum Y_i / n $$
+  $$\hat{\mu}=\bar{Y} = \frac{\sum Y_i}{n} $$
   
   2. For the variance
-	$$ \hat{\sigma}^2 = \sum (Y_i - \hat{\mu})^2 / (n-1) $$
+	$$ \hat{\sigma}^2 = \frac{\sum (Y_i - \hat{\mu})^2}{(n-1)} $$
 
 
 ## Ex: viscosity of a polymer
@@ -105,25 +105,64 @@ mean(y); var(y); sd(y)
 
 ##
 
-## Quality of an estimator (1)
+## Quality of an estimator (1a)
 
 1. The mean Squared Error (MSE)
 
 $$E((\hat{\theta}_n - \theta)^2) = MSE(\hat{\theta}_n)$$
 
-## Quality of an estimator (2)
+## Quality of an estimator (1b)
+
+1. The mean Squared Error (MSE)
+
+```{r, cache=TRUE}
+## 1 simu
+Y <- mean(rt(10, df=4))
+theta_hat_obs <- mean(Y)
+mse_obs <- (theta_hat_obs- 0)^2
+
+## if n=10
+mean(replicate(10^3, mean(rt(10, df=4))^2))
+# if n=100
+mean(replicate(10^3, mean(rt(100, df=4))^2))
+
+```
+
+## Quality of an estimator (2a)
 
 Lets try to decompose the error:
-$$ \hat{\theta}_n - \theta = \hat{\theta}_n - E(\hat{\theta}_n) + E(\hat{\theta_n}) - \theta$$
-2. The expectation of the first part is called the bias
+$$ \hat{\theta}_n - \theta = \hat{\theta}_n - E(\hat{\theta}_n) + E(\hat{\theta}_n) - \theta$$
+2. The expectation of the second part is called the bias
 
 $$E(\hat{\theta}_n) - \theta = Bias(\hat{\theta}_n)$$
 
+## Quality of an estimator (2b)
 
+```{r, cache=TRUE}
+## a estimator with a bias
+sd.n <- function(n){
+ Y <- rnorm(n)
+ sum((Y-mean(Y))^2)/n
+}
 
-3. The expectation of the second part is called the variance
+sd.n.obs <- (replicate(1000, sd.n(10)))
+mean(sd.n.obs)
+```
+
+## Quality of an estimator (2c)
+
+```{r}
+plot(density(sd.n.obs), col="red", lwd=1)
+abline(v=1, lty=2)
+```
+
+## Quality of an estimator (3)
+
+3. The expectation of the first part is called the variance
 
 $$E((\hat{\theta}_n - E(\hat{\theta}))^2)  = V(\hat{\theta}_n)$$
+
+- An estimator is a r.v
 
 ## Quality of an estimator (3)
 
@@ -135,15 +174,9 @@ $$ MSE(\hat{\theta}_n) = E((\hat{\theta}_n - \theta)^2) = Bias(\hat{\theta}_n)^2
 than infering a simpler model (with larger bias)
 - Variance counts.
 
-## Quality of an estimator (4)
 
-5. Convergence
-
-$$\underset{n \rightarrow \infty} \lim \hat{\theta}_n = \theta$$
 
 ## Quality of the empirical mean estimator
-
-
 
 We consider a sample of size $n$ : $y_1, ... y_n$. We assume 
 
@@ -170,7 +203,7 @@ $$E(\hat{\theta}_n) = \frac{1}{n} \sum_{i=1}^n  E(Y_i) = \theta$$
 
 Using the independence:
 
-$$V(\hat{\theta_n}) = \frac{1}{n^2} \sum_{i=1}^n V(Y_i) =  \frac{\sigma^2}{n}$$
+$$V(\hat{\theta}_n) = \frac{1}{n^2} \sum_{i=1}^n V(Y_i) =  \frac{\sigma^2}{n}$$
 
 
   - On average we are not too far from $\theta$
@@ -204,16 +237,25 @@ lines(x, dunif(x, min = -sqrt(3), max=sqrt(3)), col="orange", lwd=3)
 
 ## An exercice on the mean and median
 
-## Exercice: should we use the mean or median ?
+## Exercice: mean or median ?
 
 Consider a sample of size $n$. Assume with $Y_i$ i.i.d.
 
-Compare the Bias, Variance and MSE of the empirical mean and empirical median estimators
+Compare (using simulations) the Bias, Variance and MSE of the empirical mean and empirical median estimators
 
   1. if the data are drawn from a Gaussian distribution
-  2. if the data are drawn from a Student distribution with a degree of freedom $k=3$
-    
-  3. if the data are drawn from a $\chi^2$ distribution with a degree of freedom $k=5$
+  
+```{r}
+rnorm(3)
+```
+  
+  2. if the data are drawn from a Student distribution with a degree of freedom $k=3$ (heavy tail)
+
+```{r}
+rt(3,df=3)
+```  
+  
+
 
 
 ## Ex: Mean or median with a Gaussian
@@ -294,7 +336,22 @@ colMeans(es^2) ## MSE
 
 ```
 
-## Ex: Mean or median with a $\chi^2$ 
+
+## Homework: mean or median ?
+
+Consider a sample of size $n$. Assume with $Y_i$ i.i.d.
+
+Compare (using simulations) the Bias, Variance and MSE of the empirical mean and empirical median estimators
+
+  
+  3.  if the data are drawn from a $\chi^2$ distribution with a degree of freedom $k=5$
+
+```{r}
+rchisq(3, df=5)
+```
+
+
+## Homework: Mean or median with a $\chi^2$ 
 
 ```{r, cache=TRUE}
 k <- 5
@@ -308,14 +365,14 @@ es <- t(replicate(10^5, one.simu(3)))
 colnames(es) <- c("mean", "median")
 ```
 
-## Ex: Mean or median with a $\chi^2$: distribution
+## Homework: Mean or median with a $\chi^2$: distribution
 
 ```{r}
 plot(density(es[, 1]), col="blue", lwd=3)
 lines(density(es[, 2]), col="red", lwd=3)
 ```
 
-## Ex: Mean or median with a $\chi^2$: distribution
+## Homework: Mean or median with a $\chi^2$: distribution
 
  - Looking at wikipedia we found that the mean and median of a $\chi^2$ are not equal... 
 
@@ -325,7 +382,7 @@ lines(density(es[, 2]), col="red", lwd=3)
  - So in fact we are not even trying to estimate the same thing...
  
  
-## Ex: Mean or median with a $\chi^2$: bias and variance
+## Homework: Mean or median with a $\chi^2$: bias and variance
 
 ```{r}
 mean(es[, 1])-k ## mean bias
@@ -335,7 +392,7 @@ mean(es[, 2])-k*(1-2/(9*k))^3 ## median bias
 apply(es, 2, var) ## Variance
 ```
 
-## Ex: Mean or median with a $\chi^2$: MSE
+## Homework: Mean or median with a $\chi^2$: MSE
 
 
 ```{r}
@@ -484,11 +541,11 @@ Assume $Y_i$ are i.i.d Bernouilli variables of parameter $\pi$
   - $p_{\theta}(Y_i= 1) = \pi$
   - $n_1$ the number of $y_i$ equal to $1$
   
-  $$\mathcal{V}(y_1, ..., y_n, \theta) = \prod_{i=1}^n p_{\theta}(Y_i=y_i) = \pi^{n - n_1}(1-\pi)^{n_1}$$
+  $$\mathcal{V}(y_1, ..., y_n, \theta) = \prod_{i=1}^n p_{\theta}(Y_i=y_i) = \pi^{n_1}(1-\pi)^{n-n_1}$$
 
   - taking the log
   
-    $$\mathcal{L}(y_1, ..., y_n, \theta) = (n-n_1)\log(\pi) + n_1 \log(1-\pi)$$
+    $$\mathcal{L}(y_1, ..., y_n, \theta) = (n_1)\log(\pi) + (n-n_1) \log(1-\pi)$$
 
 ## An example with Gaussian variables
 
@@ -506,9 +563,9 @@ $$\mathcal{L}(y_1, ..., y_n, \theta) = -\frac{n}{2}\log(2\pi) - \frac{n}{2}\log(
 
 ## Maximum likelihood  ?
 
-1. Given some sample what value of $\theta$ should we take ?
-2. Idea take $\theta$ that maximise the log-likelihood
-3. The log-likelihood is used a a measure of fit to the data
+1. Given some sample, what value of $\theta$ should we take ?
+2. Idea: take $\theta$ that maximise the log-likelihood
+3. The log-likelihood is used as a measure of fit to the data
 
 
 **Why should we do this:**
@@ -542,12 +599,13 @@ pr[which.max(loglik)]
 ```{r}
 
 plot(pr, loglik, col="red", type="b")
+abline(v=mean(Y), lty=2, col="blue")
 
 ```
 
 
 
-## An exercice maximum likelihoodof a Gaussian r.v
+## An exercice maximum likelihood of a Gaussian r.v
 
 
 ## Ex: Maximum likelihood for a Gaussian r.v. (1)
@@ -574,5 +632,6 @@ mr[which.max(loglik)]
 
 ```{r}
 plot(mr, loglik, col="red", type="b")
+abline(v=mean(Y), lty=2, col="blue")
 ```
   

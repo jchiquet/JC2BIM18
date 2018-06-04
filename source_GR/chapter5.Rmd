@@ -6,7 +6,7 @@
 - Is the expression of gene HER2 large in breast cancer ?
 - Is a new variety of tomoto more resistant to meldew than the previous one ?
 - Is a drug better than a placebo ?
-- Is the increased popularity of a candidate worth commenting ?
+- Should the $+1$ increased popularity of a candidate be commented ?
 
 ## When can you use a test ?
 
@@ -27,13 +27,17 @@ Only two possibilities:
 
 1. Data $y_1, ..., y_n$ realisation of r.v. $Y_1, ..., Y_n$
 2. A statistical model: 
-  * distribution of  $Y_1,..., Y_n$ depending on some parameters $\theta$
+
+    * distribution of  $Y_1,..., Y_n$ depending on some parameters $\theta$
+
 3. An assumption: 
-  * a statement about $\theta$. 
-  * This is the so called $H_0$ hypothesis ($H_1$ is the alternative)
+
+    * A statement about $\theta$. 
+    * This is the so called $H_0$ hypothesis ($H_1$ is the alternative)
 4. A decision rule 
-	* If $T=f(X_1,..., X_n)$ is a test statistic
-	* $R$  is subset of values for $T$ that is improbable if $H_0$ is true
+
+  	* If $T=f(X_1,..., X_n)$ is a test statistic
+  	* $R$  is subset of values for $T$ that is improbable if $H_0$ is true
 
 ## Four elements of a test
 
@@ -91,12 +95,12 @@ $$ P( u_{\frac{\alpha}{2}} \leq \frac{\bar{X} - \mu_0}{\frac{\sigma}{\sqrt{n}}}
 ## Construction of test (3)
 
 
-- Visually
+- Visually, we observed $\bar{y}=1.5$
 
 ```{r, echo=FALSE}
 x <- seq(-4, 4, by=0.01)
 plot(x, dnorm(x), type="l", col="blue")
-abline(v=qnorm(c(0.025, 0.975)), col="red")
+abline(v=c(-1.5, 1.5), col="red")
 abline(h=0, lty=1, col="black")
 
 ```
@@ -183,7 +187,7 @@ of those experiements should have a p-value under $\alpha$.
 
 ```{r, cache=TRUE, fig.height=5}
 pval <- replicate(10^5, one.simu(10, 0))
-hist(pval)
+hist(pval, col="blue")
 ```
 
 ## Ex: Power 
@@ -194,7 +198,7 @@ of those experiements should have a p-values under $\alpha$.
 
 ```{r, cache=TRUE, fig.height=5}
 pval <- replicate(10^5, one.simu(10, 0.2))
-hist(pval)
+hist(pval, col="red")
 ```
 
 
@@ -221,7 +225,7 @@ mean(pval <= 0.01)
 
 ```{r, cache=TRUE, fig.height=5}
 pval <- replicate(10^5, one.simu(100, 0))
-hist(pval)
+hist(pval, col="blue")
 ```
 
 ## Ex: Power 
@@ -231,7 +235,7 @@ hist(pval)
 
 ```{r, cache=TRUE, fig.height=5}
 pval <- replicate(10^5, one.simu(100, 0.2))
-hist(pval)
+hist(pval, col="red")
 ```
 
 
@@ -259,13 +263,13 @@ mean(pval <= 0.01)
 T-test
 
 - Namely we start from 
-$$ \frac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim\mathcal{T}_{n-1}$$
+$$ \frac{\bar{X} - \mu}{\hat{\sigma}/\sqrt{n}} \sim\mathcal{T}_{n-1}$$
 
 **In R**
 
 ```{r}
 Y <- runif(10, min=0, max=1)
-t.test(Y)$p.val
+t.test(Y)$p.value
 ```
 
 
@@ -338,7 +342,7 @@ for(n in 2:18){
 ## Ex: Type I error control
 
 ```{r}
-plot(type1, ylim=c(0, 0.2), type="b", xlab="n", col="red")
+plot(2:18, type1[2:18], ylim=c(0, 0.2), type="b", xlab="n", col="red", lwd=2)
 abline(h=0.05, lty=2)
 ```
 
@@ -356,7 +360,7 @@ for(n in 2:18){
 ## Ex: Power
 
 ```{r}
-plot(puis, type="b", col="red")
+plot(2:18, puis[2:18], type="b", col="red", lwd=2)
 
 ```
 
@@ -374,8 +378,68 @@ sample sizes:
 Y1 <- runif(10)
 Y2 <- runif(12)
 
-wilcox.test(Y1, Y2)$pval
-t.test(Y1, Y2, var.equal=FALSE)$pval
-t.test(Y1, Y2, var.equal=TRUE)$pval
+wilcox.test(Y1, Y2)$p.value
+t.test(Y1, Y2, var.equal=FALSE)$p.value
+t.test(Y1, Y2, var.equal=TRUE)$p.value
+
+```
+
+
+## H-Ex
+
+Simulation function
+
+```{r}
+one.simu <- function(n1, n2, diff){
+  Y1 <- runif(n1, min=0, max=1)
+  Y2 <- runif(n2, min=0, max=1)+diff
+  p1 <- wilcox.test(Y1, Y2)$p.value
+  p2 <- t.test(Y1, Y2, var.equal = TRUE)$p.value
+  p3 <- t.test(Y1, Y2, var.equal = TRUE)$p.value
+  return(c(p1, p2, p3))
+}
+```
+
+
+## H-Ex: Type I error control (a)
+
+
+```{r, cache=TRUE}
+res <- replicate(10^4, one.simu(10, 10, 0))
+```
+
+## H-Ex: Type I error control (b)
+
+
+```{r}
+par(mfrow=c(2, 2))
+hist(res[1, ], col="blue")
+hist(res[2, ], col="red")
+hist(res[3, ], col="green")
+```
+
+
+## H-Ex: Type I error control (c)
+
+
+```{r}
+prob <- seq(0, 1, by=0.001)
+plot(quantile(res[1, ], prob=prob), prob, type="l", col="blue", lwd=2)
+lines(quantile(res[2, ], prob=prob), prob, type="l", col="red", lwd=2, lty=2)
+lines(quantile(res[2, ], prob=prob), prob, type="l", col="green", lwd=2, lty=3)
+```
+
+
+
+## H-Ex: Power
+
+```{r, cache=TRUE}
+res <- replicate(10^4, one.simu(10, 10, 0.5))
+rownames(res) <- c("Wil", "T.E", "T.I")
+## for alpha at 0.05
+rowMeans(res <=0.05)
+
+## for alpha at 0.01
+rowMeans(res <=0.01)
 
 ```
