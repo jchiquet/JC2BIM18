@@ -140,7 +140,7 @@
 
   \paragraph{Some remarks.}
   \begin{enumerate}
-   \item \pause $p(\cdot)$ is sometimes denotes $[\cdot]$:
+   \item \pause $p(\cdot)$ is sometimes denoted $[\cdot]$:
    $$
    p(\thetabf \gv \Ybf) = \frac{\pi(\thetabf) \; \ell(\Ybf \gv \thetabf)}{p(\Ybf)}
    \qquad \Leftrightarrow \qquad
@@ -152,7 +152,7 @@
    p(\thetabf \gv \Ybf) \propto \pi(\thetabf) \; \ell(\Ybf \gv \thetabf),
    $$
    \ra $p(\thetabf \gv \Ybf)$ and $p(\thetabf' \gv \Ybf)$ can be compared, \emphase{without computing $p(\Ybf)$} \\~
-   \item \pause Obviously, the posterior $p(\thetabf \gv \Ybf)$ depends on the prior $\pi(\thetabf)$: see next slides.
+   \item \pause Obviously, the posterior $p(\thetabf \gv \Ybf)$ depends on the prior $\pi(\thetabf)$ (see next slides).
   \end{enumerate}
 
 }
@@ -235,7 +235,7 @@
   $$
   
   \bigskip
-  (see later, but $p(\thetabf \gv \Ybf) \neq \Ncal(\cdot, \cdot)$, for sure.)
+  (see later. For sure: $p(\thetabf \gv \Ybf) \neq \Ncal(\cdot, \cdot)$).
 }
 
 %====================================================================
@@ -245,6 +245,30 @@
   $$
   \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/posterior-density}
   $$
+}
+
+%====================================================================
+\frame{ \frametitle{No test (and no estimator)} 
+
+  \paragraph{Frequentist hypothesis:}
+  $$
+  H_0 = \{\theta = 0\}
+  $$
+  \ra meaningless when $\theta$ is random: $P(H_0 \gv \Ybf) = 0$
+  
+  \pause \bigskip \bigskip
+  \paragraph{Bayesian assessment:}
+  $$
+  CI_{1 - \alpha}(\theta \gv \Ybf) \ni 0 \; ?
+  $$
+
+  \pause \bigskip \bigskip
+  \paragraph{Parameter estimate.} For the same reason:
+  $$
+  \widehat{\theta} \text{ can no be an estimate of } \theta
+  $$
+  (because $\theta$ is random).
+  
 }
 
 %====================================================================
@@ -262,7 +286,7 @@
   \bigskip
   \paragraph{Credibility interval (CI).} With level $1 - \alpha$ (e.g. 95\%):
   $$
-  CI_{1-\alpha}(\theta_j) = [\theta_j^\ell; \theta_j^u]:
+  CI_{1-\alpha}(\theta_j \gv \Ybf) = [\theta_j^\ell; \theta_j^u]:
   \qquad 
   \Pr\{\theta_j^\ell < \theta_j < \theta_j^u \gv \Ybf\} = 1-\alpha
   $$
@@ -374,6 +398,36 @@
    \Pr\{Y_0 = 1 \gv \Ybf\} = \sum_M \Pr\{Y_0 = 1 \gv \Ybf, M\} p(M \gv \Ybf)
    $$
   \end{itemize}
+}
+
+%====================================================================
+\frame{ \frametitle{Model averaging: Illustration}
+
+  \paragraph{Aim:} Probability \emphase{$p_0$} to be sick a patient with gene expression profile
+  $$
+  \xbf_0 = (0.178, 0.116, \dots, 0.076, -0.231)
+  $$
+  
+  \paragraph{Results} for models $M_1, \dots, M_d$:
+  $$
+  \begin{tabular}{lrrr}
+  Model & $p(M \gv \Ybf)$ & $\Esp(p_0 \gv \Ybf, M)$ & $\sqrt{\Var}(p_0 \gv \Ybf, M)$ \\ 
+  \hline 
+  $M_{1}$  & 1e-04  & 0.494  & 0.028 \\
+  $M_{2}$  & 7e-04  & 0.611  & 0.097 \\ 
+  $M_{3}$  & 5e-04  & 0.627  & 0.106 \\ 
+  \dots & & & \\
+  $M_{14}$  & 0.1436  & 0.242  & 0.18 \\
+  $M_{15}$  & 0.2859  & 0.203  & 0.168 \\ 
+  $M_{16}$  & 0.2726  & 0.195  & 0.168 \\
+  \hline \\ \hline
+  Averaging & & $\Esp(p_0 \gv \Ybf)$ & $\sqrt{\Var}(p_0 \gv \Ybf)$ \\ 
+  \hline 
+  & & 0.249 & 0.198 
+  \end{tabular}
+  $$
+
+  
 }
 
 %====================================================================

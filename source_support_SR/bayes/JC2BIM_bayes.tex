@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[9pt]{beamer}
 
 % Beamer style
 %\usetheme[secheader]{Madrid}
@@ -45,17 +45,8 @@
 
 \author{S. Robin}
 
-\institute[INRA / AgroParisTech]{~ \\%INRA / AgroParisTech \\
-%   \vspace{-.1\textwidth}
-  \begin{tabular}{ccc}
-    \includegraphics[height=.06\textheight]{\fignet/LogoINRA-Couleur} & 
-    \hspace{.02\textheight} &
-    \includegraphics[height=.06\textheight]{\fignet/logagroptechsolo} % & 
-%     \hspace{.02\textheight} &
-%     \includegraphics[height=.09\textheight]{\fignet/logo-ssb}
-    \\ 
-  \end{tabular} \\
-  \bigskip
+\institute[INRA / AgroParisTech / Paris-Saclay]{
+  INRA / AgroParisTech /univ. Paris-Saclay 
   }
 
 \date[JC(2)BIM]{JC(2)BIM, June 2018, Fréjus}
@@ -75,7 +66,7 @@
 %====================================================================
 \section{Evaluating the posterior distribution: Monte-Carlo} \label{sec:MCMC}
 \frame{\frametitle{Outline} \tableofcontents[currentsection]}
-\input{posterior-sampling}
+\input{bayes-sampling}
 
 %====================================================================
 \section{Extensions} \label{sec:ABC}
@@ -84,7 +75,9 @@
 
 %====================================================================
 \frame{ \frametitle{References}
-{\tiny
+
+\nocite{MaR07,JaJ00}
+{\footnotesize
   \bibliography{/home/robin/Biblio/BibGene}
 %   \bibliographystyle{/home/robin/LATEX/Biblio/astats}
   \bibliographystyle{alpha}

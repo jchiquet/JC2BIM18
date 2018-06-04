@@ -8,6 +8,7 @@ library(ks)
 library(mvtnorm)
 
 M = 1e5
+shift = .5 # .1, .5, 1. Ex = .5
 
 ###############################################################################
 # Data
@@ -20,19 +21,13 @@ data = list(X=X, Y=Y)
 # Results
 load('../res/VEER1-prior.Rdata')
 theta.grid = seq(-20, 20, by=.01)
-# load(paste0('../res/VEER1-IS-prior-M', M,'.Rdata'))
-# load(paste0('../res/VEER1-IS-VB-M', M,'.Rdata'))
-# load(paste0('../res/VEER1-IS-MLE-M', M,'.Rdata'))
-# load(paste0('../res/VEER1-MH-half-M', M,'.Rdata'))
-# load(paste0('../res/VEER1-MH-full-M', M,'.Rdata'))
-# load(paste0('../res/VEER1-MH-comp-M', M,'.Rdata'))
 
 ###############################################################################
 # All methods : Confidence intervals 
-load(paste0('../res/VEER1-IS-prior-M', M,'.Rdata'))
-load(paste0('../res/VEER1-IS-VB-M', M,'.Rdata'))
-load(paste0('../res/VEER1-IS-MLE-M', M,'.Rdata'))
-load(paste0('../res/VEER1-MH-full-M', M,'.Rdata'))
+load(paste0('../res/VEER1-IS-prior-M', M,'-shift', shift, '.Rdata'))
+load(paste0('../res/VEER1-IS-VB-M', M, '-shift', shift, '.Rdata'))
+load(paste0('../res/VEER1-IS-MLE-M', M, '-shift', shift, '.Rdata'))
+load(paste0('../res/VEER1-MH-full-M', M, '-shift', shift, '.Rdata'))
 CI.prior; CI.VB; CI.MLE; CI.MH.full
 MLE.var = summary(MLE)$cov.scaled
 
@@ -53,31 +48,64 @@ dev.off()
 
 # IS from approximate posterior: 2D density
 pdf('../figs/ISproposal-density2D.pdf')
-prob = .025
+prob = .01; cont = c(10, 50, 90)
 par(mfrow=c(2, 2), mex=.5)
 for (j in 2:3){
    for(k in (j+1):4){
       KDE = kde(beta.sample[, c(j, k)])
       plot(KDE, main='', xlab=colnames(X)[j], ylab=colnames(X)[j], lwd=2, xlim=quantile(beta.sample[, j], probs=c(prob, 1-prob)), 
-           ylim=quantile(beta.sample[, k], probs=c(prob, 1-prob)))
-      abline(v=mean(beta.sample[, j]), h=mean(beta.sample[, k]), lty=2, lwd=2)
+           ylim=quantile(beta.sample[, k], probs=c(prob, 1-prob)), cont=cont)
+      abline(v=mean(beta.sample[, j]), h=mean(beta.sample[, k]), lty=2, lwd=1)
       plotmixt(mus=VB$Parms.vb$mean[c(j, k)], Sigmas=VB$Parms.vb$Variance[c(j, k), c(j, k)], props=1, 
-               col=2, lwd=2, add=T)
-      abline(v=VB$Parms.vb$mean[j], h=VB$Parms.vb$mean[k], col=2, lty=2, lwd=2)
+               col=2, lwd=2, add=T, cont=cont)
+      abline(v=VB$Parms.vb$mean[j], h=VB$Parms.vb$mean[k], col=2, lty=2, lwd=1)
    }
 }
 dev.off()
 
 ###############################################################################
-# # MH : Autocorrelation check
-# par(mfrow=c(d, d), mex=.3, pch=20)
-# invisible(sapply(1:d, function(j){sapply(1:d, function(k){
-#    plot(beta.sample[1:(beta.nb-1), j], beta.sample[2:beta.nb, k], main='', xlab='', ylab='')
-# })}))
+# MH : Sampling path
+
+# Acceptance rate
+shift.list = c(.1, .5, 1)
+rate = sapply(shift.list, function(s){
+   load(paste0('../res/VEER1-MH-full-M', M, '-shift', s, '.Rdata'))
+   nrow(beta.sample) / MH.full$iter
+})
+Res = rbind(round(rate, 3))
+colnames(Res) = shift.list
+rownames(Res) = 'acceptance rate'
+F_PrintTab(Res)
+
+# par(mfrow=c(4, 1), mex=.25)
+# for(j in 1:4){
+#    plot(MH.full$beta.path[, j], xlab='', ylab='', main='', type='l')
+# }
+
+pdf(paste0('../figs/MH-path-10shift', round(10*shift), '.pdf'))
+par(mfrow=c(4, 1), mex=.25)
+for(j in 1:4){
+   plot(beta.sample[, j], xlab='', ylab='', main='', type='l')
+}
+dev.off()
+ 
+# # Autocorrelation check
+# par(mfrow=c(2, 2), mex=.3, pch=20)
+# invisible(sapply(1:4, function(j){plot(MH.full$beta.path[1:(nrow(MH.full$beta.path)-1), j], 
+#                                        MH.full$beta.path[2:nrow(MH.full$beta.path), j], main='', xlab='', ylab='')
+# }))
+
+# Autocorrelation check
+pdf(paste0('../figs/MH-autocorrelation-10shift', round(10*shift), '.pdf'))
+par(mfrow=c(2, 2), mex=.3, pch=20)
+invisible(sapply(1:4, function(j){plot(beta.sample[1:(beta.nb-1), j], 
+                                       beta.sample[2:beta.nb, j], main='', xlab='', ylab='')
+}))
+dev.off()
 
 ###############################################################################
 # MH full  : Inference
-load(paste0('../res/VEER1-MH-full-M', M,'.Rdata'))
+load(paste0('../res/VEER1-MH-full-M', M, '-shift', shift, '.Rdata'))
 beta.nb = nrow(beta.sample)
 # Posterior histograms
 pdf('../figs/posterior-hist.pdf')
@@ -127,30 +155,50 @@ post.delta[1, ] = c(mean(delta.sample), delta.post.density$x[which.max(delta.pos
 F_PrintTab(post.delta)
 
 ###############################################################################
-# MH : Model comparison
-load(paste0('../res/VEER1-MH-comp-M', M,'.Rdata'))
-par(mfrow=c(1, 1))
-pY = sapply(1:d, function(j){
-   logpY = logLikelihood(data=list(X=as.matrix(X[, 1:j]), Y=Y), 
-                         H.sample=list(beta=beta.sample.comp[[j]]))
+# MH : Model comparison and averaging
+load(paste0('../res/VEER1-MH-comp-M', M, '-shift', shift, '.Rdata'))
+par(mfrow=c(1, 1), pch=20)
+i0 = 1; x0 = X[i0, ]
+pY = Esp.prob0 = Var.prob0 = rep(0, d)
+for (k in 1:d){
+   logpY = logLikelihood(data=list(X=as.matrix(X[, 1:k]), Y=Y), 
+                         H.sample=list(beta=beta.sample.comp[[k]]))
    logpY.mean = mean(logpY)
    logpY = logpY - logpY.mean
-   exp(logpY.mean) * mean(exp(logpY))
-})
+   pY[k] = exp(logpY.mean) * mean(exp(logpY))
+   if(k > 1){
+      prob0 = plogis(beta.sample.comp[[k]]%*%x0[1:k])
+   }else{
+      prob0 = plogis(beta.sample.comp[[k]]*x0)
+   }
+   Esp.prob0[k] = mean(prob0); Var.prob0[k] = var(prob0)
+}
+pY = pY / sum(pY)
 plot(0:(d-1), pY, type='b', xlab='Model')
+
+as.vector(x0)
+
+Sd.prob0 = sqrt(Var.prob0)
+prob0.avg = cbind(round(pY, 4), round(Esp.prob0, 3), round(Sd.prob0, 3))
+colnames(prob0.avg) = c('pY', 'Esp.prob0', 'Sd.prob0')
+rownames(prob0.avg) = paste0('$M_{', 1:d, '}$')
+F_PrintTab(prob0.avg)
+
+Esp.prob0.avg = pY %*% Esp.prob0
+Var.prob0.avg = pY %*% Var.prob0 + (pY %*% Esp.prob0^2) - Esp.prob0.avg^2
+Sd.prob0.avg = sqrt(Var.prob0.avg)
+paste0(round(Esp.prob0.avg, 3), ' & ', round(Sd.prob0.avg, 3))
 
 ###############################################################################
 # MH : Data combination
 pdf('../figs/posterior-combine.pdf')
 par(mfrow=c(2, 2))
 sapply(1:4, function(j){
-   load(paste0('../res/VEER1-MH-full-M', M,'.Rdata'))
+   load(paste0('../res/VEER1-MH-full-M', M, '-shift', shift, '.Rdata'))
    plot(density(beta.sample[, j]), xlab='', ylab='', main=colnames(X)[j], lwd=2)
-   load(paste0('../res/VEER1-MH-half-M', M,'.Rdata'))
+   load(paste0('../res/VEER1-MH-half-M', M, '-shift', shift, '.Rdata'))
    lines(density(beta.sample[, j]), col=2, lwd=2)
    lines(theta.grid, phi[[j]], lwd=2, col=4)
    abline(v=0, lty=2, lwd=2)
 })
 dev.off()
-length(sample1)
-n
