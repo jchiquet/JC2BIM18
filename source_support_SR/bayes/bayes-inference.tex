@@ -6,9 +6,9 @@
 
   \paragraph{Example:} 
   \begin{itemize}
-   \item $n$ patients: $i = 1 \dots n$
-   \item $Y_i =$ status (0 = healthy, 1 = sick) of patient $i$ 
-   \item $\xbf_i = (x_{i1}, \dots x_{ip}) =$ vector of gene expression for patient $i$ (gene $j = 1 \dots p$)
+   \item $n$ tissue samples: $i = 1 \dots n$
+   \item $Y_i =$ status (0 = n, normal = tumor) of sample $i$ 
+   \item $\xbf_i = (x_{i1}, \dots x_{ip}) =$ vector of gene expression for sample $i$ (gene $j = 1 \dots p$)
   \end{itemize}
   
   \bigskip \bigskip 
@@ -20,20 +20,22 @@
   2  & 0.065  & -0.073  & -0.014  & & 0 \\ 
   3  & -0.077  & 0.03  & 0.043  & & 0 \\ 
   4  & 0.176  & -0.041  & 0.362  & & 0 \\ 
-  5  & -0.089  & -0.164  & -0.266  & & 0 
+  5  & -0.089  & -0.164  & -0.266  & & 0 \\
+  & \multicolumn{4}{c}{$\underbrace{\qquad\qquad\qquad\qquad\qquad}$} & \multicolumn{1}{r}{$\underbrace{\quad}$} \\
+  & \multicolumn{4}{c}{$X$} & \multicolumn{1}{r}{$Y\;\;$}
   \end{tabular} } \end{center}
   
-  \pause \bigskip \bigskip 
-  Similar question for genotyping data.
+  \pause \bigskip 
+  Similar question for genotyping data: $x_{ij} \in \{0, 1, 2\}$.
   }
   
 %====================================================================
 \frame{ \frametitle{A statistical model}
 
-  \paragraph{Logistic regression} Logistic regression
+  \paragraph{Model:} Logistic regression
   \begin{itemize}
-   \item The patients are independent.
-   \item The probability for patient $i$ to be sick depends on $\xbf_i$:
+   \item The samples are independent.
+   \item The probability for sample $i$ to be tumor depends on $\xbf_i$:
    $$
    \Pr\{Y_i = 1\} = \frac{e^{\xbf_i^\intercal \thetabf}}{1 + e^{\xbf_i^\intercal \thetabf}}, 
    \qquad \qquad
@@ -60,7 +62,7 @@
    $$
    \widehat{\thetabf}: \qquad \log p_{\widehat{\thetabf}}(\Ybf) = \max_\thetabf \log p_{\thetabf}(\Ybf)
    $$
-   \item The estimate $\widehat{\thetabf}$ itself is random (depends on the data) \ra confidence interval, tests, ...
+   \item The estimate $\widehat{\thetabf}$ itself is random (depends on the data) \ra conf. interval, tests, ...
   \end{itemize}
   
   \bigskip \bigskip \pause
@@ -110,7 +112,7 @@
   \begin{itemize}
    \item $P(B) =$ marginal probability of $B$
    \item $P(A, B) =$ joint probability of $A$ and $B$
-   \item $P(A \gv B) =$ conditional probability of $A$ given $B$ \appref{app:JointMargCond}
+   \item $P(A \gv B) =$ conditional probability of $A$ given $B$ 
   \end{itemize}
 
   \bigskip \bigskip \pause
@@ -135,27 +137,27 @@
   $$
   p(\Ybf) = \int \pi(\thetabf) \ell(\Ybf \gv \thetabf) \d \thetabf,
   $$
-  which act as the normalizing constant of the posterior $p(\thetabf \gv \Ybf)$.
+  which acts as the normalizing constant of the posterior $p(\thetabf \gv \Ybf)$.
 }
 
 %====================================================================
 \frame{ \frametitle{Bayes formula for Bayesian inference (2/2)}
 
-  \paragraph{Some remarks.}
+  \paragraph{Remarks.}
   \begin{enumerate}
-   \item \pause $p(\cdot)$ is sometimes denoted $[\cdot]$:
-   $$
-   p(\thetabf \gv \Ybf) = \frac{\pi(\thetabf) \; \ell(\Ybf \gv \thetabf)}{p(\Ybf)}
-   \qquad \Leftrightarrow \qquad
-   [\thetabf \gv \Ybf] = \frac{[\thetabf] \; [\Ybf \gv \thetabf]}{[\Ybf]}
-   $$ \\ ~
    \item \pause Computing $p(\Ybf)$ is generally (very) difficult: see Section \ref{sec:MCMC} \\~
    \item \pause Obviously
    $$
    p(\thetabf \gv \Ybf) \propto \pi(\thetabf) \; \ell(\Ybf \gv \thetabf),
    $$
    \ra $p(\thetabf \gv \Ybf)$ and $p(\thetabf' \gv \Ybf)$ can be compared, \emphase{without computing $p(\Ybf)$} \\~
-   \item \pause Obviously, the posterior $p(\thetabf \gv \Ybf)$ depends on the prior $\pi(\thetabf)$ (see next slides).
+   \item \pause Obviously, the posterior $p(\thetabf \gv \Ybf)$ depends on the prior $\pi(\thetabf)$ (see next slides) \\ ~
+   \item \pause $p(\cdot)$ is sometimes denoted $[\cdot]$:
+   $$
+   p(\thetabf \gv \Ybf) = \frac{\pi(\thetabf) \; \ell(\Ybf \gv \thetabf)}{p(\Ybf)}
+   \qquad \Leftrightarrow \qquad
+   [\thetabf \gv \Ybf] = \frac{[\thetabf] \; [\Ybf \gv \thetabf]}{[\Ybf]}
+   $$ 
   \end{enumerate}
 
 }
@@ -166,15 +168,15 @@
     \begin{tabular}{p{.5\textwidth}}
     \paragraph{Data \& Model:}
     \begin{itemize}
-     \item $Y_i =1$ if sick, $0$ otherwise
+     \item $Y_i =1$ if disease, $0$ otherwise
      \item $n = 10$ patients
-     \item $\vdots:$ number sicks $/ n$
+     \item $\vdots:$ number disease carriers$/ n$
     \end{itemize}
 
     \bigskip \pause
     \paragraph{Param:}
     \begin{itemize}
-     \item $\theta =$ proba. sick
+     \item $\theta =$ proba. disease
      \item $\textcolor{blue}{\boldsymbol{-}}:$ prior $\pi(\theta)$
     \end{itemize}
 
@@ -201,18 +203,15 @@
   \begin{tabular}{ccc}
     $n = 10$ & $n = 100$ & $n = 1000$ \\
 	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n10-p33} & 
-	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n10-p33} 
-	 & 
-	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n100-p33} 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n100-p33} & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b10-n1000-p33} 
 	 \\
-	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n1000-p33} & 
-	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n100-p33} 
-	 & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n10-p33} & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n100-p33} & 
 	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a5-b5-n1000-p33} 
 	 \\
 	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n10-p33} & 
-	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n100-p33} 
-	 & 
+	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n100-p33} & 
 	 \includegraphics[width=.3\textwidth, height=.25\textheight]{../figs/beta-binomial-a1-b1-n1000-p33} 
   \end{tabular}
 }
@@ -222,11 +221,11 @@
 
   \paragraph{Model}
   \begin{itemize}
-   \item Prior: all coefficient $\theta_j$ independent:
+   \item Prior: coefficients $\theta_j$ all independent:
    $$
    \theta_j \sim \Ncal(0, 100)
    $$
-   \item Likelihood: all patients independent, {\sl conditionally} on $\thetabf$:
+   \item Likelihood: all samples independent, {\sl conditionally} on $\thetabf$:
    $$
    \Pr\{Y_i = 1 \gv \thetabf\} = e^{\xbf_i^\intercal \thetabf} \left/ \left( 1 + e^{\xbf_i^\intercal \thetabf} \right) \right. 
    $$
@@ -309,7 +308,7 @@
 %====================================================================
 \frame{ \frametitle{Accounting for uncertainty}
 
-  \paragraph{Question:} What is the probability for patient 0 (with profile $\xbf_0$) to be sick?
+  \paragraph{Question:} What is the probability for sample 0 (with profile $\xbf_0$) to be tumor?
 
   \bigskip \bigskip 
   \paragraph{Model answer:}
@@ -380,7 +379,7 @@
 %====================================================================
 \frame{ \frametitle{Model averaging (uncertainty on models)}
 
-  \paragraph{Question:} Probability for patient 0 to be sick?
+  \paragraph{Question:} Probability for sample 0 to be tumor?
   
   \bigskip \bigskip \pause
   \paragraph{Model selection.}
@@ -406,7 +405,7 @@
 %====================================================================
 \frame{ \frametitle{Model averaging: Illustration}
 
-  \paragraph{Aim:} Probability \emphase{$p_0$} to be sick a patient with gene expression profile
+  \paragraph{Aim:} Probability \emphase{$p_0$} to be tumor for a sample with gene expression profile
   $$
   \xbf_0 = (0.178, 0.116, \dots, 0.076, -0.231)
   $$

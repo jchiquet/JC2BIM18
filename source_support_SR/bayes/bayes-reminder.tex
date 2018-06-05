@@ -1,0 +1,55 @@
+%====================================================================
+\frame{ \frametitle{Reminder: Joint, marginal, conditional (1/2)} \label{app:JointMargCond}
+
+  \paragraph{Reminder:} 2 loci with 2 alleles each: $(A, a)$, $(B, b)$
+  \begin{itemize}
+   \item Joint distribution: 
+   $$
+   \begin{array}{c|cc|c}
+   & B & b & \text{marginal} \\
+   \hline
+   A & f_{AB} & f_{Ab} & p_A = f_{AB} + f_{Ab} \\
+   a & f_{aB} & f_{ab} & p_a = f_{aB} + f_{ab} \\
+   \hline
+   \text{marginal} & q_B = f_{AB} + f_{aB} & q_b = f_{Ab} + f_{ab} & 
+    f_{AB} + f_{Ab} + f_{aB} + f_{ab} = 1 
+  \end{array}
+  $$ \\ ~
+  \item Marginal distribution: 'integrate out' the allele of the other locus
+  $$
+  \Pr\{B\} = q_B = f_{AB} + f_{aB}
+  $$ \\ ~
+  \item Conditional distribution: fix the allele of the other locus
+  $$
+  \Pr\{A \gv b\} = \frac{\Pr\{A, b\}}{\Pr\{b\}} = \frac{f_{Ab}}{q_b} = \frac{f_{Ab}}{f_{Ab} + f_{ab}}
+  $$
+  ('Bayes formula')
+  \end{itemize}
+}
+
+%====================================================================
+\frame{ \frametitle{Reminder: Joint, marginal, conditional  (2/2)} \label{app:JointMargCond}
+
+  \paragraph{Continuous case:} 2 continuous random variables $U$ and $V$
+  \begin{itemize}
+   \item Joint distribution: 
+   $$
+   \begin{array}{c|c|c}
+   & v  & \text{marginal} \\
+   \hline & & \\
+   u & p_{UV}(u, v) & p_U(u) = \int p_{UV}(u, v) \d v \\ & & \\
+   \hline & & \\
+   \text{marginal} & p_V(v) = \int p_{UV}(u, v) \d u & \int p_{UV}(u, v) \d u \d v = 1 
+   \end{array}
+  $$ \\ ~
+  \item Marginal distribution: 'integrate out' the other variable
+  $$
+  p_U(u) = \int p_{UV}(u, v) \d v
+  $$ \\ ~
+  \item Conditional distribution: fix the value of the other variable
+  $$
+  p_{V|U=u}(v) = \frac{p_{UV}(u, v)}{p_U(u)} = \frac{p_{UV}(u, v)}{\int p_{UV}(u, v) \d v}
+  $$
+  \end{itemize}
+
+}

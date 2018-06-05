@@ -30,13 +30,13 @@
 
   \paragraph{Example: Bernoulli}\footnote{\#\ref{slide:prior}: from top to bottom, $(a, b) = (1, 10), (5, 5), (1, 1)$}
   \begin{description}
-   \item[Prior:] $\theta =$ probability to be sick. 
+   \item[Prior:] $\theta =$ probability to carry a disease. 
    $$
    \theta \sim \Beta(a, b), 
    \qquad 
    \pi(\theta) \propto \theta^{a-1} (1-\theta)^{b-1}
    $$ \pause
-   \item[Likelihood:] $Y_i = 1$ if sick, $0$ otherwise. $S =$ number of sick
+   \item[Likelihood:] $Y_i = 1$ if disease, $0$ otherwise. $S =$ number of carriers
    $$
    Y_i \gv \theta \sim \Bcal(\theta), 
    \qquad 
