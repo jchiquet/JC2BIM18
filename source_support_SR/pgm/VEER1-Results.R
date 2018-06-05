@@ -7,7 +7,7 @@ library(plotrix)
 library(ks)
 library(mvtnorm)
 
-M = 1e4
+M = 1e5
 shift = .5 # .1, .5, 1. Ex = .5
 
 ###############################################################################
@@ -202,3 +202,4 @@ sapply(1:4, function(j){
    abline(v=0, lty=2, lwd=2)
 })
 dev.off()
+

@@ -295,13 +295,13 @@
   \bigskip \pause
   \paragraph{Example.} \appref{app:CIcontrast}
   \begin{center} {\tt \begin{tabular}{lrrrcr}
-    & post.mean  & post.mode  & lower.CI  & upper.CI \\ 
-    \hline 
-    Intercept  & -0.9298079  & -0.8838218  & -2.457669  & 0.5376564 \\ 
-    AB033066  & 8.656539  & 8.497985  & 3.646142  & 13.98029 \\ 
-    NM003056  & -0.8669479  & -0.5323168  & -4.919099  & 3.084982 \\ 
-    NM000903  & 2.088584  & 1.852784  & -0.4736828  & 4.838164 
-    \end{tabular} } \end{center}
+  & post.mean  & post.mode  & lower.CI  & upper.CI \\ 
+  \hline 
+  Intercept  & -0.890718  & -0.9281564  & -2.266244  & 0.4477921 \\ 
+  AB033066  & 8.483059  & 8.229936  & 3.595861  & 13.60357 \\ 
+  NM003056  & -0.8067056  & -1.290723  & -4.698653  & 3.000588 \\ 
+  NM000903  & 2.13275  & 1.958102  & -0.3106497  & 4.750834     
+  \end{tabular} } \end{center}
 }
 
 %====================================================================
@@ -409,26 +409,22 @@
   \xbf_0 = (0.178, 0.116, \dots, 0.076, -0.231)
   $$
   
-  \paragraph{Results} for models $M_1, \dots, M_d$:
-  $$
-  \begin{tabular}{lrrr}
-  Model & $p(M \gv \Ybf)$ & $\Esp(p_0 \gv \Ybf, M)$ & $\sqrt{\Var}(p_0 \gv \Ybf, M)$ \\ 
+  \paragraph{Example} for models $M_1, \dots, M_d$:
+  \begin{center} {\tt \begin{tabular}{lrrr}
+  Model & pY  & Esp.prob0  & Sd.prob0 \\ 
   \hline 
-  $M_{1}$  & 1e-04  & 0.494  & 0.028 \\
-  $M_{2}$  & 7e-04  & 0.611  & 0.097 \\ 
-  $M_{3}$  & 5e-04  & 0.627  & 0.106 \\ 
-  \dots & & & \\
-  $M_{14}$  & 0.1436  & 0.242  & 0.18 \\
-  $M_{15}$  & 0.2859  & 0.203  & 0.168 \\ 
-  $M_{16}$  & 0.2726  & 0.195  & 0.168 \\
+  $M_{1}$  & 1e-04  & 0.435  & 0.056 \\ 
+  $M_{2}$  & 4e-04  & 0.609  & 0.095 \\ 
+  $M_{3}$  & 3e-04  & 0.625  & 0.102 \\ 
+  \dots\\
+  $M_{14}$  & 0.1331  & 0.234  & 0.174 \\ 
+  $M_{15}$  & 0.2974  & 0.207  & 0.168 \\ 
+  $M_{16}$  & 0.27  & 0.197  & 0.161 \\
   \hline \\ \hline
-  Averaging & & $\Esp(p_0 \gv \Ybf)$ & $\sqrt{\Var}(p_0 \gv \Ybf)$ \\ 
+  Averaging & & Esp.prob0  & Sd.prob0 \\ 
   \hline 
-  & & 0.249 & 0.198 
-  \end{tabular}
-  $$
-
-  
+  & & 0.242 & 0.188
+  \end{tabular} } \end{center}
 }
 
 %====================================================================
