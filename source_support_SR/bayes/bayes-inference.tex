@@ -437,6 +437,14 @@
   \paragraph{Combining samples.} Consider two independent but similar datasets $\Ybf_1$ and $\Ybf_2$.
   
   \bigskip
+  \paragraph{Model:}
+  \begin{itemize}
+   \item Prior: $\thetabf \sim \pi(\thetabf)$
+   \item Independent samples with same conditional likelihood: 
+   $$p(\Ybf_1, \Ybf_2 \gv \thetabf) = \ell(\Ybf_1 \gv \thetabf) \ell(\Ybf_2 \gv \thetabf)$$
+  \end{itemize}
+  
+  \pause \bigskip
   Simple algebra gives:
   $$
   p(\thetabf \gv \Ybf_1, \Ybf_2) 
