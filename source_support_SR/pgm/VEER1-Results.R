@@ -7,7 +7,7 @@ library(plotrix)
 library(ks)
 library(mvtnorm)
 
-M = 1e5
+M = 1e4
 shift = .5 # .1, .5, 1. Ex = .5
 
 ###############################################################################
@@ -70,7 +70,7 @@ dev.off()
 shift.list = c(.1, .5, 1)
 rate = sapply(shift.list, function(s){
    load(paste0('../res/VEER1-MH-full-M', M, '-shift', s, '.Rdata'))
-   nrow(beta.sample) / MH.full$iter
+   MH.full$accept / MH.full$M.MH
 })
 Res = rbind(round(rate, 3))
 colnames(Res) = shift.list
@@ -169,7 +169,7 @@ for (k in 1:d){
    if(k > 1){
       prob0 = plogis(beta.sample.comp[[k]]%*%x0[1:k])
    }else{
-      prob0 = plogis(beta.sample.comp[[k]]*x0)
+      prob0 = plogis(beta.sample.comp[[k]]*x0[1])
    }
    Esp.prob0[k] = mean(prob0); Var.prob0[k] = var(prob0)
 }

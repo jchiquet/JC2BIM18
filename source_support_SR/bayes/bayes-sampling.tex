@@ -466,15 +466,15 @@
   loglik.cur = sum(dbinom(Y, 1, prob.cur, log=T)) \\ \pause
   ~ \\
   for (b in 2:B)\{ \\ \pause
-  \qquad theta.tmp = rmvnorm(1, mean=theta.sample[b-1, ], sigma=Sigma.shift)[1, ] \\ \pause
-  \qquad logprior.tmp = dmvnorm(theta.tmp, mean=mu.prior, sigma=Sigma.prior, log=T) \\ \pause
-  \qquad prob.tmp = plogis(X\%*\%theta.tmp) \\ \pause
-  \qquad loglik.tmp = sum(dbinom(Y, 1, prob.tmp, log=T)) \\ \pause
+  \qquad theta.prop = rmvnorm(1, mean=theta.sample[b-1, ], sigma=Sigma.shift)[1, ] \\ \pause
+  \qquad logprior.prop = dmvnorm(theta.prop, mean=mu.prior, sigma=Sigma.prior, log=T) \\ \pause
+  \qquad prob.prop = plogis(X\%*\%theta.prop) \\ \pause
+  \qquad loglik.prop = sum(dbinom(Y, 1, prob.prop, log=T)) \\ \pause
   ~ \\
-  \qquad alpha = exp(logprior.tmp + loglik.tmp - logprior.cur - loglik.cur) \\ \pause
+  \qquad alpha = exp(logprior.prop + loglik.prop - logprior.cur - loglik.cur) \\ \pause
   \qquad if(runif(1) < alpha)\{ \\ 
-  \qquad \qquad theta.sample[b, ] = theta.cur = theta.tmp \\ 
-  \qquad \qquad logprior.cur = logprior.tmp; loglik.cur = loglik.tmp \\ \pause
+  \qquad \qquad theta.sample[b, ] = theta.cur = theta.prop \\ 
+  \qquad \qquad logprior.cur = logprior.prop; loglik.cur = loglik.prop \\ \pause
   \qquad \}else\{ \\
   \qquad \qquad theta.sample[b, ] = theta.sample[b-1, ] \\
   \qquad \} \\ \pause

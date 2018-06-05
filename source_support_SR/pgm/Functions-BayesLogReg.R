@@ -122,23 +122,25 @@ VB <- function(data, HyperParms){
 # Metropolis-Hastings algorithm for logistic regression
 MH <- function(data, beta.prior.mean, beta.prior.var, beta.shift.var, M=1e3, coef.MH=1.2){
    M.MH = round(coef.MH*M); d = ncol(data$X)
-   beta.tmp = matrix(0, 1, d) #rmvnorm(1, mean=beta.prior.mean, sigma=beta.prior.var)
-   logpY.tmp = logLikelihood(data, H.sample=list(beta=beta.tmp))
-   logprior.tmp = logPrior(H.sample=list(beta=beta.tmp), HyperParms=list(mean=beta.prior.mean, Variance=beta.prior.var))
-   beta.path = matrix(0, M.MH, d); iter = 0; sample = 0
+   beta.cur = matrix(0, 1, d) #rmvnorm(1, mean=beta.prior.mean, sigma=beta.prior.var)
+   logpY.cur = logLikelihood(data, H.sample=list(beta=beta.cur))
+   logprior.cur = logPrior(H.sample=list(beta=beta.cur), HyperParms=list(mean=beta.prior.mean, Variance=beta.prior.var))
+   beta.path = matrix(0, M.MH, d); beta.path[1, ] = beta.cur; accept = 0
    par(mfrow=c(d, 1), mex=.3)
-   while(sample < M.MH){
-      iter = iter+1
-      if(iter%%round(sqrt(M.MH))==0){cat(sample, '/', iter, ' ', sep='')}
-      beta.prop = beta.tmp + rmvnorm(1, sigma=beta.shift.var)
+   for(m in 1:M.MH){
+      if(m%%round(sqrt(M.MH))==0){cat(accept, '/', m, ' ', sep='')}
+      beta.prop = beta.cur + rmvnorm(1, sigma=beta.shift.var)
       logpY.prop = logLikelihood(data, H.sample=list(beta=beta.prop))
       logprior.prop = logPrior(H.sample=list(beta=beta.prop), HyperParms=list(mean=beta.prior.mean, Variance=beta.prior.var))
-      logratio = logpY.prop + logprior.prop - logpY.tmp - logprior.tmp
+      logratio = logpY.prop + logprior.prop - logpY.cur - logprior.cur
       if(logratio < -100){ratio = 0}else if(logratio > +100){ratio = 1}else{ratio = min(c(1,exp(logratio)))}
       if(runif(1) < ratio){
-         sample = sample+1; beta.path[sample, ] = beta.prop
-         beta.tmp = beta.prop; logpY.tmp = logpY.prop; logprior.tmp = logprior.prop
+         accept = accept+1; 
+         beta.path[m, ] = beta.prop
+         beta.cur = beta.prop; logpY.cur = logpY.prop; logprior.cur = logprior.prop
+      }else{
+         beta.path[m, ] = beta.cur
       }
    }
-   return(list(beta.path=beta.path, sample=sample, iter=iter, M.MH=M.MH))
+   return(list(beta.path=beta.path, accept=accept, M.MH=M.MH))
 }

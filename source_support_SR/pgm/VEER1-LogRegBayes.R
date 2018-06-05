@@ -13,7 +13,7 @@ X = cbind(Intercept, X); d = ncol(X);
 data = list(X=X, Y=Y)
 
 # Prior & MC parms
-M = 1e4
+M = 1e5
 beta.prior.mean = rep(0, d); beta.prior.var = 1e2*diag(d)
 shift = 1
 beta.shift.var = shift*diag(d)
@@ -73,7 +73,7 @@ if(file.exists(paste0('../res/VEER1-IS-MLE-M', M, '-shift', shift, '.Rdata'))==F
 # Metropolis-Hastings : full model
 if(file.exists(paste0('../res/VEER1-MH-full-M', M, '-shift', shift, '.Rdata'))==F){
    MH.full = MH(data, beta.prior.mean, beta.prior.var, beta.shift.var, M=M)
-   cat('acceptance =', MH.full$sample/MH.full$iter, '\n')
+   cat('acceptance =', MH.full$accept/MH.full$M.MH, '\n')
    for (j in 1:d){plot(MH.full$beta.path[, j], main='', xlab='', ylab='', type='l')}
    # Remove burn-in period
    beta.path = MH.full$beta.path[(MH.full$M.MH-M+1):MH.full$M.MH, ]
@@ -89,7 +89,7 @@ if(file.exists(paste0('../res/VEER1-MH-half-M', M, '-shift', shift, '.Rdata'))==
    sample1 = sort(sample(1:n, round(n/2)))
    sample2 = (1:n)[-sample1]
    MH.half = MH(data=list(X=X[sample1, ], Y=Y[sample1]), beta.prior.mean, beta.prior.var, beta.shift.var, M=M)
-   cat('acceptance =', MH.half$sample/MH.half$iter, '\n')
+   cat('acceptance =', MH.half$accept/MH.half$M.MH, '\n')
    for (j in 1:d){plot(MH.half$beta.path[, j], main='', xlab='', ylab='', type='l')}
    # Remove burn-in period
    beta.path = MH.half$beta.path[(MH.half$M.MH-M+1):MH.half$M.MH, ]
@@ -109,7 +109,7 @@ if(file.exists(paste0('../res/VEER1-MH-comp-M', M, '-shift', shift, '.Rdata'))==
                         beta.prior.mean=as.vector(beta.prior.mean[1:j]), 
                         beta.prior.var=as.matrix(beta.prior.var[1:j, 1:j]), 
                         beta.shift.var=as.matrix(beta.shift.var[1:j, 1:j]), M=M)
-      cat('acceptance =', MH.comp[[j]]$sample/MH.comp[[j]]$iter, '\n')
+      cat('acceptance =', MH.comp[[j]]$accept/MH.comp[[j]]$M.MH, '\n')
       # Remove burn-in period
       beta.path = as.matrix(MH.comp[[j]]$beta.path[(MH.comp[[j]]$M.MH-M+1):MH.comp[[j]]$M.MH, ])
       beta.sample.comp[[j]] = beta.path[seq(1, M, by=10), ]
@@ -118,19 +118,19 @@ if(file.exists(paste0('../res/VEER1-MH-comp-M', M, '-shift', shift, '.Rdata'))==
    save(MH.comp, beta.sample.comp, beta.nb.comp, file=paste0('../res/VEER1-MH-comp-M', M, '-shift', shift, '.Rdata'))
 }
 
-###############################################################################
-# ABC
-epsilon = .1; iter = sample = 0; beta.sample = matrix(0, M, d)
-while(sample < M){
-   iter = iter + 1
-   beta.tmp = rmvnorm(1, mean=beta.prior.mean, sigma=beta.prior.var)[1, ]
-   prob.tmp = plogis(X %*% beta.tmp)
-   Y.tmp = rbinom(n, 1, prob.tmp)
-   dist.tmp = sum(abs(Y.tmp - Y))/n
-   if(dist.tmp < epsilon){
-      sample = sample + 1
-      beta.sample[sample, ] = beta.tmp
-   }
-   if (iter %% sqrt(M)==0){cat(sample, '/', iter, '')}
-}
-cat(sample, '/', iter, '\n')
+# ###############################################################################
+# # ABC
+# epsilon = .1; iter = sample = 0; beta.sample = matrix(0, M, d)
+# while(sample < M){
+#    iter = iter + 1
+#    beta.tmp = rmvnorm(1, mean=beta.prior.mean, sigma=beta.prior.var)[1, ]
+#    prob.tmp = plogis(X %*% beta.tmp)
+#    Y.tmp = rbinom(n, 1, prob.tmp)
+#    dist.tmp = sum(abs(Y.tmp - Y))/n
+#    if(dist.tmp < epsilon){
+#       sample = sample + 1
+#       beta.sample[sample, ] = beta.tmp
+#    }
+#    if (iter %% sqrt(M)==0){cat(sample, '/', iter, '')}
+# }
+# cat(sample, '/', iter, '\n')
