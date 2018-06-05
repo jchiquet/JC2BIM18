@@ -22,7 +22,7 @@
   \paragraph{Sequential Monte Carlo.} 
   \begin{itemize}
    \item Monte Carlo (stochastic) counterpart of the forward-backward recurrence
-   \item Sequentially sample from $p(Z_t \gv \Ybf_1^t, \Zbf_1^{t-1})$.
+   \item Sequentially sample from $p(Z_t \gv \Ybf_1^t, \Zbf_1^{t-1})$, then 'backtrack'.
   \end{itemize}
 }
 
@@ -76,7 +76,7 @@
   \end{itemize}
   
   \pause \bigskip
-  \paragraph{Rational.} Do not sample from $p(\thetabf \gv \Ybf)$ but from
+  \paragraph{Rational.} Does not sample from $p(\thetabf \gv \Ybf)$ but from
   $$
   p(\thetabf \gv d(\sbf(\Ybf) - \sbf(\Ybf_\obs)) < \varepsilon).
   $$
