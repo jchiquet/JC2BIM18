@@ -121,9 +121,9 @@
   \begin{itemize}
    \item Works fine to evaluate $\Esp[f(\thetabf)]$, taking $q(\thetabf) = \pi(\thetabf)$
    $$
-   \widehat{\Esp}_{\Ncal(0, 10)}\left[e^\theta\right] = \text{\tt mean(exp(rnorm(B, mean=0, sd=sqrt(10))))}
+   \widehat{\Esp}_{\Ncal(0, 10)}\left(e^\theta\right) = \text{\tt mean(exp(rnorm(B, mean=0, sd=sqrt(10))))}
    $$\pause
-   \item Useless to evaluate $\Esp[f(\thetabf) | \Ybf]$ as we do not know how to sample from $q(\thetabf) = p(\thetabf \gv \Ybf)$
+   \item Useless for $\Esp[f(\thetabf) | \Ybf]$ as we do not know how to sample from $q(\thetabf) = p(\thetabf \gv \Ybf)$
   \end{itemize}
 }
 
@@ -362,26 +362,32 @@
 %====================================================================
 \frame{ \frametitle{Limit distribution of Markov chain}
 
-  \paragraph{Property.} If $\{\phibf^b\}_{b \geq 0}$ is an ergodic Markov chain (irreducible, aperiodic, ...) with
+  \paragraph{Definition.} Let $\{\phibf^b\}_{b \geq 0}$ be a Markov chain with
   \begin{itemize}
    \item initial distribution $\phibf^0 \sim \nu$,
    \item transition kernel $\phibf^b \gv \phibf^{b-1} \sim \kappa(\cdot \gv \phibf^{b-1})$:
   \end{itemize}
-  $$
-  p\left(\{\phibf^b\} \right) = \nu(\phibf^0) \times \kappa(\phibf^1 \gv \phibf^0) \times \kappa(\phibf^2 \gv \phibf^1) \times \kappa(\phibf^3 \gv \phibf^2) \times \dots
-%   \prod_{b\geq 1} \kappa(\phibf^b \gv \phibf^{b-1})
-  $$
-  then
+%   $$
+%   p\left(\{\phibf^b\} \right) = \nu(\phibf^0) \times \kappa(\phibf^1 \gv \phibf^0) \times \kappa(\phibf^2 \gv \phibf^1) \times \kappa(\phibf^3 \gv \phibf^2) \times \dots
+% %   \prod_{b\geq 1} \kappa(\phibf^b \gv \phibf^{b-1})
+%   $$
+  $\{\phibf^b\}_{b \geq 0}$ is said to be {\sl ergodic} if
   \begin{itemize}
    \item it admits a \emphase{unique stationary distribution} $\mu$:
    $$
    \phibf^{b-1} \sim \mu \qquad \Rightarrow \qquad \phibf^b \sim \mu
    $$
-   \item $\phibf^b$ converges towards $\mu$ in distribution
+   \item for \emphase{any initial distribution} $\nu$, $\phibf^b$ converges towards $\mu$ in distribution
    $$
    \phibf^b \overset{\Delta}{\underset{b \rightarrow \infty}{\longrightarrow}} \mu
    $$
-   for \emphase{any initial distribution} $\nu$
+  \end{itemize}
+  
+  \bigskip
+  \paragraph{Ergodicity conditions.}
+  \begin{itemize}
+   \item Finite state space: irreducibility, aperiodicity
+   \item Infinite state space: the same + positive recurrence
   \end{itemize}
 }
 
@@ -393,6 +399,7 @@
   p(\thetabf \gv \Ybf)
   $$
   
+  \bigskip \bigskip 
   \paragraph{Idea.} 
   \begin{itemize}
    \item Construct an ergodic Markov chain $\{\thetabf^b\}_{b \geq 0}$ with stationary distribution

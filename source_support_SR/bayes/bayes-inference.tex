@@ -7,7 +7,7 @@
   \paragraph{Example:} 
   \begin{itemize}
    \item $n$ tissue samples: $i = 1 \dots n$
-   \item $Y_i =$ status (0 = n, normal = tumor) of sample $i$ 
+   \item $Y_i =$ status (0 = normal, 1 = tumor) of sample $i$ 
    \item $\xbf_i = (x_{i1}, \dots x_{ip}) =$ vector of gene expression for sample $i$ (gene $j = 1 \dots p$)
   \end{itemize}
   
@@ -58,7 +58,7 @@
    $$
    \Ybf \sim p_\thetabf
    $$
-   \item Inference: get a (point) estimate $\widehat{\thetabf}$ e.g.
+   \item Inference: get a (point) estimate $\widehat{\thetabf}$ e.g. maximum likelihood
    $$
    \widehat{\thetabf}: \qquad \log p_{\widehat{\thetabf}}(\Ybf) = \max_\thetabf \log p_{\thetabf}(\Ybf)
    $$
@@ -81,18 +81,18 @@
 %====================================================================
 \frame{ \frametitle{Bayesian inference}
 
-  \paragraph{$\thetabf =$ random parameter:}
+  \paragraph{$\thetabf =$ random parameter:} \\~ 
   \begin{itemize}
-   \item Statistical model:
+   \item \pause Statistical model:
    $$
    \emphase{\ell(\Ybf \gv \thetabf)} := p(\Ybf \gv \thetabf) \qquad \text{($=$ {\sl likelihood})}
-   $$
-   \item Inference: provide the conditional distribution of $\thetabf$ given the observed data $\Ybf$:
+   $$ \\~
+   \item \pause Inference: provide the \emphase{conditional distribution} of $\thetabf$ given the observed data $\Ybf$:
    $$
    p(\thetabf \gv \Ybf) \qquad \text{($=$ {\sl posterior} distribution)}
    $$
-   \ra credibility intervals
-   \item Requires to define a marginal distribution: 
+   \ra credibility intervals \\~
+   \item \pause Requires to define a marginal distribution: 
    $$
    \emphase{\pi(\thetabf)} := p(\thetabf) \qquad \text{($=$ {\sl prior} distribution)}
    $$  
@@ -133,6 +133,8 @@
   $$
   p(\thetabf \gv \Ybf) = \frac{p(\Ybf, \thetabf)}{p(\Ybf)} = \frac{\overset{prior}{\overbrace{\pi(\thetabf)}} \; \overset{likelihood}{\overbrace{\ell(\Ybf \gv \thetabf)}}}{\emphase{p(\Ybf)}}
   $$
+  
+  \bigskip \bigskip 
   \ra Requires to evaluate the {\sl integrated likelihood} (i.e. marginal)
   $$
   p(\Ybf) = \int \pi(\thetabf) \ell(\Ybf \gv \thetabf) \d \thetabf,
@@ -191,9 +193,9 @@
     & 
     \hspace{-.02\textwidth}
     \begin{tabular}{p{.5\textwidth}}
-	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b10-n10-p33} \\
-	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a5-b5-n10-p33} \\
-	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b1-n10-p33} 
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b10-n10-p33-zoomed} \\
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a5-b5-n10-p33-zoomed} \\
+	 \includegraphics[width=.3\textwidth, height=.3\textheight]{../figs/beta-binomial-a1-b1-n10-p33-zoomed} 
     \end{tabular}
   \end{tabular}
 }
@@ -222,22 +224,22 @@
 
   \paragraph{Model}
   \begin{itemize}
-   \item Prior: coefficients $\theta_j$ all independent:
+   \item Prior $\pi(\thetabf)$: coefficients $\theta_j$ all independent:
    $$
    \theta_j \sim \Ncal(0, 100)
    $$
-   \item Likelihood: all samples independent, {\sl conditionally} on $\thetabf$:
+   \item Likelihood $\ell(\Ybf \gv \thetabf)$: all samples independent, {\sl conditionally} on $\thetabf$:
    $$
-   \Pr\{Y_i = 1 \gv \thetabf\} = e^{\xbf_i^\intercal \thetabf} \left/ \left( 1 + e^{\xbf_i^\intercal \thetabf} \right) \right. 
+   \Pr\{Y_i = 1 \emphase{\gv \thetabf}\} = e^{\xbf_i^\intercal \thetabf} \left/ \left( 1 + e^{\xbf_i^\intercal \thetabf} \right) \right. 
    $$
   \end{itemize}
   
   \bigskip \pause
   \paragraph{Inference:}
   $$
-  \thetabf \gv \Ybf \sim \; ? 
+  p(\thetabf \gv \Ybf) = \; ? 
   $$
-  (for sure: $p(\thetabf \gv \Ybf) \neq \Ncal(\cdot, \cdot)$).
+  (for sure: $\neq \Ncal(\cdot, \cdot)$).
 }
 
 %====================================================================
@@ -256,7 +258,7 @@
   $$
   H_0 = \{\theta = 0\}
   $$
-  \ra meaningless when $\theta$ is random: $P(H_0 \gv \Ybf) = 0$
+  \ra meaningless as $\theta$ is random: $P(H_0 \gv \Ybf) = 0$
   
   \pause \bigskip \bigskip
   \paragraph{Bayesian assessment:}
@@ -308,7 +310,7 @@
 %====================================================================
 \frame{ \frametitle{Accounting for uncertainty}
 
-  \paragraph{Question:} What is the probability for sample 0 (with profile $\xbf_0$) to be tumor?
+  \paragraph{Question:} What is the probability for a \emphase{new sample} 0 (with profile $\xbf_0$) to be tumor?
 
   \bigskip \bigskip 
   \paragraph{Model answer:}
@@ -320,7 +322,7 @@
   \bigskip \bigskip 
   \paragraph{Bayesian answer:} {\sl posterior predictive} probability
   $$
-  \Pr\{Y_0 = 1 \gv \Ybf\} = \int \Pr\{Y_0 = 1 \gv \thetabf\} p(\thetabf \gv \Ybf) \d \thetabf
+  \Pr\{Y_0 = 1 \gv \Ybf\} = \int \Pr\{Y_0 = 1 \gv \thetabf\} \emphase{p(\thetabf \gv \Ybf)} \d \thetabf
   $$
 }
 
@@ -410,21 +412,23 @@
   \xbf_0 = (0.178, 0.116, \dots, 0.076, -0.231)
   $$
   
-  \paragraph{Example} for models $M_1, \dots, M_d$:
-  \begin{center} {\tt \begin{tabular}{lrrr}
-  Model & pY  & Esp.prob0  & Sd.prob0 \\ 
+  \bigskip
+  \paragraph{Example.} For models $M_0, \dots, M_p$:
+  \begin{center} {\tt \begin{tabular}{lrrrr}
+  Model & logpY|M  & pM|Y  & Esp.p0|M.Y  & Sd.p0|M.Y \\ 
   \hline 
-  $M_{1}$  & 1e-04  & 0.435  & 0.056 \\ 
-  $M_{2}$  & 4e-04  & 0.609  & 0.095 \\ 
-  $M_{3}$  & 3e-04  & 0.625  & 0.102 \\ 
-  \dots\\
-  $M_{14}$  & 0.1331  & 0.234  & 0.174 \\ 
-  $M_{15}$  & 0.2974  & 0.207  & 0.168 \\ 
-  $M_{16}$  & 0.27  & 0.197  & 0.161 \\
+  $M_{0}$  & -53.77  & 1e-04  & 0.435  & 0.056 \\ 
+  $M_{1}$  & -51.61  & 4e-04  & 0.609  & 0.095 \\ 
+  $\cdots$ \\
+  $M_{11}$  & -47.57  & 0.0252  & 0.431  & 0.196 \\ 
+  $M_{12}$  & -45.48  & 0.2023  & 0.246  & 0.173 \\ 
+  $M_{13}$  & -45.9  & 0.1331  & 0.234  & 0.174 \\ 
+  $M_{14}$  & -45.1  & 0.2974  & 0.207  & 0.168 \\ 
+  $M_{15}$  & -45.19  & 0.27  & 0.197  & 0.161 \\
   \hline \\ \hline
-  Averaging & & Esp.prob0  & Sd.prob0 \\ 
+  Averaging & logpY & & Esp.p0|Y  & Sd.p0|Y \\ 
   \hline 
-  & & 0.242 & 0.188
+  & -46.66 & & 0.242 & 0.188
   \end{tabular} } \end{center}
 }
 
@@ -446,6 +450,7 @@
   $$
   p(\thetabf \gv \Ybf_1, \Ybf_2) 
   = \frac{p(\thetabf \gv \Ybf_1) p(\Ybf_2 \gv \thetabf, \Ybf_1) }{p(\Ybf_2 \gv \Ybf_1)}
+  = \frac{p(\thetabf \gv \Ybf_1) \ell(\Ybf_2 \gv \thetabf) }{p(\Ybf_2 \gv \Ybf_1)}
   $$
   
   \bigskip \pause
@@ -459,7 +464,7 @@
 %====================================================================
 \frame{ \frametitle{Combining experiments}
 
-  \paragraph{Output:} $n_1 = n_2 = 39$
+  \paragraph{Output:} $\textcolor{red}{n_1} = n_2 = 39$
   $$
   \includegraphics[width=.8\textwidth, height=.8\textheight]{\figfig/posterior-combine}
   $$

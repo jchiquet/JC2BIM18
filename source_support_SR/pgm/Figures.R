@@ -5,8 +5,8 @@ source('Functions-Print.R')
 
 ###############################################################################
 # Logistic regression
-x = seq(-3, 3, by=.01)
-a = -2; b = 3
+x = seq(-8, 8, by=.01)
+a = 0; b = 1
 pdf('../figs/logistic-curve.pdf')
 par(mfrow=c(1, 1), mex=0.3)
 plot(x, plogis(a + b*x), main='', xlab='', ylab='', lwd=4, col=2, type='l')
@@ -15,15 +15,30 @@ dev.off()
 ###############################################################################
 # Beta binomial
 u = seq(0, 1, by=.001)
+p = 1/3; 
+a.list = c(1, 10, 1, 5); b.list = c(1, 1, 10, 5); list.nb = length(a.list)
+# Fixed n
+n = 10; y = round(n*p)
+for (i in 1:list.nb){
+   a = a.list[i]; b = b.list[i]
+   pdf(paste0('../figs/beta-binomial-a', a, '-b', b, '-n', n, '-p', round(100*p), '-zoomed.pdf'))
+   par(mfrow=c(1, 1), mex=0.3)
+   plot(u, dbeta(u, a+y, b+n-y), main='', xlab='', ylab='', lwd=4, 
+        col=1, type='l', ylim=c(0, 5))
+   lines(u, dbeta(u, a, b), lwd=4, col=4)
+   abline(v=y/n, lty=2, lwd=4)
+   dev.off()
+}
+# Increasing n
 n.list = c(10, 100, 1000)
 for (n in n.list){
-   p = 1/3; y = round(n*p)
-   a.list = c(1, 10, 1, 5); b.list = c(1, 1, 10, 5); list.nb = length(a.list)
+   y = round(n*p)
    for (i in 1:list.nb){
       a = a.list[i]; b = b.list[i]
       pdf(paste0('../figs/beta-binomial-a', a, '-b', b, '-n', n, '-p', round(100*p), '.pdf'))
       par(mfrow=c(1, 1), mex=0.3)
-      plot(u, dbeta(u, a+y, b+n-y), main='', xlab='', ylab='', lwd=4, col=1, type='l')
+      plot(u, dbeta(u, a+y, b+n-y), main='', xlab='', ylab='', lwd=4, 
+           col=1, type='l', ylim=c(0, 30))
       lines(u, dbeta(u, a, b), lwd=4, col=4)
       abline(v=y/n, lty=2, lwd=4)
       dev.off()
@@ -146,7 +161,7 @@ x.grid = seq(-4, 4, by=.01); grid.lim = c(min(x.grid), max(x.grid))
 
 # Joint
 pdf('../figs/Joint.pdf')
-par(mfrow=c(1 ,1))
+par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
 abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
@@ -154,7 +169,7 @@ dev.off()
 
 # Marginal
 pdf('../figs/JointMarg.pdf')
-par(mfrow=c(1 ,1))
+par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
 abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
@@ -166,7 +181,7 @@ dev.off()
 
 # Ref
 pdf('../figs/JointMargRef.pdf')
-par(mfrow=c(1 ,1))
+par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
 abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
@@ -179,7 +194,7 @@ dev.off()
 
 # Conditional
 pdf('../figs/JointMargCond.pdf')
-par(mfrow=c(1 ,1))
+par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
 abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)

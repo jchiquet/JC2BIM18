@@ -17,24 +17,24 @@
   \end{tabular} } \end{center}
 }
 
-%====================================================================
-\frame{ \frametitle{Monte Carlo: Illustration (1/3)} \label{app:MCillustration}
-  
-  \paragraph{Example.} $\pi(\theta) = \Ncal(0, 10)$, $g(\theta) = e^\theta$:
-  \begin{itemize}
-   \item {\tt theta.sample = rnorm(M, mean=0, sd=sqrt(10))}
-   \item {\tt mean(exp(theta.sample))}
-%    \item   
-%    \begin{tabular}{crrrrc}
-%     $M$ & 1e3 & 1e4 & 1e5 & 1e6 & truth \\
-%     \hline
-%     $\widehat{\Esp}(g(\thetabf))$ & 388.27 & 140.06 & 133.08 & 170.40 & 148.41
-%   \end{tabular}
-  \end{itemize}
-}
+% %====================================================================
+% \frame{ \frametitle{Monte Carlo: Illustration (1/3)} \label{app:MCillustration}
+%   
+%   \paragraph{Example.} $\pi(\theta) = \Ncal(0, 10)$, $g(\theta) = e^\theta$:
+%   \begin{itemize}
+%    \item {\tt theta.sample = rnorm(M, mean=0, sd=sqrt(10))}
+%    \item {\tt mean(exp(theta.sample))}
+% %    \item   
+% %    \begin{tabular}{crrrrc}
+% %     $M$ & 1e3 & 1e4 & 1e5 & 1e6 & truth \\
+% %     \hline
+% %     $\widehat{\Esp}(g(\thetabf))$ & 388.27 & 140.06 & 133.08 & 170.40 & 148.41
+% %   \end{tabular}
+%   \end{itemize}
+% }
 
 %====================================================================
-\frame{ \frametitle{Monte Carlo: Illustration (2/3)}
+\frame{ \frametitle{Monte Carlo: Illustration (1/2)} \label{app:MCillustration}
 
   \paragraph{Properties.} 
   \begin{itemize}
@@ -49,7 +49,7 @@
  }
 
 %====================================================================
-\frame{ \frametitle{Monte Carlo: Illustration (3/3)}
+\frame{ \frametitle{Monte Carlo: Illustration (2/2)}
 
   \begin{tabular}{cc}
     \begin{tabular}{p{.5\textwidth}}

@@ -173,21 +173,23 @@ for (k in 1:d){
    }
    Esp.prob0[k] = mean(prob0); Var.prob0[k] = var(prob0)
 }
-pY = pY / sum(pY)
-plot(0:(d-1), pY, type='b', xlab='Model')
+pM.Y = pY / sum(pY)
+plot(0:(d-1), pM.Y, type='b', xlab='Model')
 
 as.vector(x0)
 
 Sd.prob0 = sqrt(Var.prob0)
-prob0.avg = cbind(round(pY, 4), round(Esp.prob0, 3), round(Sd.prob0, 3))
-colnames(prob0.avg) = c('pY', 'Esp.prob0', 'Sd.prob0')
-rownames(prob0.avg) = paste0('$M_{', 1:d, '}$')
+pM.Y = pY / sum(pY)
+prob0.avg = cbind(round(log(pY), 2), round(pM.Y, 4), round(Esp.prob0, 3), round(Sd.prob0, 3))
+colnames(prob0.avg) = c('logpY|M', 'pM|Y', 'Esp.prob0', 'Sd.prob0')
+rownames(prob0.avg) = paste0('$M_{', 0:(d-1), '}$')
 F_PrintTab(prob0.avg)
 
-Esp.prob0.avg = pY %*% Esp.prob0
-Var.prob0.avg = pY %*% Var.prob0 + (pY %*% Esp.prob0^2) - Esp.prob0.avg^2
+logpY.marg = log(sum(pY)/length(pY))
+Esp.prob0.avg = pM.Y %*% Esp.prob0
+Var.prob0.avg = pM.Y %*% Var.prob0 + (pM.Y %*% Esp.prob0^2) - Esp.prob0.avg^2
 Sd.prob0.avg = sqrt(Var.prob0.avg)
-paste0(round(Esp.prob0.avg, 3), ' & ', round(Sd.prob0.avg, 3))
+paste0(round(logpY.marg, 2), ' & & ', round(Esp.prob0.avg, 3), ' & ', round(Sd.prob0.avg, 3))
 
 ###############################################################################
 # MH : Data combination
