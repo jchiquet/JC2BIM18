@@ -128,7 +128,7 @@ dev.off()
 
 ###############################################################################
 # Importance sampling: Influence of the proposal
-M = 1e3; y.grid = seq(0, 1, by=.01); seed = 3
+M = 1e3; y.grid = seq(0, 1, by=.01); seed = 6
 a.target = 6; b.target = 12; p.target = dbeta(y.grid, a.target, b.target)
 a.list = c(1, 10, 1, 5); b.list = c(1, 1, 10, 5)
 prop.nb = length(a.list)
@@ -138,6 +138,7 @@ for (i in 1:prop.nb){
    y.prop = rbeta(M, a.prop, b.prop)
    p.prop = dbeta(y.grid, a.prop, b.prop)
    W = dbeta(y.prop, a.target, b.target) / dbeta(y.prop, a.prop, b.prop)
+   W = M * W / sum(W)
    ESS = mean(W)^2 / mean(W^2)   
    cat(a.target, b.target, a.prop, b.prop, ESS, '\n')
    H = hist(y.prop, breaks=sqrt(M), xlim=c(0, 1))
@@ -172,7 +173,7 @@ pdf('../figs/JointMarg.pdf')
 par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
-abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+# abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
 phi.marg = dnorm(x.grid, mean=mu[1], sd=sqrt(Sigma[1, 1])); 
 coef.phi = 3
 lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
@@ -184,9 +185,9 @@ pdf('../figs/JointMargRef.pdf')
 par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
-abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+# abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
 lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
-abline(v=mu[1], lty=2, col=4, lwd=2)
+# abline(v=mu[1], lty=2, col=4, lwd=2)
 # Ref
 y = 1.5; 
 abline(h=y, lty=4, lwd=2)
@@ -197,9 +198,9 @@ pdf('../figs/JointMargCond.pdf')
 par(mfrow=c(1 ,1), mex=.3)
 plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
          xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
-abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+# abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
 lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
-abline(v=mu[1], lty=2, col=4, lwd=2)
+# abline(v=mu[1], lty=2, col=4, lwd=2)
 abline(h=y, lty=4, lwd=2)
 # Conditional
 mu.cond = mu[1] + (y-mu[2])*Sigma[1, 2]/Sigma[2, 2]

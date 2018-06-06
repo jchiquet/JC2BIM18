@@ -114,7 +114,7 @@
    \widehat{\Esp}_q[f(\thetabf)] = \frac1B \sum_b f(\thetabf^b)
    $$
   \end{enumerate}
-  \pause \ra unbiased estimate of $\Esp_q[f(\thetabf)]$ with variance $\propto 1/ B$. \appref{app:MCillustration}
+  \pause \ra unbiased estimate of $\Esp_q[f(\thetabf)]$ with variance $\propto 1/ B$. \appref{app:MCillustration} \label{back:MCillustration}
   
   \bigskip \bigskip \pause
   \paragraph{In practice:} 
@@ -133,8 +133,8 @@
   \paragraph{Main trick = weighting particles.} \pause To evaluate $\Esp[f(\thetabf)]$, write it as
   \begin{align*}
   \Esp_q[f(\thetabf)] 
-  = \int f(\thetabf) q(\thetabf) \d \thetabf 
-  = \int f(\thetabf) \frac{q(\thetabf)}{\emphase{q'(\thetabf)}} \emphase{q'(\thetabf)} \d \thetabf 
+  = \int f(\thetabf) \emphase{q(\thetabf)} \d \thetabf 
+  = \int f(\thetabf) \frac{q(\thetabf)}{q'(\thetabf)} \emphase{q'(\thetabf)} \d \thetabf 
   \end{align*}
   for some \emphase{proposal} $q' \gg q$, from which you {\sl know how to sample}, then
   \begin{enumerate}
@@ -548,7 +548,7 @@
 }
 
 %====================================================================
-\frame{ \frametitle{Gibbs}
+\frame{ \frametitle{Gibbs sampler}
 
   \paragraph{Framework.} We do not know how to sample the whole vector $\thetabf$:
   $$
