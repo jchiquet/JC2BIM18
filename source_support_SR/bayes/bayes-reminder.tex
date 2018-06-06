@@ -1,9 +1,10 @@
 %====================================================================
-\frame{ \frametitle{Reminder: Joint, marginal, conditional (1/2)} 
+\frame{ \frametitle{Reminder: Joint, marginal, conditional (1/2)} \label{app:JointMargCond}
 
-  \paragraph{Reminder:} 2 loci with 2 alleles each: $(A, a)$, $(B, b)$
+  \paragraph{Reminder:} 2 loci with 2 alleles each: $(A, a)$, $(B, b)$ \\~ 
+  
   \begin{itemize}
-   \item Joint distribution: 
+   \item \pause Joint distribution: 
    $$
    \begin{array}{c|cc|c}
    & B & b & \text{marginal} \\
@@ -14,21 +15,25 @@
    \text{marginal} & q_B = f_{AB} + f_{aB} & q_b = f_{Ab} + f_{ab} & 
     f_{AB} + f_{Ab} + f_{aB} + f_{ab} = 1 
   \end{array}
-  $$ \\ ~
-  \item Marginal distribution: 'integrate out' the allele of the other locus
+  $$ \\ ~ 
+  \item \pause Marginal distribution: 'integrate out' the allele of the other locus
   $$
   \Pr\{B\} = q_B = f_{AB} + f_{aB}
   $$ \\ ~
-  \item Conditional distribution: fix the allele of the other locus
+  \item \pause Conditional distribution: fix the allele of the other locus
   $$
-  \Pr\{A \gv b\} = \frac{\Pr\{A, b\}}{\Pr\{b\}} = \frac{f_{Ab}}{q_b} = \frac{f_{Ab}}{f_{Ab} + f_{ab}}
+  \Pr\{A \gv b\} 
+  = \frac{\Pr\{A, b\}}{\Pr\{b\}} 
+  = \frac{f_{Ab}}{q_b} 
+  = \frac{f_{Ab}}{f_{Ab} + f_{ab}} 
+  = \frac{\Pr\{A\}}{\Pr\{b\}}  P\{b \gv A \}
   $$
   ('\emphase{Bayes formula}')
   \end{itemize}
 }
 
 %====================================================================
-\frame{ \frametitle{Reminder: Joint, marginal, conditional  (2/2)} \label{app:JointMargCond}
+\frame{ \frametitle{Reminder: Joint, marginal, conditional  (2/2)} 
 
   \paragraph{Continuous case:} 2 continuous random variables $U$ and $V$
   \begin{itemize}
@@ -51,5 +56,21 @@
   p_{V|U=u}(v) = \frac{p_{UV}(u, v)}{p_U(u)} = \frac{p_{UV}(u, v)}{\int p_{UV}(u, v) \d v}
   $$
   \end{itemize}
+
+}
+
+%====================================================================
+\frame{ \frametitle{A picture}
+
+  \begin{overprint}
+    \onslide<1> $$\includegraphics[height=.7\textheight]{../figs/Joint}$$
+    \onslide<2> $$\includegraphics[height=.7\textheight]{../figs/JointMarg}$$
+    \onslide<3> $$\includegraphics[height=.7\textheight]{../figs/JointMargRef}$$
+    \onslide<4> $$\includegraphics[height=.7\textheight]{../figs/JointMargCond}$$
+  \end{overprint}
+  
+  \onslide+<1->{\textcolor{red}{Joint, }}
+  \onslide+<2->{\textcolor{blue}{Marginal, }}
+  \onslide+<3->{\textcolor{black}{Conditional}}
 
 }

@@ -1,5 +1,6 @@
 rm(list=ls())
 library(plotrix)
+library(ks)
 source('Functions-Print.R')
 
 ###############################################################################
@@ -137,3 +138,58 @@ for (i in 1:prop.nb){
    lines(y.grid, bin.width*M*p.target, lwd=4, col=1)
    dev.off()
 }
+
+###############################################################################
+# Joint, marginal, conditional
+mu = c(0, 0); Sigma = matrix(c(1, 1.25, 1.25, 2), 2, 2); cont = c(10, 50, 90)
+x.grid = seq(-4, 4, by=.01); grid.lim = c(min(x.grid), max(x.grid))
+
+# Joint
+pdf('../figs/Joint.pdf')
+par(mfrow=c(1 ,1))
+plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
+         xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
+abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+dev.off()
+
+# Marginal
+pdf('../figs/JointMarg.pdf')
+par(mfrow=c(1 ,1))
+plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
+         xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
+abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+phi.marg = dnorm(x.grid, mean=mu[1], sd=sqrt(Sigma[1, 1])); 
+coef.phi = 3
+lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
+abline(v=mu[1], lty=2, col=4, lwd=2)
+dev.off()
+
+# Ref
+pdf('../figs/JointMargRef.pdf')
+par(mfrow=c(1 ,1))
+plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
+         xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
+abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
+abline(v=mu[1], lty=2, col=4, lwd=2)
+# Ref
+y = 1.5; 
+abline(h=y, lty=4, lwd=2)
+dev.off()
+
+# Conditional
+pdf('../figs/JointMargCond.pdf')
+par(mfrow=c(1 ,1))
+plotmixt(mus=mu, Sigmas=Sigma, props=1, col=2, lwd=3, cont=cont, 
+         xlim=grid.lim, ylim=grid.lim, main='', xlab='', ylab='', xaxt='n', yaxt='n')
+abline(v=mu[1], h=mu[2], lty=2, col=2, lwd=2)
+lines(x.grid, min(x.grid)+coef.phi*phi.marg, col=4, lwd=3); 
+abline(v=mu[1], lty=2, col=4, lwd=2)
+abline(h=y, lty=4, lwd=2)
+# Conditional
+mu.cond = mu[1] + (y-mu[2])*Sigma[1, 2]/Sigma[2, 2]
+sigma2.cond = Sigma[1, 1] - Sigma[1, 2]*Sigma[2, 1]/Sigma[2, 2]
+phi.cond = dnorm(x.grid, mean=mu.cond, sd=sqrt(sigma2.cond)); 
+lines(x.grid, y+coef.phi*phi.cond, col=1, lwd=3); 
+abline(v=mu.cond, lty=2, col=1, lwd=2)
+dev.off()
