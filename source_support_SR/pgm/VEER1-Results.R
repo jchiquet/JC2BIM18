@@ -89,14 +89,14 @@ for(j in 1:4){
 }
 dev.off()
  
-# # Autocorrelation check
-# par(mfrow=c(2, 2), mex=.3, pch=20)
-# invisible(sapply(1:4, function(j){plot(MH.full$beta.path[1:(nrow(MH.full$beta.path)-1), j], 
-#                                        MH.full$beta.path[2:nrow(MH.full$beta.path), j], main='', xlab='', ylab='')
-# }))
-
 # Autocorrelation check
-pdf(paste0('../figs/MH-autocorrelation-10shift', round(10*shift), '.pdf'))
+# pdf(paste0('../figs/MH-autocorrelation-10shift', round(10*shift), '.pdf'))
+# par(mfrow=c(2, 2), mex=.3, pch=20)
+# invisible(sapply(1:4, function(j){plot(beta.sample[1:(beta.nb-1), j], 
+#                                        beta.sample[2:beta.nb, j], main='', xlab='', ylab='')
+# }))
+# dev.off()
+png(paste0('../figs/MH-autocorrelation-10shift', round(10*shift), '.png'))
 par(mfrow=c(2, 2), mex=.3, pch=20)
 invisible(sapply(1:4, function(j){plot(beta.sample[1:(beta.nb-1), j], 
                                        beta.sample[2:beta.nb, j], main='', xlab='', ylab='')
