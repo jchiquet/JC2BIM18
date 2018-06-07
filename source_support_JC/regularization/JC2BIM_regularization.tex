@@ -812,7 +812,7 @@ Extract size and RSS. Add the null model (with just the intercept)
   \frametitle{Exhaustive search II}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/bss_r2-1} 
+\includegraphics[width=.8\textwidth]{figures/subsetbss_r2-1} 
 
 \end{knitrout}
 \end{frame}
@@ -821,7 +821,7 @@ Extract size and RSS. Add the null model (with just the intercept)
   \frametitle{Exhaustive search III}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/bss_AIC-1} 
+\includegraphics[width=.8\textwidth]{figures/subsetbss_AIC-1} 
 
 \end{knitrout}
 \end{frame}
@@ -831,7 +831,7 @@ Extract size and RSS. Add the null model (with just the intercept)
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/bss_BIC-1} 
+\includegraphics[width=.8\textwidth]{figures/subsetbss_BIC-1} 
 
 \end{knitrout}
 
@@ -1269,7 +1269,7 @@ Generate two correlated predictors
 \hlkwd{cor}\hlstd{(x1,x2)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.7316593
+## [1] 0.934117
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -1282,9 +1282,9 @@ Draw $Y$ and plot the  \alert{\bf ridge regularisation path}
 \hlstd{y} \hlkwb{<-} \hlstd{x1} \hlopt{+} \hlstd{x2} \hlopt{+}\hlkwd{rnorm}\hlstd{(}\hlnum{5}\hlstd{)}
 \hlkwd{plot}\hlstd{(quadrupen}\hlopt{::}\hlkwd{ridge}\hlstd{(}\hlkwd{cbind}\hlstd{(x1,x2),y))}
 \end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/subsetunnamed-chunk-18-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: 'ridge' is not an exported object from 'namespace:quadrupen'}}\end{kframe}
 \end{knitrout}
 
 \end{frame}
@@ -1463,9 +1463,7 @@ Compute the ridge path
 \begin{alltt}
 \hlstd{ridge_path} \hlkwb{<-} \hlstd{quadrupen}\hlopt{::}\hlkwd{ridge}\hlstd{(x_train, y_train)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: 'ridge' is not an exported object from 'namespace:quadrupen'}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
 \vfill
@@ -1476,9 +1474,7 @@ Compute the prediction error on the test set for all $\lambda$
 \begin{alltt}
 \hlstd{err} \hlkwb{<-} \hlkwd{colMeans}\hlstd{((y_test} \hlopt{-} \hlkwd{predict}\hlstd{(ridge_path,} \hlkwd{as.matrix}\hlstd{(x_test)))}\hlopt{^}\hlnum{2}\hlstd{)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in predict(ridge\_path, as.matrix(x\_test)): object 'ridge\_path' not found}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
 \vfill
@@ -1489,9 +1485,10 @@ Then, $\lambda^\star$ that minimizes this error
 \begin{alltt}
 \hlstd{ridge_path}\hlopt{@}\hlkwc{lambda2}\hlstd{[}\hlkwd{which.min}\hlstd{(err)]}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'ridge\_path' not found}}\end{kframe}
+\begin{verbatim}
+## [1] 0.5722368
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 The prediction error is smaller than with the OLS
@@ -1499,15 +1496,13 @@ The prediction error is smaller than with the OLS
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{err_ridge} \hlkwb{<-} \hlstd{err[}\hlkwd{which.min}\hlstd{(err)]}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'err' not found}}\begin{alltt}
 \hlkwd{print}\hlstd{(err_ridge)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in print(err\_ridge): object 'err\_ridge' not found}}\begin{alltt}
+\begin{verbatim}
+##      0.572 
+## 0.06618371
+\end{verbatim}
+\begin{alltt}
 \hlkwd{print}\hlstd{(err_ols)}
 \end{alltt}
 \begin{verbatim}
@@ -1520,10 +1515,9 @@ The prediction error is smaller than with the OLS
 
 \begin{frame}[containsverbatim]
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/ridgerdige_path_prostate-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(ridge\_path): object 'ridge\_path' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1623,9 +1617,15 @@ $\rightsquigarrow$ What sens give to the degrees of freedom for ridge regression
 \begin{alltt}
 \hlkwd{system.time}\hlstd{(loo} \hlkwb{<-} \hlstd{quadrupen}\hlopt{::}\hlkwd{crossval}\hlstd{(x_train,y_train,} \hlkwc{penalty} \hlstd{=}  \hlstr{"ridge"}\hlstd{,} \hlkwc{K} \hlstd{= n))}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in match.arg(penalty): 'arg' should be one of "{}elastic.net"{}, "{}bounded.reg"{}}}\end{kframe}
+\begin{verbatim}
+## 
+## CROSS-VALIDATION FOR  ridge  REGULARIZER 
+## 
+## 67-fold CV on the lambda2 grid.
+##    user  system elapsed 
+##   0.364   0.092   0.274
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \begin{knitrout}\scriptsize
@@ -1633,9 +1633,15 @@ $\rightsquigarrow$ What sens give to the degrees of freedom for ridge regression
 \begin{alltt}
 \hlkwd{system.time}\hlstd{(CV10} \hlkwb{<-} \hlstd{quadrupen}\hlopt{::}\hlkwd{crossval}\hlstd{(x_train,y_train,} \hlkwc{penalty} \hlstd{=}  \hlstr{"ridge"}\hlstd{,} \hlkwc{K} \hlstd{=} \hlnum{10}\hlstd{))}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in match.arg(penalty): 'arg' should be one of "{}elastic.net"{}, "{}bounded.reg"{}}}\end{kframe}
+\begin{verbatim}
+## 
+## CROSS-VALIDATION FOR  ridge  REGULARIZER 
+## 
+## 10-fold CV on the lambda2 grid.
+##    user  system elapsed 
+##   0.488   0.228   0.173
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \end{frame}
@@ -1643,20 +1649,22 @@ $\rightsquigarrow$ What sens give to the degrees of freedom for ridge regression
 \begin{frame}[containsverbatim]
   \frametitle{Leave one out}
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/ridgeplot_loo_ridge-1} 
 
+\includegraphics[width=.8\textwidth]{figures/ridgeplot_loo_ridge-2} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(loo, main = "{}LOO CV error"{}): object 'loo' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
 \begin{frame}[containsverbatim]
   \frametitle{Ten fold}
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/ridgeplot_cv10_ridge-1} 
 
+\includegraphics[width=.8\textwidth]{figures/ridgeplot_cv10_ridge-2} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(CV10, main = "{}10-fold CV error"{}): object 'CV10' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1778,9 +1786,7 @@ Compute the LASSO path
 \hlkwd{library}\hlstd{(glmnet)}
 \hlstd{lasso_path} \hlkwb{<-} \hlstd{quadrupen}\hlopt{::}\hlkwd{lasso}\hlstd{(x_train,y_train)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: 'lasso' is not an exported object from 'namespace:quadrupen'}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
 \vfill
@@ -1792,9 +1798,7 @@ Compute the prediction error on the test set for all $\lambda$
 \begin{alltt}
 \hlstd{err} \hlkwb{<-} \hlkwd{colMeans}\hlstd{((y_test} \hlopt{-} \hlkwd{predict}\hlstd{(lasso_path, x_test))}\hlopt{^}\hlnum{2}\hlstd{)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in predict(lasso\_path, x\_test): object 'lasso\_path' not found}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
 \vfill
@@ -1805,9 +1809,10 @@ Then, $\lambda^\star$ that minimizes this error
 \begin{alltt}
 \hlstd{lasso_path}\hlopt{@}\hlkwc{lambda1}\hlstd{[}\hlkwd{which.min}\hlstd{(err)]}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'lasso\_path' not found}}\end{kframe}
+\begin{verbatim}
+## [1] 0.337835
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \framebreak
@@ -1818,14 +1823,20 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{alltt}
 \hlstd{err[}\hlkwd{which.min}\hlstd{(err)]}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'err' not found}}\begin{alltt}
+\begin{verbatim}
+##      0.338 
+## 0.05705363
+\end{verbatim}
+\begin{alltt}
 \hlstd{lasso_path}\hlopt{@}\hlkwc{coefficients}\hlstd{[}\hlkwd{which.min}\hlstd{(err), ]}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'lasso\_path' not found}}\end{kframe}
+\begin{verbatim}
+##     lcavol    lweight        age       lbph        svi        lcp 
+## 0.30457102 0.63292397 0.00000000 0.03384766 0.06716404 0.00000000 
+##    gleason      pgg45 
+## 0.00000000 0.02819954
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \end{frame}
@@ -1839,9 +1850,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \hlkwd{qplot}\hlstd{(}\hlkwd{log10}\hlstd{(lasso_path}\hlopt{@}\hlkwc{lambda1}\hlstd{), err)} \hlopt{+} \hlkwd{geom_line}\hlstd{()} \hlopt{+}
 \hlkwd{geom_vline}\hlstd{(}\hlkwc{xintercept} \hlstd{=} \hlkwd{log10}\hlstd{(lasso_path}\hlopt{@}\hlkwc{lambda1}\hlstd{[}\hlkwd{which.min}\hlstd{(err)]),} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
 \end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-29-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in data.frame(xintercept = xintercept): object 'lasso\_path' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1853,9 +1864,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{alltt}
 \hlkwd{plot}\hlstd{(lasso_path)}
 \end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-30-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(lasso\_path): object 'lasso\_path' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1868,9 +1879,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{alltt}
 \hlkwd{plot}\hlstd{(lasso_path,} \hlkwc{xvar}\hlstd{=}\hlstr{"fraction"}\hlstd{)}
 \end{alltt}
+\end{kframe}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-31-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(lasso\_path, xvar = "{}fraction"{}): object 'lasso\_path' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1915,10 +1926,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
  \framesubtitle{Calcul de l' AIC/BIC en estimant $\sigma$ (plot)}
 
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-33-1} 
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in criteria(lasso\_path): could not find function "{}criteria"{}}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1930,9 +1940,15 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{alltt}
 \hlkwd{system.time}\hlstd{(loo} \hlkwb{<-} \hlkwd{crossval}\hlstd{(x_train, y_train,} \hlkwc{penalty} \hlstd{=} \hlstr{"lasso"}\hlstd{,} \hlkwc{K} \hlstd{= n))}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in match.arg(penalty): 'arg' should be one of "{}elastic.net"{}, "{}bounded.reg"{}}}\end{kframe}
+\begin{verbatim}
+## 
+## CROSS-VALIDATION FOR  lasso  REGULARIZER 
+## 
+## 67-fold CV on the lambda1 grid, lambda2 is fixed.
+##    user  system elapsed 
+##   0.084   0.016   0.319
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \begin{knitrout}\scriptsize
@@ -1940,9 +1956,15 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{alltt}
 \hlkwd{system.time}\hlstd{(CV10} \hlkwb{<-} \hlkwd{crossval}\hlstd{(x_train, y_train,} \hlkwc{penalty} \hlstd{=} \hlstr{"lasso"}\hlstd{,} \hlkwc{K} \hlstd{=} \hlnum{10}\hlstd{))}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in match.arg(penalty): 'arg' should be one of "{}elastic.net"{}, "{}bounded.reg"{}}}\end{kframe}
+\begin{verbatim}
+## 
+## CROSS-VALIDATION FOR  lasso  REGULARIZER 
+## 
+## 10-fold CV on the lambda1 grid, lambda2 is fixed.
+##    user  system elapsed 
+##   0.984   0.276   0.184
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \end{frame}
@@ -1950,10 +1972,11 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{frame}[containsverbatim]
   \frametitle{Leave one out}
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-36-1} 
 
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-36-2} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(loo, main = "{}LOO CV error"{}): object 'loo' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 
@@ -1962,10 +1985,11 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \begin{frame}[containsverbatim]
   \frametitle{Ten fold}
 \begin{knitrout}\scriptsize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-37-1} 
 
+\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-37-2} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(CV10, main = "{}10-fold CV error"{}): object 'CV10' not found}}\end{kframe}
 \end{knitrout}
 \end{frame}
 

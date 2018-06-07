@@ -18,7 +18,7 @@ Support de cours de statistiques pour l'école d'été Jeunes Chercheurs et Jeun
 
 [slides](https://github.com/jchiquet/JC2BIM18/raw/master/slides/JC2BIM_Bayes.pdf)
 
-## Part 5: Modèle linéaire régularisé
+## Part 5: Modèle linéaire: sélection de variables et régularisation
 
 [slides](https://github.com/jchiquet/JC2BIM18/raw/master/slides/JC2BIM_regularization.pdf)
 
