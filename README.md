@@ -6,7 +6,7 @@ Support de cours de statistiques pour l'école d'été Jeunes Chercheurs et Jeun
 
 [slides](https://github.com/jchiquet/JC2BIM18/raw/master/slides/JC2BIM_inference.pdf)
 
-## Part 2: Inférence Statistique
+## Part 2: Analyse différentielle
 
 [slides](https://github.com/jchiquet/JC2BIM18/raw/master/slides/JC2BIM_analyse_diff.pdf)
 
