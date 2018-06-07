@@ -1,6 +1,6 @@
 # JC2BIM18
 
-Support de cours de statistiques pour l'école d'été Jeunes Chercheurs et Jeunes Chercheuses du GdR BIM 2018
+Supports de cours de statistiques pour l'école d'été Jeunes Chercheurs et Jeunes Chercheuses du GdR BIM 2018
 
 ## Part 1: Inférence Statistique
 
