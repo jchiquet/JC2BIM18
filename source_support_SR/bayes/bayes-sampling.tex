@@ -464,7 +464,7 @@
 
   \pause
   \footnotesize{\tt 
-  mu.prior = rep(0, p); Sigma.prior = 100*diag(p); Sigma.shift = .5*diag(p) \\ \pause
+  mu.prior = rep(0, p); \quad Sigma.prior = 100*diag(p); \quad Sigma.shift = .5*diag(p) \\ \pause
   theta.sample = matrix(0, B, p); \\ \pause
   ~ \\
   theta.cur = theta.sample[1, ] \\ \pause
@@ -473,18 +473,18 @@
   loglik.cur = sum(dbinom(Y, 1, prob.cur, log=T)) \\ \pause
   ~ \\
   for (b in 2:B)\{ \\ \pause
-  \qquad theta.prop = rmvnorm(1, mean=theta.sample[b-1, ], sigma=Sigma.shift)[1, ] \\ \pause
+  \qquad theta.prop = rmvnorm(1, mean=theta.cur, sigma=Sigma.shift)[1, ] \\ \pause
   \qquad logprior.prop = dmvnorm(theta.prop, mean=mu.prior, sigma=Sigma.prior, log=T) \\ \pause
   \qquad prob.prop = plogis(X\%*\%theta.prop) \\ \pause
   \qquad loglik.prop = sum(dbinom(Y, 1, prob.prop, log=T)) \\ \pause
   ~ \\
   \qquad alpha = exp(logprior.prop + loglik.prop - logprior.cur - loglik.cur) \\ \pause
   \qquad if(runif(1) < alpha)\{ \\ 
-  \qquad \qquad theta.sample[b, ] = theta.cur = theta.prop \\ 
-  \qquad \qquad logprior.cur = logprior.prop; loglik.cur = loglik.prop \\ \pause
-  \qquad \}else\{ \\
-  \qquad \qquad theta.sample[b, ] = theta.sample[b-1, ] \\
+  \qquad \qquad theta.cur = theta.prop \\
+  \qquad \qquad logprior.cur = logprior.prop; \quad loglik.cur = loglik.prop \\ 
   \qquad \} \\ \pause
+  ~ \\
+  \qquad theta.sample[b, ] = theta.cur \\ 
   \} \\
   }
 }
