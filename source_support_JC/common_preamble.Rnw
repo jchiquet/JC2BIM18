@@ -57,7 +57,7 @@ opts_chunk$set(size = 'scriptsize',dev='pdf',fig.path='figures/',
     \titlepage
     \vfill
     \begin{center}
-        \scriptsize\url{http://github/jchiquet/JC2BIM}
+        \scriptsize\url{https://github.com/jchiquet/JC2BIM18}
     \end{center}
     \vfill
     \includegraphics[width=1.5cm]{logo_cnrs}\hfill

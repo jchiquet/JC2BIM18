@@ -15,7 +15,7 @@ rm(list=ls())
 \pgfdeclareimage[width=.18\textwidth]{microarray}{../common_figs/data_affy}
 \pgfdeclareimage[width=.18\textwidth]{sequencer}{../common_figs/tech_ngs}
 \pgfdeclareimage[width=.25\textwidth]{ngs}{../common_figs/data_ngs}
-\pgfdeclareimage[width=.3\textwidth]{computer}{../common_figs/computer}
+\pgfdeclareimage[width=.5cm]{computer}{../common_figs/computer}
 
 \begin{document}
 

@@ -107,7 +107,7 @@
     \titlepage
     \vfill
     \begin{center}
-        \scriptsize\url{http://github/jchiquet/JC2BIM}
+        \scriptsize\url{https://github.com/jchiquet/JC2BIM18}
     \end{center}
     \vfill
     \includegraphics[width=1.5cm]{logo_cnrs}\hfill
@@ -812,7 +812,7 @@ Extract size and RSS. Add the null model (with just the intercept)
   \frametitle{Exhaustive search II}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/subsetbss_r2-1} 
+\includegraphics[width=.8\textwidth]{figures/bss_r2-1} 
 
 \end{knitrout}
 \end{frame}
@@ -821,7 +821,7 @@ Extract size and RSS. Add the null model (with just the intercept)
   \frametitle{Exhaustive search III}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/subsetbss_AIC-1} 
+\includegraphics[width=.8\textwidth]{figures/bss_AIC-1} 
 
 \end{knitrout}
 \end{frame}
@@ -831,7 +831,7 @@ Extract size and RSS. Add the null model (with just the intercept)
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/subsetbss_BIC-1} 
+\includegraphics[width=.8\textwidth]{figures/bss_BIC-1} 
 
 \end{knitrout}
 
@@ -1283,7 +1283,7 @@ Draw $Y$ and plot the  \alert{\bf ridge regularisation path}
 \hlkwd{plot}\hlstd{(quadrupen}\hlopt{::}\hlkwd{ridge}\hlstd{(}\hlkwd{cbind}\hlstd{(x1,x2),y))}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=.8\textwidth]{figures/subsetunnamed-chunk-18-1} 
+\includegraphics[width=.8\textwidth]{figures/toy_ridgeunnamed-chunk-18-1} 
 
 \end{knitrout}
 
@@ -1851,7 +1851,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \hlkwd{geom_vline}\hlstd{(}\hlkwc{xintercept} \hlstd{=} \hlkwd{log10}\hlstd{(lasso_path}\hlopt{@}\hlkwc{lambda1}\hlstd{[}\hlkwd{which.min}\hlstd{(err)]),} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-29-1} 
+\includegraphics[width=.8\textwidth]{figures/ridgeunnamed-chunk-29-1} 
 
 \end{knitrout}
 \end{frame}
@@ -1865,7 +1865,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \hlkwd{plot}\hlstd{(lasso_path)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-30-1} 
+\includegraphics[width=.8\textwidth]{figures/ridgeunnamed-chunk-30-1} 
 
 \end{knitrout}
 \end{frame}
@@ -1880,7 +1880,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 \hlkwd{plot}\hlstd{(lasso_path,} \hlkwc{xvar}\hlstd{=}\hlstr{"fraction"}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-31-1} 
+\includegraphics[width=.8\textwidth]{figures/ridgeunnamed-chunk-31-1} 
 
 \end{knitrout}
 \end{frame}
@@ -1927,7 +1927,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-33-1} 
+\includegraphics[width=.8\textwidth]{figures/crit_lassounnamed-chunk-33-1} 
 
 \end{knitrout}
 \end{frame}
@@ -1946,7 +1946,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 ## 
 ## 67-fold CV on the lambda1 grid, lambda2 is fixed.
 ##    user  system elapsed 
-##   0.084   0.016   0.319
+##   0.532   0.136   0.299
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -1962,7 +1962,7 @@ The prediction error is smaller than with the OLS with only 5 coefficients
 ## 
 ## 10-fold CV on the lambda1 grid, lambda2 is fixed.
 ##    user  system elapsed 
-##   0.984   0.276   0.184
+##   0.476   0.168   0.243
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -1973,9 +1973,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
   \frametitle{Leave one out}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-36-1} 
+\includegraphics[width=.8\textwidth]{figures/crit_lassounnamed-chunk-36-1} 
 
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-36-2} 
+\includegraphics[width=.8\textwidth]{figures/crit_lassounnamed-chunk-36-2} 
 
 \end{knitrout}
 \end{frame}
@@ -1986,9 +1986,9 @@ The prediction error is smaller than with the OLS with only 5 coefficients
   \frametitle{Ten fold}
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-37-1} 
+\includegraphics[width=.8\textwidth]{figures/crit_lassounnamed-chunk-37-1} 
 
-\includegraphics[width=.8\textwidth]{figures/lasso_prostateunnamed-chunk-37-2} 
+\includegraphics[width=.8\textwidth]{figures/crit_lassounnamed-chunk-37-2} 
 
 \end{knitrout}
 \end{frame}
